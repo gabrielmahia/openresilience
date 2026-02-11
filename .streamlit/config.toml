@@ -1,5 +1,4 @@
 [theme]
-# Professional Deep Blue to represent water-centric analysis
 primaryColor = "#0077b6"
 backgroundColor = "#f0f2f6"
 secondaryBackgroundColor = "#ffffff"
@@ -7,6 +6,5 @@ textColor = "#1f1f1f"
 font = "sans serif"
 
 [server]
-# Optimized for cloud environments like Streamlit Cloud
 headless = true
 enableCORS = false
