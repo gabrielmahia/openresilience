@@ -1,0 +1,23 @@
+🚀 Updated Final Instructions
+Once you paste that code, follow these steps to finish the deployment:
+
+Commit Changes: Click the green "Commit changes..." button at the top right of your GitHub screen to save the file.
+
+Verify Root Files: Ensure your main repository folder also has these two files:
+
+app.py: The Python script for your map.
+
+requirements.txt: The list of libraries (streamlit, pandas, folium, etc.).
+
+Deploy on Streamlit:
+
+Go to .
+
+Select your openresilience repository.
+
+Click "Deploy".
+
+🧠 Why this code is necessary
+Theme: It forces the application to use a professional "Water Blue" color scheme rather than the default "red/black" Streamlit look.
+
+Server: It ensures the app runs smoothly in a "headless" cloud environment (without a physical monitor attached) and prevents cross-origin (CORS) errors during data fetching.
