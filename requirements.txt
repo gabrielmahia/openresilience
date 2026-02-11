@@ -1,6 +1,6 @@
-streamlit
-pandas
-numpy
-folium
-streamlit-folium
-requests
+streamlit>=1.28.0
+pandas>=2.0.0
+numpy>=1.24.0
+folium>=0.14.0
+streamlit-folium>=0.15.0
+Pillow>=10.0.0
