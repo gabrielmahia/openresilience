@@ -99,28 +99,29 @@ SPECIAL_AREAS = {
         "type": "Informal Settlement",
         "county": "Kiambu",
         "challenges": ["Unreliable piped water", "Expensive water kiosks", "No rainwater harvesting"],
-        "population": ~15000
+        # Use rough estimates (avoid Python bitwise inversion like ~15000).
+        "population": 15000
     },
     "Thika Landless": {
         "lat": -1.0419, "lon": 37.0977,
         "type": "Landless Community", 
         "county": "Kiambu",
         "challenges": ["No land for wells", "Dependent on vendors", "High water costs"],
-        "population": ~8000
+        "population": 8000
     },
     "Githurai 45": {
         "lat": -1.1524, "lon": 36.9108,
         "type": "Informal Settlement",
         "county": "Kiambu",
         "challenges": ["Water rationing", "Contamination risks", "Distance to sources"],
-        "population": ~30000
+        "population": 30000
     },
     "Mathare": {
         "lat": -1.2601, "lon": 36.8589,
         "type": "Informal Settlement",
         "county": "Nairobi",
         "challenges": ["Illegal connections", "Water theft", "Quality issues"],
-        "population": ~200000
+        "population": 200000
     },
 }
 
@@ -727,14 +728,25 @@ st.divider()
 
 # County comparison table
 with st.expander("📊 Compare All 47 Counties"):
-    st.dataframe(
-        df.sort_values('Current_Stress', ascending=False).style.format({
-            'Current_Stress': '{:.0%}',
-            'Population': '{:,.0f}'
-        }).background_gradient(subset=['Current_Stress'], cmap='RdYlGn_r'),
-        use_container_width=True,
-        height=400
-    )
+    # Pandas styling gradients require matplotlib. If it's missing, fall back to a plain table.
+    df_sorted = df.sort_values('Current_Stress', ascending=False)
+    try:
+        import matplotlib  # noqa: F401
+        styled = (
+            df_sorted.style
+            .format({'Current_Stress': '{:.0%}', 'Population': '{:,.0f}'})
+            .background_gradient(subset=['Current_Stress'], cmap='RdYlGn_r')
+        )
+        st.dataframe(styled, use_container_width=True, height=400)
+    except Exception:
+        st.warning("Table heatmap requires the optional dependency 'matplotlib'. Showing a plain table instead.")
+        st.dataframe(
+            df_sorted.assign(
+                Current_Stress=(df_sorted['Current_Stress'] * 100).round(0).astype(int).astype(str) + "%"
+            ),
+            use_container_width=True,
+            height=400
+        )
 
 # Community water point reporting
 with st.expander("📝 Report Water Point Status (Community Reporting)"):
