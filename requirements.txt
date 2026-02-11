@@ -1,5 +1,6 @@
 streamlit
-numpy
+pandas
+requests
 folium
 streamlit-folium
-Pillow
+plotly
