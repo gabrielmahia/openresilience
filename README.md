@@ -1,32 +1,114 @@
-# OpenResilience Platform 🛰️
-**Drought • Water • Food Stress Intelligence**
 
-![License](https://img.shields.io/badge/license-CC%20BY--NC--ND-red)
+# OpenResilience — Drought / Water / Food Stress Intelligence System
 
-## What this is
-OpenResilience is a **decision-support** dashboard that turns fragmented signals into interpretable indices:
+![License](https://img.shields.io/badge/license-CC--BY--NC--ND-red)
+![Status](https://img.shields.io/badge/status-Research%20Infrastructure-blue)
+![Data](https://img.shields.io/badge/data-DEMO%20%2F%20Simulated-orange)
 
-- **WSI** Water Stress Index
-- **FSI** Food Stress Index
-- **MSI** Market Stress Index
-- **CRI** Composite Risk Index
+> **⚠️ DATA STATUS:** This system currently runs on **DEMO / SIMULATED DATA**.  
+> All water stress indices, forecasts, and severity scores are generated from statistical models  
+> seeded with synthetic values — they do **NOT** reflect real-time satellite or ground-truth conditions.  
+> **DO NOT use for operational decisions.**
 
-**Signals, not certainties:** validate locally before acting. Avoid sharing precise resource locations publicly.
+## Overview
+OpenResilience is a crisis-signal intelligence system designed to surface environmental and market stress indicators related to drought, water scarcity, and food insecurity.
 
-## Run locally
+This platform provides **multi-dimensional resilience assessment** across four indices:
+- **WSI** (Water Stress Index): Rainfall deficit + soil dryness
+- **FSI** (Food Stress Index): Vegetation decline + water stress + field reports
+- **MSI** (Market Stress Index): Food price inflation + supply stockouts
+- **CRI** (Composite Risk Index): Weighted aggregation of all stress indicators
+
+This platform is intended as:
+- Decision-support infrastructure (when connected to real data sources)
+- Research tooling for resilience planning methodologies
+- Coordination augmentation for community-level preparedness
+
+**It is NOT an automated decision authority.**
+
+## Current Data Sources (Demo Mode)
+- 🔶 **Water Stress Indices**: Synthetic scoring algorithms (0-10 scale)
+- 🔶 **Population Data**: Static 2019 census estimates
+- 🔶 **Geographic Coverage**: All 47 Kenyan counties + 2 focus areas
+- 🔶 **Forecast Models**: Simulated trend projections (not predictive)
+
+## Roadmap to Production Data
+See [docs/DATA_ADAPTERS.md](docs/DATA_ADAPTERS.md) for planned integration with:
+- NASA MODIS satellite imagery (real-time drought monitoring)
+- CHIRPS rainfall estimates
+- FEWS NET food security alerts
+- Kenya Meteorological Department feeds
+
+## Mission
+Reduce information asymmetry in environments where resource stress impacts human well-being.
+
+## Governance Alignment
+This repository operates under:
+
+- **Ethics-first engineering**: No harm amplification, no misleading predictions
+- **Harm minimization**: Clear data provenance labeling
+- **Privacy-preserving data structures**: No PII collection in demo mode
+- **Transparency of assumptions**: All scoring logic documented
+
+## Risk Disclaimer
+⚠️ **This is demonstration software.**  
+Outputs are not validated for operational use. Any deployment in real decision-making contexts requires:
+1. Connection to authoritative data sources
+2. Local validation by domain experts
+3. Ethical review of risk communication methods
+4. Community consent for data usage
+
+## Usage Notice
+This system produces probabilistic signals — not certainties.  
+All outputs must be validated locally before operational use.
+
+## License
+**Creative Commons Attribution-NonCommercial-NoDerivatives 4.0**  
+See [LICENSE](LICENSE) file.
+
+- ✅ Study, reference, and fork for personal learning
+- ❌ Commercial use prohibited
+- ❌ Distribution of modified versions prohibited
+
+For collaboration inquiries: contact@aikungfu.dev
+
+## Quick Start
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## First run (recommended)
-Open the sidebar and click **Seed Demo Data** to populate sample runs + reports.
+Visit `http://localhost:8501` to explore the demo interface.
 
-## Storage
-Default storage is **SQLite** (`openresilience.db`) so the system runs anywhere without extra infrastructure.
-For multi-user production deployments, migrate to Postgres and add authentication.
+---
 
-## License
-CC BY-NC-ND 4.0. See LICENSE.
+## Repository Discoverability
+
+### Recommended GitHub Configuration
+
+**Description:**  
+> 🌍 Crisis-signal intelligence for drought, water, and food stress — Kenya-focused demo with ethical AI principles
+
+**Topics:**
+```
+resilience climate-change drought water-stress kenya streamlit 
+humanitarian-aid food-security disaster-preparedness arid-lands 
+crisis-management demo-data
+```
+
+**Website:**  
+Future: `https://openresilience.docs` (documentation site)
+
+**Social Preview:**  
+Suggested image: Map of Kenya with water stress gradient overlay + "DEMO DATA" watermark
+
+### Citation
+
+If referencing this work:
+```
+Mahia, Gabriel (2026). OpenResilience: Drought/Water/Food Stress Intelligence System.
+GitHub repository: https://github.com/gabrielmahia/openresilience
+License: CC BY-NC-ND 4.0
+```
+
+---
