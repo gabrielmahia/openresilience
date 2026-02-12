@@ -1,34 +1,32 @@
+# OpenResilience Platform 🛰️
+**Drought • Water • Food Stress Intelligence**
 
-# OpenResilience — Drought / Water / Food Stress Intelligence System
+![License](https://img.shields.io/badge/license-CC%20BY--NC--ND-red)
 
-![License](https://img.shields.io/badge/license-CC--BY--NC--ND-red)
-![Status](https://img.shields.io/badge/status-Research%20Infrastructure-blue)
+## What this is
+OpenResilience is a **decision-support** dashboard that turns fragmented signals into interpretable indices:
 
-## Overview
-OpenResilience is a crisis‑signal intelligence system designed to surface environmental and market stress indicators related to drought, water scarcity, and food insecurity.
+- **WSI** Water Stress Index
+- **FSI** Food Stress Index
+- **MSI** Market Stress Index
+- **CRI** Composite Risk Index
 
-This platform is intended as:
-- Decision‑support infrastructure
-- Research tooling
-- Coordination augmentation
+**Signals, not certainties:** validate locally before acting. Avoid sharing precise resource locations publicly.
 
-It is NOT an automated decision authority.
+## Run locally
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+```
 
-## Mission
-Reduce information asymmetry in environments where resource stress impacts human well‑being.
+## First run (recommended)
+Open the sidebar and click **Seed Demo Data** to populate sample runs + reports.
 
-## Governance Alignment
-This repository operates under:
-
-- Ethics‑first engineering
-- Harm minimization
-- Privacy‑preserving data structures
-- Transparency of assumptions
-
-## Usage Notice
-This system produces probabilistic signals — not certainties.
-All outputs must be validated locally before operational use.
+## Storage
+Default storage is **SQLite** (`openresilience.db`) so the system runs anywhere without extra infrastructure.
+For multi-user production deployments, migrate to Postgres and add authentication.
 
 ## License
-Creative Commons Attribution‑NonCommercial‑NoDerivatives 4.0
-See LICENSE file.
+CC BY-NC-ND 4.0. See LICENSE.

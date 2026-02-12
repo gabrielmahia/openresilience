@@ -1,1 +1,9 @@
-# Deployment\n\nUse docker compose. Put API behind TLS proxy in production.\n
+# Deployment
+
+## Local
+See README.
+
+## Streamlit Cloud
+- Set main file: app.py
+- Use requirements.txt
+Note: SQLite persistence depends on container lifecycle; use external DB for durability.
