@@ -1,0 +1,1 @@
+# Safety policy\n\nSignals not certainties. Verify locally. Avoid harm.\n

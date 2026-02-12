@@ -1,0 +1,1 @@
+# Data adapters\n\nThis package ships synthetic demo. Implement real adapters for CHIRPS/IMERG/SMAP/NDVI.\n

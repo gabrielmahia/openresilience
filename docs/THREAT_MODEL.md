@@ -1,0 +1,1 @@
+# Threat model\n\nDo not publish precise resource points publicly. Use rate limits and confidence scoring.\n

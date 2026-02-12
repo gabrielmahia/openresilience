@@ -1,0 +1,78 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: openresilience
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+
+  migrate:
+    image: postgres:16
+    depends_on: [db]
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./migrations:/migrations:ro
+    entrypoint: ["/bin/bash","-lc"]
+    command: >
+      "until pg_isready -h db -U postgres; do sleep 1; done;
+       psql -h db -U postgres -d openresilience -f /migrations/001_init.sql;
+       psql -h db -U postgres -d openresilience -f /migrations/002_indexes.sql;
+       echo 'migrations applied';"
+
+  api:
+    build: ./api
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
+      REDIS_URL: ${REDIS_URL}
+      OR_VERSION: ${OR_VERSION}
+      GRID_STEP_DEG: ${GRID_STEP_DEG}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE}
+      REPORTS_PER_IP_PER_HOUR: ${REPORTS_PER_IP_PER_HOUR}
+      SUBS_PER_IP_PER_HOUR: ${SUBS_PER_IP_PER_HOUR}
+    ports: ["8000:8000"]
+    depends_on: [migrate, redis]
+
+  worker:
+    build: ./worker
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
+      REDIS_URL: ${REDIS_URL}
+      OR_VERSION: ${OR_VERSION}
+      GRID_STEP_DEG: ${GRID_STEP_DEG}
+      DATA_ADAPTER: ${DATA_ADAPTER}
+    depends_on: [migrate, redis]
+    command: ["python","-m","worker.main"]
+
+  notifier:
+    build: ./notifier
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
+      REDIS_URL: ${REDIS_URL}
+      MSG_PROVIDER: ${MSG_PROVIDER}
+      NOTIFY_INTERVAL_SEC: ${NOTIFY_INTERVAL_SEC}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_FROM: ${TWILIO_FROM}
+      AT_USERNAME: ${AT_USERNAME}
+      AT_API_KEY: ${AT_API_KEY}
+      AT_FROM: ${AT_FROM}
+    depends_on: [migrate, redis]
+    command: ["python","-m","notifier.main"]
+
+  ui:
+    build: ./ui
+    environment:
+      API_BASE: ${API_BASE}
+    ports: ["8501:8501"]
+    depends_on: [api]
+
+volumes:
+  pgdata:
