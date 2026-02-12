@@ -2,6 +2,7 @@
 # Focus: 47 Counties + Makongeni & Thika Landless Areas
 # © 2026 | Built for Kenyan Communities
 
+import os
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -11,6 +12,19 @@ from datetime import datetime, timedelta
 import base64
 from io import BytesIO
 from PIL import Image
+
+
+def get_data_mode():
+    """Detect whether the system is running on real or demo data.
+
+    Returns 'REAL' only when the OR_DATA_MODE environment variable is
+    explicitly set to 'REAL'.  Every other value (or absence) defaults
+    to 'DEMO'.
+    """
+    return os.environ.get("OR_DATA_MODE", "DEMO").upper()
+
+
+DATA_MODE = get_data_mode()
 
 # =============================================================================
 # CONFIGURATION - KENYA FOCUS
@@ -505,6 +519,21 @@ st.divider()
 # =============================================================================
 # SIDEBAR - COUNTY & SPECIAL AREA SELECTION
 # =============================================================================
+
+# --- Data mode status card ---
+_dm_color = "#dc3545" if DATA_MODE == "DEMO" else "#28a745"
+_dm_label = "DEMO / Simulated" if DATA_MODE == "DEMO" else "REAL / Live"
+st.sidebar.markdown(
+    f"""<div style="background:{_dm_color};color:white;padding:10px 14px;
+    border-radius:8px;text-align:center;font-weight:700;margin-bottom:12px;">
+    Data Mode: {_dm_label}</div>""",
+    unsafe_allow_html=True,
+)
+if DATA_MODE == "DEMO":
+    st.sidebar.caption(
+        "All values are simulated. Set env var OR_DATA_MODE=REAL when live adapters are connected."
+    )
+st.sidebar.divider()
 
 st.sidebar.header("🗺️ Select Location / Chagua Eneo")
 
