@@ -73,3 +73,36 @@ streamlit run app.py
 ```
 
 Visit `http://localhost:8501` to explore the demo interface.
+
+---
+
+## Repository Discoverability
+
+### Recommended GitHub Configuration
+
+**Description:**  
+> 🌍 Crisis-signal intelligence for drought, water, and food stress — Kenya-focused demo with ethical AI principles
+
+**Topics:**
+```
+resilience climate-change drought water-stress kenya streamlit 
+humanitarian-aid food-security disaster-preparedness arid-lands 
+crisis-management demo-data
+```
+
+**Website:**  
+Future: `https://openresilience.docs` (documentation site)
+
+**Social Preview:**  
+Suggested image: Map of Kenya with water stress gradient overlay + "DEMO DATA" watermark
+
+### Citation
+
+If referencing this work:
+```
+Mahia, Gabriel (2026). OpenResilience: Drought/Water/Food Stress Intelligence System.
+GitHub repository: https://github.com/gabrielmahia/openresilience
+License: CC BY-NC-ND 4.0
+```
+
+---
