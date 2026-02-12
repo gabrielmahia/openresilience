@@ -13,6 +13,12 @@
 ## Overview
 OpenResilience is a crisis-signal intelligence system designed to surface environmental and market stress indicators related to drought, water scarcity, and food insecurity.
 
+This platform provides **multi-dimensional resilience assessment** across four indices:
+- **WSI** (Water Stress Index): Rainfall deficit + soil dryness
+- **FSI** (Food Stress Index): Vegetation decline + water stress + field reports
+- **MSI** (Market Stress Index): Food price inflation + supply stockouts
+- **CRI** (Composite Risk Index): Weighted aggregation of all stress indicators
+
 This platform is intended as:
 - Decision-support infrastructure (when connected to real data sources)
 - Research tooling for resilience planning methodologies
