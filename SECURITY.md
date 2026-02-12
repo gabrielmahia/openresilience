@@ -1,10 +1,9 @@
 # Security Policy
 
 ## Reporting Vulnerabilities
-DO NOT open public issues.
 
-Email:
-security@openresilience.org
+* **DO NOT** open a public issue.
+* Email me directly at: contact@aikungfu.dev
 
 Include description and reproduction steps.
 
