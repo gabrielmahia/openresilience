@@ -11,6 +11,7 @@ Design: Local-first, zero-infrastructure, portable
 """
 
 import sqlite3
+import shutil
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -43,7 +44,32 @@ def get_connection(db_path: str = DEFAULT_DB_PATH):
         conn.close()
 
 
-def init_database(db_path: str = DEFAULT_DB_PATH) -> None:
+def check_schema_version(db_path: str = DEFAULT_DB_PATH) -> bool:
+    """
+    Check if database schema is compatible with current version.
+    
+    Args:
+        db_path: Path to SQLite database file
+    
+    Returns:
+        True if compatible, False if needs recreation
+    """
+    try:
+        with get_connection(db_path) as conn:
+            # Check if regions table has the 'level' column
+            cur = conn.execute("PRAGMA table_info(regions)")
+            columns = [row['name'] for row in cur.fetchall()]
+            
+            # Must have 'level' column (added in v2)
+            if 'level' not in columns:
+                return False
+            
+            return True
+    except Exception:
+        return False
+
+
+def init_database(db_path: str = DEFAULT_DB_PATH, force_recreate: bool = False) -> None:
     """
     Initialize database schema if it doesn't exist.
     
@@ -52,7 +78,21 @@ def init_database(db_path: str = DEFAULT_DB_PATH) -> None:
     
     Args:
         db_path: Path to SQLite database file
+        force_recreate: If True, drops existing database and recreates
     """
+    # Check if database exists and is incompatible
+    db_file = Path(db_path)
+    if db_file.exists() and not force_recreate:
+        if not check_schema_version(db_path):
+            # Incompatible schema - backup and recreate
+            backup_path = db_path + f".backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            import shutil
+            shutil.copy(db_path, backup_path)
+            db_file.unlink()
+            print(f"Incompatible schema detected. Backed up to {backup_path} and recreating.")
+    elif force_recreate and db_file.exists():
+        db_file.unlink()
+    
     with get_connection(db_path) as conn:
         conn.executescript("""
         CREATE TABLE IF NOT EXISTS regions (

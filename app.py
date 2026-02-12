@@ -543,11 +543,15 @@ def get_community_advice(stress, forecast, county, is_asal, population):
 # =============================================================================
 
 # Initialize database (silent fail if not available)
+db_initialized = False
 if DB_AVAILABLE:
     try:
         init_database()
+        db_initialized = True
     except Exception as e:
-        st.sidebar.warning(f"Database initialization skipped: {e}")
+        st.sidebar.error(f"⚠️ Database unavailable: {str(e)[:50]}...")
+        st.sidebar.caption("Running in demo mode without persistence")
+        db_initialized = False
 
 # Header
 col_h1, col_h2 = st.columns([5, 1])
@@ -1098,7 +1102,14 @@ with tab2:
             """)
     
     with col_intro2:
-        st.metric("Recent Reports", len(get_recent_reports(limit=100)) if DB_AVAILABLE else "N/A")
+        if db_initialized:
+            try:
+                report_count = len(get_recent_reports(limit=100))
+                st.metric("Recent Reports", report_count)
+            except Exception:
+                st.metric("Recent Reports", "Error")
+        else:
+            st.metric("Recent Reports", "N/A")
     
     st.divider()
     
@@ -1164,7 +1175,7 @@ with tab2:
         if not report_message.strip():
             st.error("Please provide a description")
         else:
-            if DB_AVAILABLE:
+            if db_initialized:
                 try:
                     # Get or create region
                     region_id = ensure_region(
@@ -1212,7 +1223,7 @@ with tab2:
     # Recent Reports Display
     st.subheader("Recent Reports" if lang == "English" else "Ripoti za Hivi Karibuni")
     
-    if DB_AVAILABLE:
+    if db_initialized:
         try:
             reports = get_recent_reports(limit=20)
             
@@ -1255,7 +1266,7 @@ with tab3:
     
     st.divider()
     
-    if DB_AVAILABLE:
+    if db_initialized:
         try:
             active_alerts = get_active_alerts()
             
