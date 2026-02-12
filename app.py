@@ -272,7 +272,7 @@ def generate_forecast(county_name, current_stress, is_asal):
         'trend': trend,
         'trend_emoji': trend_emoji,
         'season_note': season_note,
-        'confidence': 'High' if not is_asal else 'Medium'
+        'confidence': 'Simulated (demo data)' if not is_asal else 'Simulated (demo data)'
     }
 
 def get_community_advice(stress, forecast, county, is_asal, population):
@@ -425,9 +425,9 @@ def get_community_advice(stress, forecast, county, is_asal, population):
         "  • Kenya Red Cross: 1199 (toll-free)",
         "  • Ministry of Agriculture: 0800 221 0071",
         "",
-        "**SMS Services** (Free alerts):",
-        "  • Send 'MAJI' to 22555 → Water alerts",
-        "  • Send 'KILIMO' to 30606 → Farm advice",
+        "**SMS Services** (Planned — not yet active):",
+        "  • Send 'MAJI' to 22555 → Water alerts (coming soon)",
+        "  • Send 'KILIMO' to 30606 → Farm advice (coming soon)",
         "",
         "**Water Vendors** (if needed):",
         "  • Check county-approved vendor list",
@@ -482,7 +482,7 @@ with col_h2:
 df = load_county_data()
 
 # Disclaimer
-with st.expander("⚠️ Important - Please Read / Soma Kwanza", expanded=False):
+with st.expander("⚠️ Important - Please Read / Soma Kwanza", expanded=True):
     if lang == "Kiswahili":
         st.markdown("""
         **Elimu Tu:** Zana ya elimu. Hakikisha taarifa na serikali kabla ya maamuzi.
@@ -784,16 +784,15 @@ col_sms1, col_sms2 = st.columns(2)
 with col_sms1:
     st.subheader("📱 SMS Alert Service")
     st.info("""
-    **Free water alerts via SMS** - No smartphone or internet needed!
-    
-    Receive:
+    **Planned: Free water alerts via SMS** - No smartphone or internet needed!
+
+    When active, you will receive:
     - Weekly water stress updates
     - Critical shortage warnings
     - Planting season reminders
     - Water truck schedules
-    
-    **To register:** SMS 'MAJI' to 22555  
-    **Cost:** Free service (standard SMS rates apply)
+
+    **Status:** SMS service is under development. Not yet active.
     """)
 
 with col_sms2:
@@ -814,5 +813,5 @@ with col_sms2:
 st.divider()
 st.caption("💧 OpenResilience Kenya • Built WITH and FOR Kenyan Communities")
 st.caption("🇰🇪 Data Sovereignty • Community Resilience • Climate Adaptation • Agricultural Planning")
-st.caption("© 2026 | In Partnership with County Governments & National Drought Management Authority")
+st.caption("© 2026 | Open-source research infrastructure — not affiliated with any government body")
 st.caption("🙏 Special thanks to communities in Makongeni, Thika Landless, and all 47 counties")
