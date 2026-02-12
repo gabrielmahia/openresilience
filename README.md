@@ -1,27 +1,34 @@
-# OpenResilience (ALL-OUT) • Drought / Water / Food Stress System (v0.3)
 
-This is a **full-stack, safety-first crisis intelligence + coordination system** built for drought, water scarcity, and famine risk.
+# OpenResilience — Drought / Water / Food Stress Intelligence System
 
-## Architecture
-- `db` Postgres: indicators, alerts, reports, subscriptions, prices
-- `api` FastAPI: read/write endpoints + PDF briefs + export
-- `worker` computes WSI/FSI/MSI/CRI + generates alerts (adapter-driven)
-- `notifier` pushes alerts to subscriptions (provider adapters: mock/Twilio/Africa's Talking stubs)
-- `ui` Streamlit: Situation • Water • Food • Markets • Logistics • Alerts • Reports • Briefs • Admin
-- `docs` threat model, safety policy, data integrity rules
+![License](https://img.shields.io/badge/license-CC--BY--NC--ND-red)
+![Status](https://img.shields.io/badge/status-Research%20Infrastructure-blue)
 
-## Safety defaults
-- No public high-resolution water-point map by default.
-- Field reports stored as **coarse geohash** + optional admin region.
-- Alerts always include **timestamp + confidence + provenance + assumptions**.
-- Rate-limiting on inbound reports/subscriptions to reduce abuse.
+## Overview
+OpenResilience is a crisis‑signal intelligence system designed to surface environmental and market stress indicators related to drought, water scarcity, and food insecurity.
 
-## Run
-```bash
-cp .env.example .env
-docker compose up --build
-```
+This platform is intended as:
+- Decision‑support infrastructure
+- Research tooling
+- Coordination augmentation
 
-Open:
-- UI: http://localhost:8501
-- API: http://localhost:8000/docs
+It is NOT an automated decision authority.
+
+## Mission
+Reduce information asymmetry in environments where resource stress impacts human well‑being.
+
+## Governance Alignment
+This repository operates under:
+
+- Ethics‑first engineering
+- Harm minimization
+- Privacy‑preserving data structures
+- Transparency of assumptions
+
+## Usage Notice
+This system produces probabilistic signals — not certainties.
+All outputs must be validated locally before operational use.
+
+## License
+Creative Commons Attribution‑NonCommercial‑NoDerivatives 4.0
+See LICENSE file.
