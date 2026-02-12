@@ -3,11 +3,13 @@ Geographic Hierarchy Management for Kenya
 
 Loads and provides access to county → constituency → ward administrative structure.
 Handles incomplete datasets gracefully with fallback behavior.
+Supports optional ward centroid data for mapping.
 """
 
 import json
+import pandas as pd
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 class GeoHierarchy:
@@ -33,6 +35,58 @@ class GeoHierarchy:
         self.hierarchy = {}
         self.loaded = False
         self._load()
+        
+        # Optional ward centroids
+        self.centroids_path = self.data_path.parent / "ke_ward_centroids.csv"
+        self.ward_centroids = None
+        self._load_centroids()
+    
+    def _load_centroids(self):
+        """Load optional ward centroid data."""
+        if not self.centroids_path.exists():
+            return
+        
+        try:
+            self.ward_centroids = pd.read_csv(self.centroids_path)
+        except:
+            self.ward_centroids = None
+    
+    def get_ward_centroid(
+        self, 
+        county: str, 
+        constituency: Optional[str] = None, 
+        ward: Optional[str] = None,
+        county_fallback: Optional[Tuple[float, float]] = None
+    ) -> Optional[Tuple[float, float]]:
+        """
+        Get centroid coordinates for a ward, with fallback to county centroid.
+        
+        Args:
+            county: County name
+            constituency: Constituency name (optional)
+            ward: Ward name (optional)
+            county_fallback: (lat, lon) tuple to use if ward data unavailable
+        
+        Returns:
+            (latitude, longitude) tuple, or None if not found
+        """
+        if self.ward_centroids is None:
+            return county_fallback
+        
+        # Try to find ward centroid
+        if ward and constituency:
+            match = self.ward_centroids[
+                (self.ward_centroids['county'] == county) &
+                (self.ward_centroids['constituency'] == constituency) &
+                (self.ward_centroids['ward'] == ward)
+            ]
+            
+            if not match.empty:
+                row = match.iloc[0]
+                return (float(row['latitude']), float(row['longitude']))
+        
+        # Fallback to county centroid
+        return county_fallback
     
     def _load(self):
         """Load hierarchy data from JSON file."""

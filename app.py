@@ -613,6 +613,40 @@ except ImportError:
 
 st.sidebar.divider()
 
+# Resolution Status Card
+st.sidebar.subheader("📊 Data Status")
+try:
+    from openresilience.resolution import get_current_status
+    
+    # Check if geo hierarchy is available
+    hierarchy_available = False
+    if 'geo' in locals():
+        try:
+            hierarchy_available = geo.is_available()
+        except:
+            pass
+    
+    status = get_current_status(
+        selected_county,
+        selected_constituency if 'selected_constituency' in locals() else None,
+        selected_ward if 'selected_ward' in locals() else None,
+        hierarchy_available=hierarchy_available,
+        ward_data_available=False  # No ward data in demo
+    )
+    
+    st.sidebar.metric("Mode", status.mode.value.upper())
+    st.sidebar.metric("Resolution", status.resolution.value.title())
+    st.sidebar.caption(f"**Source:** {status.source}")
+    st.sidebar.caption(f"**Updated:** {status.timestamp.strftime('%Y-%m-%d %H:%M')}")
+    
+    if status.notes:
+        st.sidebar.info(status.notes, icon="ℹ️")
+    
+except ImportError:
+    st.sidebar.warning("Resolution engine not available", icon="⚠️")
+
+st.sidebar.divider()
+
 # County stats
 county_row = df[df['County'] == selected_county].iloc[0]
 st.sidebar.metric("Population", f"{county_row['Population']:,}")
