@@ -219,34 +219,61 @@ def load_county_data():
     """Generate water stress data for all 47 counties with multi-index scoring."""
     np.random.seed(42)
     
+    # Try to import NASA adapter
+    nasa_available = False
+    try:
+        from openresilience.adapters.appeears import get_nasa_data_for_county
+        nasa_available = True
+    except ImportError:
+        pass
+    
     county_list = []
+    nasa_success_count = 0
+    
     for county, info in KENYA_COUNTIES.items():
+        # TRY REAL NASA DATA FIRST
+        real_rainfall_anom = None
+        real_soil_moisture = None
+        data_source = "demo"
+        
+        if nasa_available:
+            try:
+                real_rainfall_anom, real_soil_moisture = get_nasa_data_for_county(
+                    county, info['lat'], info['lon']
+                )
+                if real_rainfall_anom is not None and real_soil_moisture is not None:
+                    data_source = "nasa"
+                    nasa_success_count += 1
+            except Exception as e:
+                pass  # Silently fall back to demo
+        
         # Generate realistic input signals based on region type
         if info['arid']:
             # ASAL regions: drier conditions
-            rainfall_anom = np.random.uniform(-55, -20)  # Rainfall deficit
-            soil_moisture = np.random.uniform(0.15, 0.40)  # Dry soil
+            rainfall_anom = real_rainfall_anom if real_rainfall_anom is not None else np.random.uniform(-55, -20)
+            soil_moisture = real_soil_moisture if real_soil_moisture is not None else np.random.uniform(0.15, 0.40)
             vegetation = np.random.uniform(0.25, 0.50)  # Poor vegetation
             price_change = np.random.uniform(15, 45)  # Higher food prices
             stockouts = np.random.randint(1, 4)  # More stockouts
         else:
             # Non-ASAL: better conditions
-            rainfall_anom = np.random.uniform(-30, 10)  # Near normal
-            soil_moisture = np.random.uniform(0.40, 0.75)  # Moist soil
+            rainfall_anom = real_rainfall_anom if real_rainfall_anom is not None else np.random.uniform(-30, 10)
+            soil_moisture = real_soil_moisture if real_soil_moisture is not None else np.random.uniform(0.40, 0.75)
             vegetation = np.random.uniform(0.50, 0.85)  # Healthy vegetation
             price_change = np.random.uniform(-5, 20)  # Moderate prices
             stockouts = np.random.randint(0, 2)  # Fewer stockouts
         
-        # Seasonal adjustment (current month)
-        month = datetime.now().month
-        if 3 <= month <= 5 or 10 <= month <= 12:  # Rainy seasons
-            rainfall_anom += 15  # Better rainfall
-            soil_moisture = min(1.0, soil_moisture + 0.15)
-            vegetation = min(1.0, vegetation + 0.10)
-        else:  # Dry seasons
-            rainfall_anom -= 10  # Worse rainfall
-            soil_moisture = max(0.0, soil_moisture - 0.10)
-            vegetation = max(0.0, vegetation - 0.08)
+        # Seasonal adjustment (current month) - only for demo data
+        if data_source == "demo":
+            month = datetime.now().month
+            if 3 <= month <= 5 or 10 <= month <= 12:  # Rainy seasons
+                rainfall_anom += 15  # Better rainfall
+                soil_moisture = min(1.0, soil_moisture + 0.15)
+                vegetation = min(1.0, vegetation + 0.10)
+            else:  # Dry seasons
+                rainfall_anom -= 10  # Worse rainfall
+                soil_moisture = max(0.0, soil_moisture - 0.10)
+                vegetation = max(0.0, vegetation - 0.08)
         
         # Field reports based on severity
         field_reports = np.random.poisson(2 if info['arid'] else 0.5)
@@ -295,8 +322,13 @@ def load_county_data():
             'MSI': msi,  # Market Stress Index
             'CRI': cri,  # Composite Risk Index
             'Confidence': confidence,
-            'Severity': 3 if cri > 0.70 else 2 if cri > 0.50 else 1 if cri > 0.30 else 0
+            'Severity': 3 if cri > 0.70 else 2 if cri > 0.50 else 1 if cri > 0.30 else 0,
+            'DataSource': data_source  # Track if using real NASA data
         })
+    
+    # Show NASA data usage summary
+    if nasa_success_count > 0:
+        st.sidebar.success(f"🛰️ Using NASA satellite data for {nasa_success_count} counties")
     
     return pd.DataFrame(county_list)
 
@@ -733,6 +765,13 @@ try:
     st.sidebar.metric("Mode", status.mode.value.upper())
     st.sidebar.metric("Resolution", status.resolution.value.title())
     st.sidebar.caption(f"**Source:** {status.source}")
+    
+    # Show data source (NASA or demo)
+    if 'DataSource' in county_row and county_row['DataSource'] == 'nasa':
+        st.sidebar.caption("**🛰️ Satellite Data:** NASA IMERG + SMAP")
+    else:
+        st.sidebar.caption("**📊 Data Mode:** Demo (simulated)")
+    
     st.sidebar.caption(f"**Updated:** {status.timestamp.strftime('%Y-%m-%d %H:%M')}")
     
     if status.notes:
