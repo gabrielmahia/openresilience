@@ -2,21 +2,19 @@
 # Focus: 47 Counties + Makongeni & Thika Landless Areas
 # © 2026 | Built for Kenyan Communities
 
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-import streamlit as st
-import pandas as pd
-import numpy as np
+
 import folium
+import streamlit as st
 from streamlit_folium import folium_static
-from datetime import datetime, timedelta
-import base64
-from io import BytesIO
-from PIL import Image
 
 from openresilience.constants import KENYA_COUNTIES, SPECIAL_AREAS
-from openresilience.data import load_county_data as _load_county_data, generate_forecast
+from openresilience.data import generate_forecast
+from openresilience.data import load_county_data as _load_county_data
 from openresilience.models import get_community_advice
 
 
@@ -303,19 +301,19 @@ col_map, col_advice = st.columns([2, 3])
 
 with col_map:
     st.subheader("🗺️ Kenya Water Stress Map")
-    
+
     # Create map
     m = folium.Map(
         location=[county_row['Lat'], county_row['Lon']],
         zoom_start=7,
         tiles="OpenStreetMap"
     )
-    
+
     # Add all 47 counties
     for _, row in df.iterrows():
         color = 'red' if row['Severity'] >= 3 else 'orange' if row['Severity'] >= 2 else 'yellow' if row['Severity'] >= 1 else 'green'
         size = 12 if row['County'] == selected_county else 6
-        
+
         folium.CircleMarker(
             location=[row['Lat'], row['Lon']],
             radius=size,
@@ -326,7 +324,7 @@ with col_map:
             popup=f"<b>{row['County']}</b><br>Stress: {row['Current_Stress']:.0%}<br>Pop: {row['Population']:,}",
             tooltip=row['County']
         ).add_to(m)
-    
+
     # Add special areas with star markers
     for area, info in SPECIAL_AREAS.items():
         folium.Marker(
@@ -335,9 +333,9 @@ with col_map:
             icon=folium.Icon(color='purple', icon='star'),
             tooltip=f"⭐ {area}"
         ).add_to(m)
-    
+
     folium_static(m, width=500, height=500)
-    
+
     st.caption("""
     **Legend:** 🔴 Critical (>80%) • 🟠 High (60-80%) • 🟡 Moderate (40-60%) • 🟢 Low (<40%)  
     ⭐ Purple stars = Special focus areas (Makongeni, Thika Landless, etc.)
@@ -345,7 +343,7 @@ with col_map:
 
 with col_advice:
     st.subheader("📋 Practical Action Plan")
-    
+
     # Generate detailed advice
     advice = get_community_advice(
         county_row['Current_Stress'],
@@ -354,7 +352,7 @@ with col_advice:
         is_asal,
         county_row['Population']
     )
-    
+
     # Tabbed interface for different advice categories
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "🚨 Immediate",
@@ -363,24 +361,24 @@ with col_advice:
         "🐄 Livestock" if is_asal else "📅 Timeline",
         "📞 Resources"
     ])
-    
+
     with tab1:
         for item in advice['immediate']:
             st.markdown(item)
-    
+
     with tab2:
         for item in advice['water_mgmt']:
             st.markdown(item)
-    
+
     with tab3:
         for item in advice['agriculture']:
             st.markdown(item)
-    
+
     with tab4:
         items = advice['livestock'] if is_asal else advice['timeline']
         for item in items:
             st.markdown(item)
-    
+
     with tab5:
         for item in advice['resources']:
             st.markdown(item)
@@ -416,7 +414,7 @@ with st.expander("📊 Compare All 47 Counties"):
 # Community water point reporting
 with st.expander("📝 Report Water Point Status (Community Reporting)"):
     st.caption("Help your community by reporting water availability. Location is coarsened for safety.")
-    
+
     col_r1, col_r2, col_r3 = st.columns(3)
     with col_r1:
         report_county = st.selectbox("County", sorted(KENYA_COUNTIES.keys()), key="rep_county")
@@ -433,11 +431,11 @@ with st.expander("📝 Report Water Point Status (Community Reporting)"):
             "❌ Dry/Not working",
             "💰 Very expensive (>100 KES/20L)"
         ])
-    
+
     queue_time = st.slider("Waiting time (minutes)", 0, 180, 15)
     cost = st.number_input("Cost per 20L jerrican (KES)", 0, 200, 50, 10)
     notes = st.text_area("Additional details (optional)")
-    
+
     if st.button("Submit Report", use_container_width=True, type="primary"):
         st.success(f"✅ Report received for {report_county} County. Thank you!")
         st.info("In production: This data helps county governments allocate water trucks and prioritize infrastructure repairs.")
