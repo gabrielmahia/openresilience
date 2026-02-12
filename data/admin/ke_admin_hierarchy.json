@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "source": "Demo structure - not authoritative",
+    "last_updated": "2026-02-12",
+    "coverage": "Sample counties for demonstration",
+    "note": "This is a partial dataset showing hierarchical structure. Full 47-county data requires official IEBC/KNBS sources."
+  },
+  "counties": {
+    "Nairobi": {
+      "code": "047",
+      "constituencies": {
+        "Westlands": {
+          "code": "001",
+          "wards": ["Kitisuru", "Parklands/Highridge", "Karura", "Kangemi", "Mountain View"]
+        },
+        "Dagoretti North": {
+          "code": "002",
+          "wards": ["Kilimani", "Kawangware", "Gatina", "Kileleshwa", "Kabiro"]
+        },
+        "Dagoretti South": {
+          "code": "003",
+          "wards": ["Mutu-ini", "Ngando", "Riruta", "Uthiru/Ruthimitu", "Waithaka"]
+        },
+        "Langata": {
+          "code": "004",
+          "wards": ["Karen", "Nairobi West", "Mugumo-ini", "South C", "Nyayo Highrise"]
+        },
+        "Kibra": {
+          "code": "005",
+          "wards": ["Laini Saba", "Lindi", "Makina", "Woodley/Kenyatta Golf Course", "Sarang'ombe"]
+        },
+        "Starehe": {
+          "code": "006",
+          "wards": ["Nairobi Central", "Ngara", "Pangani", "Ziwani/Kariokor", "Landimawe", "Nairobi South"]
+        },
+        "Mathare": {
+          "code": "007",
+          "wards": ["Hospital", "Mabatini", "Huruma", "Ngei", "Mlango Kubwa", "Kiamaiko"]
+        }
+      }
+    },
+    "Kiambu": {
+      "code": "022",
+      "constituencies": {
+        "Gatundu South": {
+          "code": "001",
+          "wards": ["Ndarugu", "Ngenda", "Kiamwangi"]
+        },
+        "Gatundu North": {
+          "code": "002",
+          "wards": ["Githobokoni", "Chania", "Mang'u"]
+        },
+        "Juja": {
+          "code": "003",
+          "wards": ["Kalimoni", "Witeithie", "Theta", "Juja"]
+        },
+        "Thika Town": {
+          "code": "004",
+          "wards": ["Township", "Kamenu", "Hospital", "Gatuanyaga", "Ngoliba"]
+        },
+        "Ruiru": {
+          "code": "005",
+          "wards": ["Biashara", "Gatongora", "Kahawa Sukari", "Kahawa Wendani", "Kiuu", "Mwiki", "Mwihoko"]
+        }
+      }
+    },
+    "Nakuru": {
+      "code": "032",
+      "constituencies": {
+        "Nakuru Town East": {
+          "code": "001",
+          "wards": ["Biashara", "Kivumbini", "Flamingo", "Menengai West", "Kapkures"]
+        },
+        "Nakuru Town West": {
+          "code": "002",
+          "wards": ["Barut", "London", "Kaptembwo", "Kapkures", "Rhonda"]
+        },
+        "Subukia": {
+          "code": "003",
+          "wards": ["Subukia", "Kabazi", "Waseges"]
+        }
+      }
+    },
+    "Mombasa": {
+      "code": "001",
+      "constituencies": {
+        "Mvita": {
+          "code": "001",
+          "wards": ["Mji wa Kale/Makadara", "Tudor", "Tononoka", "Shimanzi/Ganjoni", "Majengo"]
+        },
+        "Changamwe": {
+          "code": "002",
+          "wards": ["Port Reitz", "Kipevu", "Airport", "Changamwe", "Chaani"]
+        },
+        "Jomvu": {
+          "code": "003",
+          "wards": ["Jomvu Kuu", "Miritini", "Mikindani"]
+        },
+        "Kisauni": {
+          "code": "004",
+          "wards": ["Mjambere", "Junda", "Bamburi", "Mwakirunge", "Mtopanga", "Magogoni", "Shanzu"]
+        }
+      }
+    },
+    "Kisumu": {
+      "code": "042",
+      "constituencies": {
+        "Kisumu East": {
+          "code": "001",
+          "wards": ["Kajulu", "Kolwa East", "Manyatta 'B'", "Nyalenda 'A'"]
+        },
+        "Kisumu West": {
+          "code": "002",
+          "wards": ["North West Kisumu", "Central Kisumu", "Kisumu North", "West Kisumu", "Central Kolwa", "South West Kisumu"]
+        },
+        "Kisumu Central": {
+          "code": "003",
+          "wards": ["Railways", "Migosi", "Shaurimoyo Kaloleni", "Market Milimani", "Kondele", "Nyalenda 'B'"]
+        }
+      }
+    }
+  }
+}

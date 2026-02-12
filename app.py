@@ -567,6 +567,52 @@ selected_county = st.sidebar.selectbox(
     index=sorted(KENYA_COUNTIES.keys()).index("Nairobi")
 )
 
+# Geographic hierarchy selectors (optional, based on data availability)
+try:
+    from openresilience.geo import load_hierarchy
+    
+    geo = load_hierarchy()
+    
+    if geo.is_available() and selected_county in geo.get_counties():
+        constituencies = geo.get_constituencies(selected_county)
+        
+        if constituencies:
+            selected_constituency = st.sidebar.selectbox(
+                "Constituency (if available)",
+                ["County-wide"] + constituencies,
+                help="Sub-county administrative unit"
+            )
+            
+            if selected_constituency != "County-wide":
+                wards = geo.get_wards(selected_county, selected_constituency)
+                
+                if wards:
+                    selected_ward = st.sidebar.selectbox(
+                        "Ward (if available)",
+                        ["All wards"] + wards,
+                        help="Smallest administrative unit"
+                    )
+                else:
+                    selected_ward = "All wards"
+                    st.sidebar.caption("⚠️ Ward data not available for this constituency")
+            else:
+                selected_ward = None
+        else:
+            selected_constituency = None
+            selected_ward = None
+            st.sidebar.caption("ℹ️ Constituency data not available for this county")
+    else:
+        selected_constituency = None
+        selected_ward = None
+        if geo.is_available():
+            st.sidebar.caption("ℹ️ Hierarchy data available for: " + ", ".join(geo.get_counties()[:3]) + "...")
+except ImportError:
+    selected_constituency = None
+    selected_ward = None
+    st.sidebar.caption("ℹ️ Install openresilience package for sub-county navigation")
+
+st.sidebar.divider()
+
 # County stats
 county_row = df[df['County'] == selected_county].iloc[0]
 st.sidebar.metric("Population", f"{county_row['Population']:,}")
