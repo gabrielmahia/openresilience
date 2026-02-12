@@ -1,0 +1,21 @@
+county,constituency,ward,latitude,longitude,population
+Nairobi,Westlands,Kitisuru,-1.2375,36.8076,25000
+Nairobi,Westlands,Parklands/Highridge,-1.2635,36.8215,32000
+Nairobi,Westlands,Karura,-1.2425,36.8390,28000
+Nairobi,Westlands,Kangemi,-1.2683,36.7457,40000
+Nairobi,Westlands,Mountain View,-1.2521,36.7968,22000
+Nairobi,Dagoretti North,Kilimani,-1.2893,36.7867,35000
+Nairobi,Dagoretti North,Kawangware,-1.2842,36.7450,55000
+Nairobi,Dagoretti North,Gatina,-1.2956,36.7523,38000
+Nairobi,Dagoretti North,Kileleshwa,-1.2811,36.7823,30000
+Nairobi,Dagoretti North,Kabiro,-1.2758,36.7598,32000
+Nairobi,Langata,Karen,-1.3198,36.7029,18000
+Nairobi,Langata,Nairobi West,-1.3156,36.8234,25000
+Nairobi,Kibra,Laini Saba,-1.3142,36.7823,42000
+Nairobi,Kibra,Lindi,-1.3086,36.7741,38000
+Nairobi,Kibra,Makina,-1.3024,36.7698,45000
+Kiambu,Thika Town,Township,-1.0332,37.0893,52000
+Kiambu,Thika Town,Kamenu,-1.0425,37.1012,35000
+Kiambu,Thika Town,Hospital,-1.0398,37.0845,28000
+Kiambu,Ruiru,Biashara,-1.1456,36.9612,45000
+Kiambu,Ruiru,Mwiki,-1.1823,36.9156,38000
