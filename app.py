@@ -2,7 +2,9 @@
 # Focus: 47 Counties + Makongeni & Thika Landless Areas
 # © 2026 | Built for Kenyan Communities
 
-import os
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -13,14 +15,13 @@ import base64
 from io import BytesIO
 from PIL import Image
 
+from openresilience.constants import KENYA_COUNTIES, SPECIAL_AREAS
+from openresilience.data import load_county_data as _load_county_data, generate_forecast
+from openresilience.models import get_community_advice
+
 
 def get_data_mode():
-    """Detect whether the system is running on real or demo data.
-
-    Returns 'REAL' only when the OR_DATA_MODE environment variable is
-    explicitly set to 'REAL'.  Every other value (or absence) defaults
-    to 'DEMO'.
-    """
+    """Detect whether the system is running on real or demo data."""
     return os.environ.get("OR_DATA_MODE", "DEMO").upper()
 
 
@@ -37,107 +38,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# =============================================================================
-# KENYA DATA - ALL 47 COUNTIES
-# =============================================================================
-
-KENYA_COUNTIES = {
-    # Former Central Province
-    "Kiambu": {"lat": -1.1719, "lon": 36.8356, "pop": 2417735, "arid": False},
-    "Kirinyaga": {"lat": -0.6599, "lon": 37.3828, "pop": 610411, "arid": False},
-    "Murang'a": {"lat": -0.7833, "lon": 37.1500, "pop": 1056640, "arid": False},
-    "Nyeri": {"lat": -0.4197, "lon": 36.9475, "pop": 759164, "arid": False},
-    "Nyandarua": {"lat": -0.1833, "lon": 36.4667, "pop": 638289, "arid": False},
-    
-    # Former Coast Province
-    "Mombasa": {"lat": -4.0435, "lon": 39.6682, "pop": 1208333, "arid": False},
-    "Kwale": {"lat": -4.1833, "lon": 39.4500, "pop": 866820, "arid": False},
-    "Kilifi": {"lat": -3.6309, "lon": 39.8494, "pop": 1453787, "arid": False},
-    "Tana River": {"lat": -1.5167, "lon": 39.9833, "pop": 315943, "arid": True},
-    "Lamu": {"lat": -2.2717, "lon": 40.9020, "pop": 143920, "arid": False},
-    "Taita Taveta": {"lat": -3.3167, "lon": 38.3500, "pop": 340671, "arid": True},
-    
-    # Former Eastern Province
-    "Marsabit": {"lat": 2.3284, "lon": 37.9891, "pop": 459785, "arid": True},
-    "Isiolo": {"lat": 0.3556, "lon": 37.5817, "pop": 268002, "arid": True},
-    "Meru": {"lat": 0.3556, "lon": 37.6500, "pop": 1545714, "arid": False},
-    "Tharaka Nithi": {"lat": -0.2833, "lon": 37.7667, "pop": 393177, "arid": False},
-    "Embu": {"lat": -0.5392, "lon": 37.4572, "pop": 608599, "arid": False},
-    "Kitui": {"lat": -1.3667, "lon": 38.0167, "pop": 1136187, "arid": True},
-    "Machakos": {"lat": -1.5177, "lon": 37.2634, "pop": 1421932, "arid": True},
-    "Makueni": {"lat": -2.2667, "lon": 37.8333, "pop": 987653, "arid": True},
-    
-    # Nairobi (Capital)
-    "Nairobi": {"lat": -1.2921, "lon": 36.8219, "pop": 4397073, "arid": False},
-    
-    # Former North Eastern Province (ASAL - Arid & Semi-Arid Lands)
-    "Garissa": {"lat": -0.4569, "lon": 39.6580, "pop": 841353, "arid": True},
-    "Wajir": {"lat": 1.7500, "lon": 40.0667, "pop": 781263, "arid": True},
-    "Mandera": {"lat": 3.9167, "lon": 41.8500, "pop": 1025756, "arid": True},
-    
-    # Former Nyanza Province
-    "Siaya": {"lat": -0.0636, "lon": 34.2864, "pop": 993183, "arid": False},
-    "Kisumu": {"lat": -0.0917, "lon": 34.7680, "pop": 1155574, "arid": False},
-    "Homa Bay": {"lat": -0.5167, "lon": 34.4667, "pop": 1131950, "arid": False},
-    "Migori": {"lat": -1.0634, "lon": 34.4731, "pop": 1116436, "arid": False},
-    "Kisii": {"lat": -0.6817, "lon": 34.7680, "pop": 1266860, "arid": False},
-    "Nyamira": {"lat": -0.5667, "lon": 34.9333, "pop": 605576, "arid": False},
-    
-    # Former Rift Valley Province
-    "Turkana": {"lat": 3.1167, "lon": 35.6000, "pop": 1016867, "arid": True},
-    "West Pokot": {"lat": 1.6215, "lon": 35.1121, "pop": 621241, "arid": True},
-    "Samburu": {"lat": 1.2167, "lon": 36.9000, "pop": 310327, "arid": True},
-    "Trans Nzoia": {"lat": 1.0500, "lon": 34.9500, "pop": 990341, "arid": False},
-    "Uasin Gishu": {"lat": 0.5500, "lon": 35.3000, "pop": 1163186, "arid": False},
-    "Elgeyo Marakwet": {"lat": 0.8500, "lon": 35.4500, "pop": 454480, "arid": False},
-    "Nandi": {"lat": 0.1833, "lon": 35.1167, "pop": 885711, "arid": False},
-    "Baringo": {"lat": 0.8500, "lon": 35.9667, "pop": 666763, "arid": True},
-    "Laikipia": {"lat": 0.3667, "lon": 36.7833, "pop": 518560, "arid": True},
-    "Nakuru": {"lat": -0.3031, "lon": 36.0800, "pop": 2162202, "arid": False},
-    "Narok": {"lat": -1.0833, "lon": 35.8667, "pop": 1157873, "arid": True},
-    "Kajiado": {"lat": -2.0978, "lon": 36.7820, "pop": 1117840, "arid": True},
-    "Kericho": {"lat": -0.3681, "lon": 35.2839, "pop": 901777, "arid": False},
-    "Bomet": {"lat": -0.8000, "lon": 35.3333, "pop": 875689, "arid": False},
-    
-    # Former Western Province
-    "Kakamega": {"lat": 0.2827, "lon": 34.7519, "pop": 1867579, "arid": False},
-    "Vihiga": {"lat": 0.0667, "lon": 34.7167, "pop": 590013, "arid": False},
-    "Bungoma": {"lat": 0.5667, "lon": 34.5667, "pop": 1670570, "arid": False},
-    "Busia": {"lat": 0.4604, "lon": 34.1115, "pop": 893681, "arid": False},
-}
-
-# Special Focus Areas - Vulnerable Communities
-SPECIAL_AREAS = {
-    "Makongeni (Thika)": {
-        "lat": -1.0332, "lon": 37.0893, 
-        "type": "Informal Settlement",
-        "county": "Kiambu",
-        "challenges": ["Unreliable piped water", "Expensive water kiosks", "No rainwater harvesting"],
-        # Use rough estimates (avoid Python bitwise inversion like ~15000).
-        "population": 15000
-    },
-    "Thika Landless": {
-        "lat": -1.0419, "lon": 37.0977,
-        "type": "Landless Community", 
-        "county": "Kiambu",
-        "challenges": ["No land for wells", "Dependent on vendors", "High water costs"],
-        "population": 8000
-    },
-    "Githurai 45": {
-        "lat": -1.1524, "lon": 36.9108,
-        "type": "Informal Settlement",
-        "county": "Kiambu",
-        "challenges": ["Water rationing", "Contamination risks", "Distance to sources"],
-        "population": 30000
-    },
-    "Mathare": {
-        "lat": -1.2601, "lon": 36.8589,
-        "type": "Informal Settlement",
-        "county": "Nairobi",
-        "challenges": ["Illegal connections", "Water theft", "Quality issues"],
-        "population": 200000
-    },
-}
+# KENYA_COUNTIES and SPECIAL_AREAS imported from openresilience.constants
 
 # Styling
 st.markdown("""
@@ -209,275 +110,10 @@ if 'initialized' not in st.session_state:
     st.session_state.selected_county = "Nairobi"
     st.session_state.language = "English"
 
-@st.cache_data(ttl=3600)  # Cache for 1 hour for performance
+@st.cache_data(ttl=3600)
 def load_county_data():
-    """Generate water stress data for all 47 counties."""
-    np.random.seed(42)
-    
-    county_list = []
-    for county, info in KENYA_COUNTIES.items():
-        # More realistic stress based on region
-        if info['arid']:
-            base_stress = np.random.uniform(0.65, 0.95)
-        else:
-            base_stress = np.random.uniform(0.25, 0.60)
-        
-        # Seasonal adjustment (current month)
-        month = datetime.now().month
-        if 3 <= month <= 5 or 10 <= month <= 12:  # Rainy seasons
-            stress = max(0.1, base_stress - 0.15)
-        else:  # Dry seasons
-            stress = min(0.98, base_stress + 0.10)
-        
-        county_list.append({
-            'County': county,
-            'Lat': info['lat'],
-            'Lon': info['lon'],
-            'Population': info['pop'],
-            'ASAL': 'Yes' if info['arid'] else 'No',
-            'Current_Stress': stress,
-            'Severity': 3 if stress > 0.80 else 2 if stress > 0.60 else 1 if stress > 0.40 else 0
-        })
-    
-    return pd.DataFrame(county_list)
-
-def generate_forecast(county_name, current_stress, is_asal):
-    """Generate actionable short, mid, long-term forecast."""
-    month = datetime.now().month
-    
-    # Determine seasonal trend
-    if 3 <= month <= 5:  # Long rains (Mar-May)
-        short_trend = -0.08
-        season_note = "Long rains season approaching"
-    elif 6 <= month <= 9:  # Dry season
-        short_trend = 0.06
-        season_note = "Dry season - stress increasing"
-    elif 10 <= month <= 12:  # Short rains (Oct-Dec)
-        short_trend = -0.05
-        season_note = "Short rains season active"
-    else:  # Jan-Feb dry period
-        short_trend = 0.08
-        season_note = "Peak dry season"
-    
-    # ASAL areas have more extreme swings
-    if is_asal:
-        short_trend *= 1.5
-    
-    # Calculate forecasts
-    short = np.clip(current_stress + short_trend + np.random.uniform(-0.03, 0.03), 0, 1)
-    medium = np.clip(current_stress + short_trend * 2 + np.random.uniform(-0.08, 0.08), 0, 1)
-    long = np.clip(current_stress + short_trend * 3 + np.random.uniform(-0.12, 0.12), 0, 1)
-    
-    # Determine trend direction
-    if short < current_stress - 0.05:
-        trend = "improving"
-        trend_emoji = "📈 ✅"
-    elif short > current_stress + 0.05:
-        trend = "worsening"
-        trend_emoji = "📉 ⚠️"
-    else:
-        trend = "stable"
-        trend_emoji = "➡️"
-    
-    return {
-        'short': short,
-        'medium': medium,
-        'long': long,
-        'trend': trend,
-        'trend_emoji': trend_emoji,
-        'season_note': season_note,
-        'confidence': 'Simulated (demo data)' if not is_asal else 'Simulated (demo data)'
-    }
-
-def get_community_advice(stress, forecast, county, is_asal, population):
-    """Generate hyperlocal, actionable advice."""
-    
-    advice = {
-        'immediate': [],
-        'water_mgmt': [],
-        'agriculture': [],
-        'livestock': [],
-        'resources': [],
-        'timeline': []
-    }
-    
-    # IMMEDIATE ACTIONS (Next 2 weeks)
-    if stress > 0.80:
-        advice['immediate'] = [
-            "🚨 **CRITICAL**: Water emergency likely within 2-4 weeks",
-            "🚰 Install emergency rainwater tanks IMMEDIATELY (200-1000L)",
-            "📞 Contact county water office for emergency bowser requests",
-            "💰 Budget 300-500 KES/day for water purchases",
-            "👥 Form or join community water-sharing arrangements NOW"
-        ]
-    elif stress > 0.60:
-        advice['immediate'] = [
-            "⚠️ **HIGH RISK**: Water shortages likely within 1-2 months",
-            "🪣 Stock up water containers (20L jerricans)",
-            "🔧 Fix all leaking taps and pipes immediately",
-            "💡 Prepare for water rationing by county government"
-        ]
-    else:
-        advice['immediate'] = [
-            "✅ Current conditions: Manageable",
-            "🏗️ Use this time to improve water infrastructure",
-            "📊 Monitor your household water usage patterns"
-        ]
-    
-    # WATER MANAGEMENT STRATEGIES
-    if stress > 0.70:
-        advice['water_mgmt'] = [
-            "**Rainwater Harvesting** (Priority #1):",
-            "  • 30m² roof → 300L per rain event (estimate)",
-            "  • ROI: Pays back in 6-12 months vs buying water",
-            "  • Contact: Kenya Rainwater Association (0722 123 456)",
-            "",
-            "**Household Conservation** (Save 30-50%):",
-            "  • Bucket bathing: 15L vs 60L shower",
-            "  • Washing water → toilet flushing → garden",
-            "  • Fix dripping tap = save 20L/day = 600L/month",
-            "",
-            "**Community Actions**:",
-            "  • Organize neighborhood water committee",
-            "  • Bulk purchase water to reduce costs",
-            "  • Map all nearby water sources (boreholes, rivers)"
-        ]
-    else:
-        advice['water_mgmt'] = [
-            "💧 Maintain current conservation practices",
-            "🌧️ Install rainwater system BEFORE crisis (cheaper now)",
-            "📱 Join county water WhatsApp group for updates"
-        ]
-    
-    # AGRICULTURAL GUIDANCE
-    month = datetime.now().month
-    if 1 <= month <= 3:  # Planning for long rains
-        if forecast['trend'] == 'worsening':
-            advice['agriculture'] = [
-                "🌾 **LONG RAINS PLANTING** (March-April):",
-                "⚠️ HIGH RISK SEASON - Plant cautiously",
-                "",
-                "**Recommended crops** (drought-tolerant):",
-                "  • Green grams (60-90 days) - BEST CHOICE",
-                "  • Cowpeas (60-70 days)",
-                "  • Cassava (8-12 months, very drought-resistant)",
-                "  • Sorghum (3-4 months, survives dry spells)",
-                "",
-                "**AVOID** (high water needs):",
-                "  • ❌ Normal maize varieties",
-                "  • ❌ Traditional beans",
-                "  • ❌ Potatoes",
-                "",
-                "**Risk Mitigation**:",
-                "  • Plant 50% of usual area",
-                "  • Wait until rains CONFIRMED (3+ rainy days)",
-                "  • Keep seed for replanting if crops fail"
-            ]
-        else:
-            advice['agriculture'] = [
-                "🌽 **LONG RAINS PLANTING** (March-April):",
-                "✅ Good season predicted",
-                "",
-                "**Recommended crops**:",
-                "  • Maize + beans intercrop (traditional)",
-                "  • Irish potatoes (highland areas)",
-                "  • Vegetables (kale, spinach, tomatoes)",
-                "",
-                "**Maximize success**:",
-                "  • Prepare land early (conserve early rains)",
-                "  • Use hybrid seeds for better drought tolerance",
-                "  • Apply manure before planting"
-            ]
-    elif 8 <= month <= 10:  # Planning for short rains
-        advice['agriculture'] = [
-            "🌾 **SHORT RAINS PLANTING** (October-November):",
-            "Plan now, plant in October",
-            "",
-            f"**Risk level**: {'HIGH' if forecast['trend'] == 'worsening' else 'MODERATE'}",
-            "**Best crops**: Green grams, cowpeas, quick-maturing vegetables"
-        ]
-    else:
-        advice['agriculture'] = [
-            "📅 Not planting season",
-            "🌱 Prepare: Buy quality seeds now (cheaper off-season)",
-            "🚜 Maintain farm equipment",
-            "📚 Attend farmer training programs"
-        ]
-    
-    # LIVESTOCK MANAGEMENT (especially for ASAL counties)
-    if is_asal:
-        if stress > 0.75:
-            advice['livestock'] = [
-                "🐄 **URGENT LIVESTOCK DECISIONS**:",
-                "⚠️ Grazing will be insufficient",
-                "",
-                "**Immediate actions**:",
-                "  • Destocking: Sell weak/old animals NOW (before prices crash)",
-                "  • Move herds to wetter areas if possible",
-                "  • Budget for commercial feeds (expensive!)",
-                "  • Water livestock every 2-3 days (reduce trips)",
-                "",
-                "**Survival priorities**:",
-                "  1. Keep breeding females",
-                "  2. Keep young healthy stock",
-                "  3. Sell old males and weak animals",
-                "",
-                "📞 **Contact**: County Livestock Office for market info"
-            ]
-        else:
-            advice['livestock'] = [
-                "🐐 Grazing conditions: Adequate",
-                "💉 Good time for vaccinations and treatments",
-                "🌾 Consider growing fodder crops (Napier grass)"
-            ]
-    
-    # RESOURCES & CONTACTS
-    advice['resources'] = [
-        "**Emergency Contacts:**",
-        f"  • {county} Water Office: [Call county HQ]",
-        "  • National Drought Hotline: 0800 720 720",
-        "  • Kenya Red Cross: 1199 (toll-free)",
-        "  • Ministry of Agriculture: 0800 221 0071",
-        "",
-        "**SMS Services** (Planned — not yet active):",
-        "  • Send 'MAJI' to 22555 → Water alerts (coming soon)",
-        "  • Send 'KILIMO' to 30606 → Farm advice (coming soon)",
-        "",
-        "**Water Vendors** (if needed):",
-        "  • Check county-approved vendor list",
-        "  • Typical cost: 50-100 KES per 20L jerrican",
-        "  • Bowser delivery: 2000-5000 KES per 10,000L"
-    ]
-    
-    # TIMELINE FOR NEXT 12 MONTHS
-    if forecast['trend'] == 'worsening':
-        advice['timeline'] = [
-            "📅 **NEXT 3 MONTHS**: Stress increasing",
-            "  • Week 1-2: Implement water conservation",
-            "  • Week 3-4: Install rainwater tanks",
-            "  • Month 2-3: Expect rationing/shortages",
-            "",
-            "📅 **MONTHS 4-6**: Critical period",
-            "  • Peak stress expected",
-            "  • Possible county water emergency declared",
-            "  • Rely on stored water + purchases",
-            "",
-            "📅 **MONTHS 7-12**: Recovery depends on rains",
-            f"  • {forecast['season_note']}",
-            "  • Gradual improvement if rains arrive"
-        ]
-    else:
-        advice['timeline'] = [
-            "📅 **NEXT 3 MONTHS**: Improving conditions",
-            f"  • {forecast['season_note']}",
-            "  • Good time to invest in infrastructure",
-            "",
-            "📅 **MONTHS 4-12**: Stable/manageable",
-            "  • Normal water availability expected",
-            "  • Focus on preparedness for next dry spell"
-        ]
-    
-    return advice
+    """Cached wrapper around the extracted data loader."""
+    return _load_county_data()
 
 # =============================================================================
 # MAIN APP
