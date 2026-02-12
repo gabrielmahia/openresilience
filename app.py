@@ -227,8 +227,17 @@ def load_county_data():
     except ImportError:
         pass
     
+    # Try to import Earth Engine adapter
+    gee_available = False
+    try:
+        from openresilience.adapters.earthengine import get_vegetation_health
+        gee_available = True
+    except ImportError:
+        pass
+    
     county_list = []
     nasa_success_count = 0
+    gee_success_count = 0
     
     for county, info in KENYA_COUNTIES.items():
         # TRY REAL NASA DATA FIRST
@@ -247,29 +256,50 @@ def load_county_data():
             except Exception as e:
                 pass  # Silently fall back to demo
         
+        # TRY REAL EARTH ENGINE VEGETATION DATA
+        real_vegetation = None
+        if gee_available:
+            try:
+                real_vegetation = get_vegetation_health(
+                    county, info['lat'], info['lon']
+                )
+                if real_vegetation is not None:
+                    if data_source == "nasa":
+                        data_source = "nasa+gee"
+                    else:
+                        data_source = "gee"
+                    gee_success_count += 1
+            except Exception as e:
+                pass  # Silently fall back to demo
+        
         # Generate realistic input signals based on region type
         if info['arid']:
             # ASAL regions: drier conditions
             rainfall_anom = real_rainfall_anom if real_rainfall_anom is not None else np.random.uniform(-55, -20)
             soil_moisture = real_soil_moisture if real_soil_moisture is not None else np.random.uniform(0.15, 0.40)
-            vegetation = np.random.uniform(0.25, 0.50)  # Poor vegetation
+            vegetation = real_vegetation if real_vegetation is not None else np.random.uniform(0.25, 0.50)
             price_change = np.random.uniform(15, 45)  # Higher food prices
             stockouts = np.random.randint(1, 4)  # More stockouts
         else:
             # Non-ASAL: better conditions
             rainfall_anom = real_rainfall_anom if real_rainfall_anom is not None else np.random.uniform(-30, 10)
             soil_moisture = real_soil_moisture if real_soil_moisture is not None else np.random.uniform(0.40, 0.75)
-            vegetation = np.random.uniform(0.50, 0.85)  # Healthy vegetation
+            vegetation = real_vegetation if real_vegetation is not None else np.random.uniform(0.50, 0.85)
             price_change = np.random.uniform(-5, 20)  # Moderate prices
             stockouts = np.random.randint(0, 2)  # Fewer stockouts
         
         # Seasonal adjustment (current month) - only for demo data
+        if real_vegetation is None and data_source in ["demo", "nasa"]:
+            month = datetime.now().month
+            if 3 <= month <= 5 or 10 <= month <= 12:  # Rainy seasons
+                vegetation = min(1.0, vegetation + 0.10)
+        
+        # Only adjust non-real data for rainfall/soil
         if data_source == "demo":
             month = datetime.now().month
             if 3 <= month <= 5 or 10 <= month <= 12:  # Rainy seasons
                 rainfall_anom += 15  # Better rainfall
                 soil_moisture = min(1.0, soil_moisture + 0.15)
-                vegetation = min(1.0, vegetation + 0.10)
             else:  # Dry seasons
                 rainfall_anom -= 10  # Worse rainfall
                 soil_moisture = max(0.0, soil_moisture - 0.10)
@@ -329,6 +359,10 @@ def load_county_data():
     # Show NASA data usage summary
     if nasa_success_count > 0:
         st.sidebar.success(f"🛰️ Using NASA satellite data for {nasa_success_count} counties")
+    
+    # Show Earth Engine data usage summary
+    if gee_success_count > 0:
+        st.sidebar.success(f"🌍 Using Earth Engine vegetation data for {gee_success_count} counties")
     
     return pd.DataFrame(county_list)
 
@@ -766,9 +800,17 @@ try:
     st.sidebar.metric("Resolution", status.resolution.value.title())
     st.sidebar.caption(f"**Source:** {status.source}")
     
-    # Show data source (NASA or demo)
-    if 'DataSource' in county_row and county_row['DataSource'] == 'nasa':
-        st.sidebar.caption("**🛰️ Satellite Data:** NASA IMERG + SMAP")
+    # Show data source (NASA/GEE or demo)
+    if 'DataSource' in county_row:
+        data_src = county_row['DataSource']
+        if data_src == 'nasa+gee':
+            st.sidebar.caption("**🛰️ Satellite Data:** NASA (rainfall, soil) + GEE (vegetation)")
+        elif data_src == 'nasa':
+            st.sidebar.caption("**🛰️ Satellite Data:** NASA IMERG + SMAP")
+        elif data_src == 'gee':
+            st.sidebar.caption("**🌍 Satellite Data:** Earth Engine MODIS")
+        else:
+            st.sidebar.caption("**📊 Data Mode:** Demo (simulated)")
     else:
         st.sidebar.caption("**📊 Data Mode:** Demo (simulated)")
     
