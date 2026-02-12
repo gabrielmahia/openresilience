@@ -1,5 +1,10 @@
 # Security
+
 ## Reporting a Vulnerability
 
-* **DO NOT** open a public issue.
-* Email me directly at: contact@aikungfu.dev
+If you discover an error:
+
+**DO NOT** open a public issue.
+
+Email directly to:  
+contact@aikungfu.dev
