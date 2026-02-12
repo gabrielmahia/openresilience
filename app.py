@@ -508,6 +508,34 @@ st.divider()
 
 st.sidebar.header("🗺️ Select Location / Chagua Eneo")
 
+# Water Stress Glossary - Educational Resource
+with st.sidebar.expander("📚 Understanding Water Stress"):
+    # Import glossary module
+    import sys
+    sys.path.insert(0, 'src')
+    try:
+        from openresilience.glossary import (
+            get_glossary_text,
+            get_stress_category,
+            get_stress_interpretation
+        )
+        st.markdown(get_glossary_text())
+    except ImportError:
+        st.warning("Glossary module not available. Install src package.")
+        st.markdown("""
+        **Water Stress Index (0-10 scale):**
+        
+        - **0-2**: Minimal stress  
+        - **2-4**: Low stress  
+        - **4-6**: Moderate stress  
+        - **6-8**: High stress  
+        - **8-10**: Extreme stress  
+        
+        ⚠️ Demo data only - not real-time measurements
+        """)
+
+st.sidebar.divider()
+
 # Special areas first (Makongeni, Thika Landless, etc.)
 st.sidebar.subheader("⭐ Special Focus: Vulnerable Communities")
 special_area = st.sidebar.radio(
