@@ -1614,53 +1614,182 @@ with st.expander("📊 Compare All 47 Counties"):
         with col_export3:
             st.caption("💡 **Tip:** Excel file includes multiple sheets: All Counties, ASAL Counties, High Risk, and Summary Statistics")
 
-# SMS Alert Service
-with st.expander("📱 SMS Alert Service"):
+# SMS Alert Service - NOW LIVE! 🎉
+with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
     st.markdown("""
     <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border-left: 5px solid #2196f3;">
-        <h3 style="color: #1565c0; margin-top: 0;">📱 Free Water Alerts via SMS</h3>
+        <h3 style="color: #1565c0; margin-top: 0;">📱 Send FREE Water Alerts via SMS</h3>
         <p style="font-size: 1.1em; color: #000;">
-            <strong>No smartphone or internet needed!</strong>
+            <strong>Test the SMS service RIGHT NOW!</strong>
         </p>
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("")
     
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.markdown("""
-        **Receive:**
-        - 📊 Weekly water stress updates
-        - ⚠️ Critical shortage warnings
-        - 🌱 Planting season reminders
-        - 🚛 Water truck schedules
+    # Try to initialize SMS service
+    try:
+        # Import SMS service
+        from openresilience.sms_alerts import SMSAlertService
         
-        **To register:** SMS `MAJI` to `22555`
+        # Get credentials from Streamlit secrets
+        username = st.secrets.get("africastalking", {}).get("username", "sandbox")
+        api_key = st.secrets.get("africastalking", {}).get("api_key")
         
-        **Cost:** Free service (standard SMS rates apply)
-        """)
-    
-    with col2:
-        st.markdown("""
-        **SMS Commands:**
-        - `MAJI` - Subscribe to alerts
-        - `STOP` - Unsubscribe
-        - `HELP` - Get help
-        - `STATUS <county>` - Check status
+        if api_key:
+            # Initialize service
+            sms_service = SMSAlertService(api_key=api_key, username=username)
+            
+            if sms_service.available:
+                st.success("✅ SMS Service Connected! Ready to send alerts!")
+                
+                # Two tabs: Send Test SMS | About Service
+                tab1, tab2 = st.tabs(["📤 Send Test Alert", "ℹ️ About Service"])
+                
+                with tab1:
+                    st.subheader("Send Test Water Stress Alert")
+                    
+                    col1, col2 = st.columns([1, 1])
+                    
+                    with col1:
+                        # Phone number input
+                        test_phone = st.text_input(
+                            "📱 Kenya Phone Number",
+                            placeholder="0712345678 or +254712345678",
+                            help="Enter a Kenya phone number to receive test SMS"
+                        )
+                        
+                        # County selector
+                        test_county = st.selectbox(
+                            "📍 County",
+                            options=[selected_county] + [c for c in df['County'].tolist() if c != selected_county],
+                            help="Select county for alert"
+                        )
+                        
+                        # Language selector
+                        test_language = st.radio(
+                            "🌐 Language",
+                            options=["English", "Kiswahili"],
+                            horizontal=True
+                        )
+                    
+                    with col2:
+                        st.markdown("**Preview Message:**")
+                        
+                        # Get county data
+                        test_county_data = df[df['County'] == test_county].iloc[0]
+                        test_wsi = test_county_data['WSI']
+                        
+                        # Determine action
+                        if test_wsi >= 0.7:
+                            action = "Reduce water use by 40%"
+                        elif test_wsi >= 0.5:
+                            action = "Reduce water use by 20%"
+                        else:
+                            action = "Monitor water usage"
+                        
+                        # Show preview
+                        lang_code = "sw" if test_language == "Kiswahili" else "en"
+                        
+                        if lang_code == "sw":
+                            if test_wsi >= 0.7:
+                                status = "DHARURA"
+                                emoji = "🔴"
+                            elif test_wsi >= 0.5:
+                                status = "HATARI"
+                                emoji = "🟠"
+                            else:
+                                status = "WASTANI"
+                                emoji = "🟡"
+                            
+                            preview = f"{emoji} OPENRESILIENCE\n{test_county}: {status}\nHatua: {action}\nTuma STOP kwa 22555 kusitisha"
+                        else:
+                            if test_wsi >= 0.7:
+                                status = "CRITICAL"
+                                emoji = "🔴"
+                            elif test_wsi >= 0.5:
+                                status = "HIGH"
+                                emoji = "🟠"
+                            else:
+                                status = "MODERATE"
+                                emoji = "🟡"
+                            
+                            preview = f"{emoji} OPENRESILIENCE\n{test_county}: {status}\nAction: {action}\nSMS STOP to 22555 to unsubscribe"
+                        
+                        st.code(preview, language=None)
+                        st.caption(f"Characters: {len(preview)}/160")
+                    
+                    # Send button
+                    if st.button("📤 Send Test SMS", type="primary", use_container_width=True):
+                        if not test_phone:
+                            st.error("❌ Please enter a phone number!")
+                        else:
+                            with st.spinner("Sending SMS..."):
+                                result = sms_service.send_water_stress_alert(
+                                    phone_number=test_phone,
+                                    county=test_county,
+                                    stress_level=test_wsi,
+                                    action=action,
+                                    language=lang_code
+                                )
+                                
+                                if result.get('success'):
+                                    st.success(f"✅ SMS sent successfully to {result['phone']}!")
+                                    st.balloons()
+                                    st.info("📱 Check your phone! SMS should arrive in 5-30 seconds.")
+                                else:
+                                    st.error(f"❌ Failed to send SMS: {result.get('error')}")
+                                    st.warning("⚠️ Sandbox mode: Phone must be registered in Africa's Talking dashboard")
+                
+                with tab2:
+                    col1, col2 = st.columns([1, 1])
+                    
+                    with col1:
+                        st.markdown("""
+                        **Farmers Receive:**
+                        - 📊 Weekly water stress updates
+                        - ⚠️ Critical shortage warnings
+                        - 🌱 Planting season reminders
+                        - 🚛 Water truck schedules
+                        
+                        **How to Subscribe:**
+                        - SMS `MAJI` to `22555`
+                        - Receive weekly alerts
+                        - SMS `STOP` to unsubscribe
+                        
+                        **Cost:** Free service (standard SMS rates apply - ~1 KES per SMS)
+                        """)
+                    
+                    with col2:
+                        st.markdown("""
+                        **SMS Commands:**
+                        - `MAJI` - Subscribe to alerts
+                        - `STOP` - Unsubscribe
+                        - `HELP` - Get help
+                        - `STATUS <county>` - Check water status
+                        
+                        **Example Messages:**
+                        - Water stress alert
+                        - Planting season reminder
+                        - Weekly summary
+                        - Water truck schedule
+                        """)
+                    
+                    st.info("💡 **Perfect for farmers with basic phones!** No smartphone or internet required.")
+                    
+                    st.caption("**Service powered by Africa's Talking** | Sandbox Mode Active")
+            
+            else:
+                st.warning("⚠️ SMS service initialized but not available. Check API credentials.")
         
-        **Example Alert:**
-        ```
-        🟠 OPENRESILIENCE
-        Kiambu: HIGH
-        Action: Reduce water use by 40%
-        ```
-        """)
+        else:
+            st.info("ℹ️ SMS service not configured. Add credentials to Streamlit Secrets to enable.")
     
-    st.info("💡 **Perfect for farmers with basic phones!** No smartphone or internet required. Receive critical water alerts directly via SMS.")
-    
-    st.caption("**Service powered by Africa's Talking** | Questions? Contact your County Water Office")
+    except ImportError:
+        st.warning("⚠️ SMS module not available. Install africastalking package.")
+    except Exception as e:
+        st.error(f"❌ SMS service error: {e}")
+        st.caption("Check Streamlit logs for details")
 
 # Community water point reporting
 with st.expander("📝 Report Water Point Status (Community Reporting)"):
