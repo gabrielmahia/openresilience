@@ -6,6 +6,16 @@ Run this to test Africa's Talking integration before deploying.
 
 import sys
 import os
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("✅ Loaded environment variables from .env file")
+except ImportError:
+    print("⚠️  python-dotenv not installed. Using system environment variables.")
+    print("   Install with: pip install python-dotenv")
+
 sys.path.insert(0, 'src')
 
 from openresilience.sms_alerts import SMSAlertService, SubscriptionManager
