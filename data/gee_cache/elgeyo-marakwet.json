@@ -1,0 +1,12 @@
+{
+  "county": "Elgeyo-Marakwet",
+  "lat": 0.827,
+  "lon": 35.479,
+  "timestamp": "2026-02-13T04:34:33.659571",
+  "vegetation_health": 0.241,
+  "ndvi": 0.093,
+  "quality": 1,
+  "confidence": 85,
+  "data_source": "simulated_realistic",
+  "note": "Realistic NDVI simulation based on regional patterns"
+}

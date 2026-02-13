@@ -1,0 +1,10 @@
+{
+  "county": "Makueni",
+  "lat": -2.267,
+  "lon": 37.817,
+  "timestamp": "2026-02-13T04:34:33.659571",
+  "rainfall_anomaly": -36.92,
+  "soil_moisture": 0.033,
+  "data_source": "simulated_realistic",
+  "note": "Realistic simulation based on Kenya climate patterns"
+}

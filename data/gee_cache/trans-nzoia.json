@@ -1,0 +1,12 @@
+{
+  "county": "Trans-Nzoia",
+  "lat": 1.053,
+  "lon": 34.95,
+  "timestamp": "2026-02-13T04:34:33.659571",
+  "vegetation_health": 0.278,
+  "ndvi": 0.122,
+  "quality": 1,
+  "confidence": 85,
+  "data_source": "simulated_realistic",
+  "note": "Realistic NDVI simulation based on regional patterns"
+}

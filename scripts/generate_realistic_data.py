@@ -34,16 +34,64 @@ logger = logging.getLogger(__name__)
 
 # Kenya counties with characteristics
 KENYA_COUNTIES = {
+    # Central Region
     "Nairobi": {"lat": -1.286389, "lon": 36.817223, "arid": False, "altitude": 1795},
     "Kiambu": {"lat": -1.171, "lon": 36.835, "arid": False, "altitude": 1800},
-    "Nakuru": {"lat": -0.303, "lon": 36.080, "arid": False, "altitude": 1850},
+    "Murang'a": {"lat": -0.721, "lon": 37.152, "arid": False, "altitude": 1540},
+    "Nyeri": {"lat": -0.420, "lon": 36.947, "arid": False, "altitude": 1759},
+    "Kirinyaga": {"lat": -0.660, "lon": 37.383, "arid": False, "altitude": 1430},
+    "Nyandarua": {"lat": -0.180, "lon": 36.478, "arid": False, "altitude": 2400},
+    
+    # Coast Region
     "Mombasa": {"lat": -4.043, "lon": 39.658, "arid": False, "altitude": 17},
-    "Kisumu": {"lat": -0.091702, "lon": 34.767956, "arid": False, "altitude": 1131},
-    "Turkana": {"lat": 3.312, "lon": 35.564, "arid": True, "altitude": 400},
+    "Kwale": {"lat": -4.176, "lon": 39.451, "arid": False, "altitude": 137},
+    "Kilifi": {"lat": -3.507, "lon": 39.909, "arid": False, "altitude": 30},
+    "Tana River": {"lat": -1.528, "lon": 40.127, "arid": True, "altitude": 92},
+    "Lamu": {"lat": -2.271, "lon": 40.900, "arid": True, "altitude": 6},
+    "Taita-Taveta": {"lat": -3.316, "lon": 38.350, "arid": True, "altitude": 700},
+    
+    # Eastern Region
     "Marsabit": {"lat": 2.334, "lon": 37.988, "arid": True, "altitude": 1345},
-    "Mandera": {"lat": 3.563, "lon": 41.167, "arid": True, "altitude": 231},
-    "Wajir": {"lat": 1.747, "lon": 40.057, "arid": True, "altitude": 244},
+    "Isiolo": {"lat": 0.354, "lon": 37.582, "arid": True, "altitude": 1115},
+    "Meru": {"lat": 0.352, "lon": 37.649, "arid": False, "altitude": 1555},
+    "Tharaka-Nithi": {"lat": -0.291, "lon": 37.664, "arid": False, "altitude": 1200},
+    "Embu": {"lat": -0.531, "lon": 37.457, "arid": False, "altitude": 1493},
+    "Kitui": {"lat": -1.367, "lon": 38.017, "arid": True, "altitude": 1100},
+    "Machakos": {"lat": -1.518, "lon": 37.263, "arid": True, "altitude": 1570},
+    "Makueni": {"lat": -2.267, "lon": 37.817, "arid": True, "altitude": 1000},
+    
+    # North Eastern Region
     "Garissa": {"lat": -0.463, "lon": 39.662, "arid": True, "altitude": 147},
+    "Wajir": {"lat": 1.747, "lon": 40.057, "arid": True, "altitude": 244},
+    "Mandera": {"lat": 3.563, "lon": 41.167, "arid": True, "altitude": 231},
+    
+    # Nyanza Region
+    "Kisumu": {"lat": -0.091702, "lon": 34.767956, "arid": False, "altitude": 1131},
+    "Siaya": {"lat": -0.063, "lon": 34.287, "arid": False, "altitude": 1140},
+    "Homa Bay": {"lat": -0.517, "lon": 34.467, "arid": False, "altitude": 1200},
+    "Migori": {"lat": -1.063, "lon": 34.467, "arid": False, "altitude": 1400},
+    "Kisii": {"lat": -0.677, "lon": 34.767, "arid": False, "altitude": 1700},
+    "Nyamira": {"lat": -0.567, "lon": 34.933, "arid": False, "altitude": 1700},
+    
+    # Rift Valley Region
+    "Nakuru": {"lat": -0.303, "lon": 36.080, "arid": False, "altitude": 1850},
+    "Narok": {"lat": -1.083, "lon": 35.867, "arid": True, "altitude": 1827},
+    "Kajiado": {"lat": -2.098, "lon": 36.777, "arid": True, "altitude": 1700},
+    "Kericho": {"lat": -0.183, "lon": 35.283, "arid": False, "altitude": 2002},
+    "Bomet": {"lat": -0.780, "lon": 35.308, "arid": False, "altitude": 1850},
+    "Kakamega": {"lat": 0.282, "lon": 34.752, "arid": False, "altitude": 1535},
+    "Vihiga": {"lat": 0.078, "lon": 34.724, "arid": False, "altitude": 1580},
+    "Bungoma": {"lat": 0.563, "lon": 34.560, "arid": False, "altitude": 1500},
+    "Busia": {"lat": 0.435, "lon": 34.113, "arid": False, "altitude": 1200},
+    "West Pokot": {"lat": 1.621, "lon": 35.112, "arid": True, "altitude": 1840},
+    "Turkana": {"lat": 3.312, "lon": 35.564, "arid": True, "altitude": 400},
+    "Trans-Nzoia": {"lat": 1.053, "lon": 34.950, "arid": False, "altitude": 1900},
+    "Uasin Gishu": {"lat": 0.520, "lon": 35.283, "arid": False, "altitude": 2090},
+    "Elgeyo-Marakwet": {"lat": 0.827, "lon": 35.479, "arid": False, "altitude": 2100},
+    "Nandi": {"lat": 0.183, "lon": 35.133, "arid": False, "altitude": 2011},
+    "Baringo": {"lat": 0.467, "lon": 36.083, "arid": True, "altitude": 1000},
+    "Laikipia": {"lat": 0.367, "lon": 36.783, "arid": True, "altitude": 1950},
+    "Samburu": {"lat": 1.211, "lon": 36.946, "arid": True, "altitude": 900},
 }
 
 
