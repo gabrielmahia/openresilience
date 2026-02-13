@@ -1072,6 +1072,14 @@ with col_overview2:
         help="Weighted combination of all indices"
     )
 
+# Define ASAL status and generate forecast for use in visual indicators
+is_asal = KENYA_COUNTIES[selected_county]['arid']
+forecast = generate_forecast(
+    selected_county,
+    county_row['Current_Stress'],
+    is_asal
+)
+
 # Visual Status Indicators
 if VISUALS_AVAILABLE:
     st.divider()
@@ -1123,15 +1131,7 @@ if VISUALS_AVAILABLE:
 
 st.divider()
 
-# Generate forecast
-is_asal = KENYA_COUNTIES[selected_county]['arid']
-forecast = generate_forecast(
-    selected_county,
-    county_row['Current_Stress'],
-    is_asal
-)
-
-# Forecast timeline
+# Forecast timeline (forecast already generated above for visual indicators)
 st.subheader("🔮 Forecast Timeline")
 col1, col2, col3, col4, col5 = st.columns(5)
 
