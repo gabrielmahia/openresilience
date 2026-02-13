@@ -8,3 +8,4 @@ requests>=2.31.0
 earthengine-api>=0.1.384
 matplotlib>=3.8.0
 openpyxl>=3.1.0
+africastalking>=1.2.8

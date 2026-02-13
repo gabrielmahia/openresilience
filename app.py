@@ -1614,6 +1614,54 @@ with st.expander("📊 Compare All 47 Counties"):
         with col_export3:
             st.caption("💡 **Tip:** Excel file includes multiple sheets: All Counties, ASAL Counties, High Risk, and Summary Statistics")
 
+# SMS Alert Service
+with st.expander("📱 SMS Alert Service"):
+    st.markdown("""
+    <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border-left: 5px solid #2196f3;">
+        <h3 style="color: #1565c0; margin-top: 0;">📱 Free Water Alerts via SMS</h3>
+        <p style="font-size: 1.1em; color: #000;">
+            <strong>No smartphone or internet needed!</strong>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("")
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.markdown("""
+        **Receive:**
+        - 📊 Weekly water stress updates
+        - ⚠️ Critical shortage warnings
+        - 🌱 Planting season reminders
+        - 🚛 Water truck schedules
+        
+        **To register:** SMS `MAJI` to `22555`
+        
+        **Cost:** Free service (standard SMS rates apply)
+        """)
+    
+    with col2:
+        st.markdown("""
+        **SMS Commands:**
+        - `MAJI` - Subscribe to alerts
+        - `STOP` - Unsubscribe
+        - `HELP` - Get help
+        - `STATUS <county>` - Check status
+        
+        **Example Alert:**
+        ```
+        🟠 OPENRESILIENCE
+        Kiambu: HIGH
+        Action: Reduce water use by 40%
+        ```
+        """)
+    
+    st.info("💡 **Perfect for farmers with basic phones!** No smartphone or internet required. Receive critical water alerts directly via SMS.")
+    
+    st.caption("**Service powered by Africa's Talking** | Questions? Contact your County Water Office")
+
 # Community water point reporting
 with st.expander("📝 Report Water Point Status (Community Reporting)"):
     st.caption("Help your community by reporting water availability. Location is coarsened for safety.")
