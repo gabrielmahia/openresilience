@@ -1,0 +1,45 @@
+name: Update Satellite Data
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests earthengine-api
+      
+      - name: Update NASA data
+        env:
+          NASA_EARTHDATA_USERNAME: ${{ secrets.NASA_EARTHDATA_USERNAME }}
+          NASA_EARTHDATA_PASSWORD: ${{ secrets.NASA_EARTHDATA_PASSWORD }}
+        run: |
+          python scripts/update_nasa_data.py || echo "NASA update failed, continuing..."
+      
+      - name: Update Earth Engine data
+        env:
+          GEE_SERVICE_ACCOUNT: ${{ secrets.GEE_SERVICE_ACCOUNT }}
+        run: |
+          python scripts/update_gee_data.py || echo "GEE update failed, continuing..."
+      
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add data/nasa_cache/ data/gee_cache/ || true
+          git diff --staged --quiet || git commit -m "chore: update satellite data cache [automated]"
+          git push || echo "No changes to push"
