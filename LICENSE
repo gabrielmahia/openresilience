@@ -1,13 +1,150 @@
-Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License
+GNU AFFERO GENERAL PUBLIC LICENSE
+Version 3, 19 November 2007
 
-Copyright (c) 2026 Gabriel Mahia
+OpenResilience Kenya - Water & Agricultural Planning Platform
+Copyright (C) 2026 Gabriel Mahia
 
-By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License ("Public License").
+================================================================================
+DUAL LICENSING
+================================================================================
 
-Summary of Rights:
-1. Share — copy and redistribute the material in any medium or format.
-2. Attribution — You must give appropriate credit to Gabriel Mahia.
-3. NonCommercial — You may NOT use the material for commercial purposes (selling the software, signals, or access).
-4. NoDerivatives — If you remix, transform, or build upon the material, you may not distribute the modified material.
+This software is available under TWO licenses:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+1. AGPL-3.0 License (FREE for humanitarian, NGO, government, community use)
+2. Commercial License (Contact for pricing)
+
+Choose the license that best fits your use case.
+
+================================================================================
+LICENSE OPTION 1: AGPL-3.0 (Humanitarian/Open Source Use)
+================================================================================
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+KEY REQUIREMENTS UNDER AGPL-3.0:
+- ✅ You may use, modify, and distribute this software freely
+- ✅ You MUST provide source code if you run this as a network service
+- ✅ You MUST keep all copyright notices and attributions
+- ✅ You MUST license any derivative works under AGPL-3.0
+- ✅ You MUST credit "Gabriel Mahia" and "OpenResilience Kenya"
+
+AGPL-3.0 is PERFECT for:
+- NGOs deploying for communities
+- County governments serving citizens
+- Research institutions
+- Open source projects
+- Community organizations
+- Non-profit use
+
+================================================================================
+LICENSE OPTION 2: Commercial License
+================================================================================
+
+If you want to:
+- Use this software in a proprietary/closed-source product
+- Provide this as a paid SaaS service without sharing source code
+- Integrate into commercial software without AGPL obligations
+- Keep modifications private
+
+Contact for commercial licensing:
+- Email: [Your Email]
+- Subject: OpenResilience Commercial License Inquiry
+
+Commercial licenses are REASONABLY PRICED and support continued development.
+
+================================================================================
+ADDITIONAL TERMS (Apply to ALL licenses)
+================================================================================
+
+1. ATTRIBUTION REQUIREMENT
+   You MUST:
+   - Retain ALL copyright notices in source code
+   - Display "Powered by OpenResilience Kenya | © 2026 Gabriel Mahia" in UI
+   - Provide link to https://github.com/gabrielmahia/openresilience
+   - Credit "Gabriel Mahia" in documentation and about pages
+
+2. TRADEMARK PROTECTION
+   - "OpenResilience" and "OpenResilience Kenya" are trademarks
+   - You may NOT use these names for derivative products
+   - Use descriptive names like "[YourOrg] Water Monitor (powered by OpenResilience)"
+
+3. DATA SOVEREIGNTY COMMITMENT
+   - This software is designed for community data ownership
+   - Deployments must respect local data governance
+   - Communities must retain control of their data
+   - No exploitation of community data for profit
+
+4. ETHICAL USE ONLY
+   - May NOT be used for surveillance or oppression
+   - May NOT be used to discriminate against communities
+   - May NOT be weaponized or used in conflict
+   - Must respect human rights and dignity
+
+5. NETWORK USE DISCLOSURE (AGPL-3.0 only)
+   - If you run this as a web service/API/SaaS:
+     * You MUST make complete source code available to users
+     * Include a clear "Download Source Code" link
+     * Provide all modifications and configurations
+
+================================================================================
+CONTRIBUTOR AGREEMENT
+================================================================================
+
+By contributing to this project, you:
+1. Grant Gabriel Mahia perpetual rights to your contributions
+2. Assert you have rights to contribute the code
+3. Agree your contributions will be licensed under AGPL-3.0
+4. Waive any moral rights that might restrict project use
+
+See CONTRIBUTING.md for full details.
+
+================================================================================
+WARRANTY DISCLAIMER
+================================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+FULL AGPL-3.0 LICENSE TEXT
+================================================================================
+
+The complete GNU Affero General Public License v3.0 text is available at:
+https://www.gnu.org/licenses/agpl-3.0.txt
+
+The license is incorporated by reference and forms part of this agreement.
+
+================================================================================
+CONTACT & QUESTIONS
+================================================================================
+
+Project: OpenResilience Kenya - Resilience Monitoring Platform
+Author: Gabriel Mahia
+Repository: https://github.com/gabrielmahia/openresilience
+License Questions: [Your Email]
+Commercial Licensing: [Your Email]
+
+Built for Kenya's communities 🇰🇪
+Powered by satellite technology 🛰️
+Driven by local knowledge 🌍
+
+================================================================================
+© 2026 Gabriel Mahia. All Rights Reserved.
+"OpenResilience" and "OpenResilience Kenya" are trademarks of Gabriel Mahia.
+================================================================================

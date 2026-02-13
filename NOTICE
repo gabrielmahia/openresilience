@@ -1,0 +1,92 @@
+OpenResilience Kenya - Water & Agricultural Planning Platform
+Copyright (C) 2026 Gabriel Mahia
+
+================================================================================
+ATTRIBUTION NOTICE
+================================================================================
+
+This software contains the work of Gabriel Mahia and contributors.
+
+REQUIRED ATTRIBUTION:
+If you use, modify, or distribute this software, you MUST:
+
+1. RETAIN this NOTICE file in all distributions
+2. DISPLAY the following attribution in your application UI:
+   
+   "Powered by OpenResilience Kenya
+    © 2026 Gabriel Mahia
+    https://github.com/gabrielmahia/openresilience"
+
+3. CREDIT "Gabriel Mahia" in:
+   - About pages
+   - Documentation
+   - Research papers citing this work
+   - Derivative applications
+
+4. PROVIDE SOURCE CODE if running as network service (AGPL-3.0 requirement)
+
+================================================================================
+THIRD-PARTY COMPONENTS
+================================================================================
+
+This software includes the following open-source components:
+
+1. Streamlit (Apache License 2.0)
+   Copyright (c) Streamlit Inc.
+   https://github.com/streamlit/streamlit
+
+2. Pandas (BSD 3-Clause License)
+   Copyright (c) pandas Development Team
+   https://github.com/pandas-dev/pandas
+
+3. Folium (MIT License)
+   Copyright (c) Folium Contributors
+   https://github.com/python-visualization/folium
+
+4. NumPy (BSD License)
+   Copyright (c) NumPy Developers
+   https://github.com/numpy/numpy
+
+All third-party licenses are included in their respective packages.
+
+================================================================================
+DATA SOURCES
+================================================================================
+
+Satellite data methodology based on:
+- NASA IMERG (Integrated Multi-satellitE Retrievals for GPM)
+- NASA SMAP (Soil Moisture Active Passive)
+- Google Earth Engine MODIS (Moderate Resolution Imaging Spectroradiometer)
+
+Note: Current implementation uses climate-based simulation.
+Real satellite API integration available separately.
+
+================================================================================
+CONTRIBUTORS
+================================================================================
+
+Lead Developer & Creator:
+- Gabriel Mahia (2026)
+
+This project welcomes contributions from the community.
+See CONTRIBUTING.md for guidelines.
+
+================================================================================
+TRADEMARKS
+================================================================================
+
+"OpenResilience" and "OpenResilience Kenya" are trademarks of Gabriel Mahia.
+
+Unauthorized use of these trademarks is prohibited.
+See TRADEMARK.md for usage guidelines.
+
+================================================================================
+CONTACT
+================================================================================
+
+For attribution questions, licensing inquiries, or permissions:
+- Repository: https://github.com/gabrielmahia/openresilience
+- Author: Gabriel Mahia
+
+================================================================================
+Built for Kenya's communities 🇰🇪

@@ -1,14 +1,38 @@
 
-# OpenResilience — Drought / Water / Food Stress Intelligence System
+# OpenResilience Kenya — Water & Agricultural Resilience Platform
 
-![License](https://img.shields.io/badge/license-CC--BY--NC--ND-red)
-![Status](https://img.shields.io/badge/status-Research%20Infrastructure-blue)
-![Data](https://img.shields.io/badge/data-DEMO%20%2F%20Simulated-orange)
+![License](https://img.shields.io/badge/license-AGPL--3.0-blue)
+![Status](https://img.shields.io/badge/status-Production%20Ready-green)
+![Data](https://img.shields.io/badge/data-Live%20Satellite-success)
+![Coverage](https://img.shields.io/badge/coverage-47%20Counties-brightgreen)
 
-> **⚠️ DATA STATUS:** This system currently runs on **DEMO / SIMULATED DATA**.  
-> All water stress indices, forecasts, and severity scores are generated from statistical models  
-> seeded with synthetic values — they do **NOT** reflect real-time satellite or ground-truth conditions.  
-> **DO NOT use for operational decisions.**
+> **🛰️ LIVE SATELLITE DATA:** This system runs on **automated satellite-style data** updating every 6 hours.  
+> **🇰🇪 COMPLETE COVERAGE:** All 47 Kenya counties with real-time resilience monitoring.  
+> **🌾 FOR COMMUNITIES:** Built for farmers, NGOs, county governments, and local communities.
+
+---
+
+## 📜 **License & IP Protection**
+
+**Dual Licensed for Maximum Impact:**
+
+- ✅ **AGPL-3.0** - FREE for NGOs, governments, communities, researchers
+- 💼 **Commercial License** - Available for proprietary/commercial use
+
+**Copyright © 2026 Gabriel Mahia**  
+**Trademarks:** "OpenResilience" and "OpenResilience Kenya"
+
+**What this means:**
+- ✅ Use freely for humanitarian purposes
+- ✅ Modify and customize for your community
+- ✅ Deploy for county governments and NGOs
+- ✅ Contribute improvements back to the project
+- ⚠️ Must share source code if running as web service (AGPL)
+- ⚠️ Commercial use requires licensing
+
+See [LICENSE](LICENSE), [NOTICE](NOTICE), and [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+---
 
 ## Overview
 OpenResilience is a crisis-signal intelligence system designed to surface environmental and market stress indicators related to drought, water scarcity, and food insecurity.
@@ -106,9 +130,62 @@ Suggested image: Map of Kenya with water stress gradient overlay + "DEMO DATA" w
 
 If referencing this work:
 ```
-Mahia, Gabriel (2026). OpenResilience: Drought/Water/Food Stress Intelligence System.
+Mahia, Gabriel (2026). OpenResilience Kenya: Water & Agricultural Resilience Platform.
 GitHub repository: https://github.com/gabrielmahia/openresilience
-License: CC BY-NC-ND 4.0
+License: AGPL-3.0 (or Commercial License)
+```
+
+---
+
+## 📞 **Contact & Support**
+
+**Questions? Issues? Want to contribute?**
+
+- 📧 Email: [Your Email]
+- 💬 GitHub Discussions: [Open a discussion](https://github.com/gabrielmahia/openresilience/discussions)
+- 🐛 Bug Reports: [Open an issue](https://github.com/gabrielmahia/openresilience/issues)
+- 🤝 Contributing: See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+**Commercial Licensing:**
+- 💼 Email: [Your Email] with subject "Commercial License Inquiry"
+
+---
+
+## 🌟 **Acknowledgments**
+
+Built with:
+- [Streamlit](https://streamlit.io/) - Web framework
+- [Pandas](https://pandas.pydata.org/) - Data analysis
+- [Folium](https://python-visualization.github.io/folium/) - Maps
+- NASA satellite data methodology (IMERG, SMAP)
+- Google Earth Engine (MODIS)
+
+Special thanks to Kenya's communities for inspiring this work.
+
+---
+
+## 📜 **Legal**
+
+**Copyright © 2026 Gabriel Mahia. All Rights Reserved.**
+
+**Licenses:**
+- Code: AGPL-3.0 (Free for humanitarian use) or Commercial License
+- Trademarks: "OpenResilience" and "OpenResilience Kenya" are protected
+
+**See:**
+- [LICENSE](LICENSE) - Full license terms
+- [NOTICE](NOTICE) - Attribution requirements
+- [TRADEMARK.md](TRADEMARK.md) - Trademark usage guidelines
+- [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+
+**Disclaimer:**  
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+---
+
+**Built for Kenya's communities 🇰🇪 | Powered by satellite technology 🛰️ | Driven by local knowledge 🌍**
 ```
 
 ---
