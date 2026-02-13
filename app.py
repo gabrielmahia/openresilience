@@ -775,6 +775,9 @@ except ImportError:
 
 st.sidebar.divider()
 
+# Get county data first (needed for data source display)
+county_row = df[df['County'] == selected_county].iloc[0]
+
 # Resolution Status Card
 st.sidebar.subheader("📊 Data Status")
 try:
@@ -824,8 +827,7 @@ except ImportError:
 
 st.sidebar.divider()
 
-# County stats
-county_row = df[df['County'] == selected_county].iloc[0]
+# County stats (county_row already defined above)
 st.sidebar.metric("Population", f"{county_row['Population']:,}")
 st.sidebar.metric("ASAL Status", county_row['ASAL'])
 
