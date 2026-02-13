@@ -658,102 +658,326 @@ with col_h2:
     lang = st.selectbox("", ["English", "Kiswahili"], label_visibility="collapsed")
     st.session_state.language = lang
 
-# Enhanced Mobile-Responsive CSS
+# Enhanced Mobile-Responsive CSS for Farmers + NGO Administrators
 st.markdown("""
 <style>
-    /* Mobile-first responsive design */
-    @media (max-width: 768px) {
-        .stMetric {
-            font-size: 0.9em;
-        }
-        .css-1d391kg {
-            padding: 1rem 0.5rem;
-        }
-        h1 {
-            font-size: 1.8em !important;
-        }
-        h2 {
-            font-size: 1.3em !important;
-        }
-        h3 {
-            font-size: 1.1em !important;
-        }
+    /* ========================================
+       MOBILE-FIRST DESIGN (Farmers on phones)
+       ======================================== */
+    
+    /* Base: Optimized for small screens */
+    body {
+        font-size: 16px; /* Readable on mobile */
+        line-height: 1.6;
     }
     
-    /* Visual indicator cards */
-    .status-card {
-        text-align: center;
-        padding: 20px;
-        background: #f0f2f6;
-        border-radius: 10px;
-        margin: 10px 0;
-    }
-    
-    .status-emoji {
-        font-size: 3em;
-        margin-bottom: 10px;
-    }
-    
-    /* Agricultural guidance */
-    .agriculture-section {
-        background: #e8f5e9;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 5px solid #4caf50;
-        margin: 15px 0;
-    }
-    
-    /* Export buttons */
-    .stDownloadButton button {
-        width: 100%;
-    }
-    
-    /* Better spacing for tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        padding: 12px 20px;
-    }
-    
-    /* Improved expander */
-    .streamlit-expanderHeader {
-        font-size: 1.1em;
+    /* Large touch targets for farmers */
+    button, .stDownloadButton button, .stButton button {
+        min-height: 48px !important;
+        min-width: 48px;
+        padding: 12px 20px !important;
+        font-size: 16px !important;
         font-weight: 600;
     }
     
-    /* Forecast cards */
+    /* High contrast text - critical for outdoor use */
+    .stMarkdown, .stText, p, div {
+        color: #1a1a1a;
+    }
+    
+    /* Visual indicator cards - mobile optimized */
+    .status-card {
+        text-align: center;
+        padding: 15px;
+        background: #ffffff;
+        border-radius: 12px;
+        margin: 8px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 2px solid #e0e0e0;
+    }
+    
+    .status-emoji {
+        font-size: 2.5em;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    /* Agricultural guidance - farmer-friendly */
+    .agriculture-section {
+        background: #e8f5e9;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 6px solid #4caf50;
+        margin: 15px 0;
+        font-size: 1.05em;
+        line-height: 1.8;
+    }
+    
+    .agriculture-section h4 {
+        color: #2e7d32;
+        margin-top: 0;
+        font-size: 1.3em;
+    }
+    
+    .agriculture-section strong {
+        color: #1b5e20;
+    }
+    
+    /* Alert boxes - EXCELLENT CONTRAST */
     .forecast-warning {
         background: #fff3cd;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 5px solid #ff9800;
-        margin: 15px 0;
+        padding: 25px;
+        border-radius: 12px;
+        border-left: 8px solid #ff9800;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .forecast-warning h3 {
+        color: #000000 !important;
+        font-size: 1.4em;
+        font-weight: 700;
+        margin-top: 0 !important;
+    }
+    
+    .forecast-warning p {
+        color: #000000 !important;
+        font-size: 1.1em;
     }
     
     .forecast-good {
         background: #d4edda;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 5px solid #28a745;
-        margin: 15px 0;
+        padding: 25px;
+        border-radius: 12px;
+        border-left: 8px solid #28a745;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     
-    /* High contrast for accessibility */
+    .forecast-good h3 {
+        color: #000000 !important;
+        font-size: 1.4em;
+        font-weight: 700;
+        margin-top: 0 !important;
+    }
+    
+    .forecast-good p {
+        color: #000000 !important;
+        font-size: 1.1em;
+    }
+    
+    /* Metrics - larger for quick glance */
+    .stMetric {
+        background: #ffffff;
+        padding: 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    
     .stMetric label {
+        font-size: 0.95em !important;
+        font-weight: 600 !important;
+        color: #424242;
+    }
+    
+    .stMetric [data-testid="stMetricValue"] {
+        font-size: 2em !important;
+        font-weight: 700 !important;
+        color: #1a1a1a;
+    }
+    
+    /* Export buttons - prominent */
+    .stDownloadButton button {
+        width: 100%;
+        background: #1976d2 !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 600 !important;
+    }
+    
+    .stDownloadButton button:hover {
+        background: #1565c0 !important;
+    }
+    
+    /* ========================================
+       TABLET & DESKTOP (NGO administrators)
+       ======================================== */
+    
+    @media (min-width: 768px) {
+        /* More compact for desktop */
+        .stMetric {
+            padding: 10px;
+        }
+        
+        .status-card {
+            padding: 20px;
+        }
+        
+        button {
+            min-height: 44px !important;
+        }
+        
+        /* Better use of space */
+        .agriculture-section {
+            font-size: 1em;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        /* MOBILE OPTIMIZATIONS */
+        
+        /* Reduce header sizes for mobile */
+        h1 {
+            font-size: 1.6em !important;
+            line-height: 1.2;
+        }
+        
+        h2 {
+            font-size: 1.3em !important;
+        }
+        
+        h3 {
+            font-size: 1.1em !important;
+        }
+        
+        /* Stack columns on mobile */
+        .css-1d391kg {
+            padding: 1rem 0.5rem;
+        }
+        
+        /* Larger tap targets */
+        .stSelectbox, .stRadio {
+            font-size: 16px !important;
+        }
+        
+        /* Better spacing */
+        .stMarkdown {
+            margin-bottom: 1rem;
+        }
+        
+        /* Simplified metrics */
+        .stMetric [data-testid="stMetricValue"] {
+            font-size: 1.8em !important;
+        }
+    }
+    
+    /* ========================================
+       ACCESSIBILITY (All devices)
+       ======================================== */
+    
+    /* High contrast for outdoor viewing */
+    ::selection {
+        background: #ffeb3b;
+        color: #000;
+    }
+    
+    /* Focus indicators for keyboard navigation */
+    button:focus, select:focus, input:focus {
+        outline: 3px solid #2196f3 !important;
+        outline-offset: 2px;
+    }
+    
+    /* Links - clearly visible */
+    a {
+        color: #1976d2;
+        text-decoration: underline;
         font-weight: 600;
+    }
+    
+    a:hover {
+        color: #1565c0;
+    }
+    
+    /* ========================================
+       FARMER-SPECIFIC ENHANCEMENTS
+       ======================================== */
+    
+    /* Simple language indicators */
+    .simple-indicator {
+        font-size: 1.3em;
+        font-weight: 700;
+        padding: 15px;
+        text-align: center;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+    
+    .indicator-good {
+        background: #c8e6c9;
+        color: #1b5e20;
+        border: 3px solid #4caf50;
+    }
+    
+    .indicator-moderate {
+        background: #fff9c4;
+        color: #f57f17;
+        border: 3px solid #fdd835;
+    }
+    
+    .indicator-bad {
+        background: #ffccbc;
+        color: #bf360c;
+        border: 3px solid #ff5722;
+    }
+    
+    /* Emoji sizing for clarity */
+    .big-emoji {
+        font-size: 3em;
+        line-height: 1;
+        display: block;
+        margin: 10px auto;
+    }
+    
+    /* ========================================
+       PERFORMANCE OPTIMIZATIONS
+       ======================================== */
+    
+    /* Reduce animations on mobile to save battery */
+    @media (max-width: 767px) {
+        * {
+            animation-duration: 0.01s !important;
+            transition-duration: 0.01s !important;
+        }
     }
     
     /* Better table readability */
     .dataframe {
-        font-size: 0.9em;
+        font-size: 0.95em;
+        line-height: 1.6;
     }
     
-    /* Touch-friendly buttons */
-    button {
-        min-height: 44px;
-        padding: 0.5rem 1rem;
+    .dataframe th {
+        background: #f5f5f5;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+    
+    .dataframe td {
+        color: #424242;
+    }
+    
+    /* Tab navigation - larger touch targets */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 4px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        padding: 14px 24px;
+        font-size: 1.05em;
+        font-weight: 600;
+    }
+    
+    /* Expander - clear interaction */
+    .streamlit-expanderHeader {
+        font-size: 1.15em;
+        font-weight: 700;
+        padding: 12px 16px;
+        background: #f5f5f5;
+        border-radius: 8px;
+    }
+    
+    .streamlit-expanderHeader:hover {
+        background: #eeeeee;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -1169,12 +1393,12 @@ col5.metric(
 if forecast['trend'] == 'worsening':
     st.markdown(f"""
     <div class="forecast-warning">
-        <h3>{forecast['trend_emoji']} ALERT: Water Stress Increasing</h3>
-        <p style="font-size: 1.1em; margin: 10px 0;">
+        <h3 style="color: #000; margin-top: 0;">{forecast['trend_emoji']} ⚠️ ALERT: Water Stress Increasing</h3>
+        <p style="font-size: 1.1em; margin: 10px 0; color: #000;">
         <strong>{selected_county} County</strong> is expected to experience <strong>worsening water stress</strong> 
         over the next 6-12 months.
         </p>
-        <p style="margin: 5px 0;">
+        <p style="margin: 5px 0; color: #000;">
         <strong>📅 Season:</strong> {forecast['season_note']}<br>
         <strong>🎯 Confidence:</strong> {forecast['confidence']}<br>
         <strong>⏰ Action needed:</strong> Immediate preparation recommended
@@ -1184,12 +1408,12 @@ if forecast['trend'] == 'worsening':
 else:
     st.markdown(f"""
     <div class="forecast-good">
-        <h3>{forecast['trend_emoji']} Good News: Conditions Improving</h3>
-        <p style="font-size: 1.1em; margin: 10px 0;">
+        <h3 style="color: #000; margin-top: 0;">{forecast['trend_emoji']} ✅ Good News: Conditions Improving</h3>
+        <p style="font-size: 1.1em; margin: 10px 0; color: #000;">
         <strong>{selected_county} County</strong> water stress is expected to <strong>improve or stabilize</strong> 
         over the next 6-12 months.
         </p>
-        <p style="margin: 5px 0;">
+        <p style="margin: 5px 0; color: #000;">
         <strong>📅 Season:</strong> {forecast['season_note']}<br>
         <strong>🎯 Confidence:</strong> {forecast['confidence']}<br>
         <strong>💡 Recommendation:</strong> Maintain conservation, invest in infrastructure
