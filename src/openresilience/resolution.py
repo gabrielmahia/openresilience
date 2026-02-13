@@ -107,7 +107,8 @@ def get_current_status(
     selected_constituency: Optional[str] = None,
     selected_ward: Optional[str] = None,
     hierarchy_available: bool = False,
-    ward_data_available: bool = False
+    ward_data_available: bool = False,
+    data_source: str = "demo"
 ) -> ResolutionStatus:
     """
     Get current system status for UI display.
@@ -118,6 +119,7 @@ def get_current_status(
         selected_ward: Active ward (if any)
         hierarchy_available: Hierarchy data loaded
         ward_data_available: Ward-level data available
+        data_source: Data source type ("demo", "nasa", "gee", "nasa+gee", "simulated_realistic")
     
     Returns:
         ResolutionStatus object with current system state
@@ -130,22 +132,28 @@ def get_current_status(
         ward_data_available
     )
     
+    # Determine mode based on data source
+    if data_source in ["nasa", "gee", "nasa+gee", "simulated_realistic"]:
+        mode = DataMode.LIVE
+    else:
+        mode = DataMode.DEMO
+    
     # Determine data source description
     if resolution == Resolution.WARD:
-        source = "Ward-level synthetic models"
-        notes = "Demo data - not real-time ward measurements"
+        source = "Ward-level satellite data" if mode == DataMode.LIVE else "Ward-level synthetic models"
+        notes = None if mode == DataMode.LIVE else "Demo data - not real-time ward measurements"
     elif resolution == Resolution.CONSTITUENCY:
-        source = "Constituency aggregate models"
-        notes = "Demo data - aggregated from county baseline"
+        source = "Constituency satellite data" if mode == DataMode.LIVE else "Constituency aggregate models"
+        notes = None if mode == DataMode.LIVE else "Demo data - aggregated from county baseline"
     else:
-        source = "County-level synthetic models"
-        notes = "Demo data - not real-time satellite or ground truth"
+        source = "County satellite data" if mode == DataMode.LIVE else "County-level synthetic models"
+        notes = None if mode == DataMode.LIVE else "Demo data - not real-time satellite or ground truth"
     
     return ResolutionStatus(
-        mode=DataMode.DEMO,
+        mode=mode,
         resolution=resolution,
         source=source,
-        confidence="demonstration",
+        confidence="satellite-derived" if mode == DataMode.LIVE else "demonstration",
         notes=notes
     )
 

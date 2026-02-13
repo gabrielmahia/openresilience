@@ -796,7 +796,8 @@ try:
         selected_constituency if 'selected_constituency' in locals() else None,
         selected_ward if 'selected_ward' in locals() else None,
         hierarchy_available=hierarchy_available,
-        ward_data_available=False  # No ward data in demo
+        ward_data_available=False,  # No ward data in demo
+        data_source=county_row.get('DataSource', 'demo')
     )
     
     st.sidebar.metric("Mode", status.mode.value.upper())
