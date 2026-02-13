@@ -24,11 +24,23 @@ try:
         init_database, ensure_region, insert_run, get_recent_runs,
         insert_field_report, get_recent_reports, create_alert, get_active_alerts
     )
+    from openresilience.agriculture import get_planting_advice, get_next_planting_window
+    from openresilience.export import export_county_data_csv, export_county_summary_report, export_all_counties_excel
+    from openresilience.visuals import (
+        get_stress_emoji, get_stress_text, get_action_required,
+        get_planting_recommendation, get_simple_forecast
+    )
     SCORING_AVAILABLE = True
     DB_AVAILABLE = True
+    AGRICULTURE_AVAILABLE = True
+    EXPORT_AVAILABLE = True
+    VISUALS_AVAILABLE = True
 except ImportError as e:
     SCORING_AVAILABLE = False
     DB_AVAILABLE = False
+    AGRICULTURE_AVAILABLE = False
+    EXPORT_AVAILABLE = False
+    VISUALS_AVAILABLE = False
     print(f"OpenResilience modules not available: {e}")
 
 # =============================================================================
@@ -628,6 +640,106 @@ with col_h2:
     lang = st.selectbox("", ["English", "Kiswahili"], label_visibility="collapsed")
     st.session_state.language = lang
 
+# Enhanced Mobile-Responsive CSS
+st.markdown("""
+<style>
+    /* Mobile-first responsive design */
+    @media (max-width: 768px) {
+        .stMetric {
+            font-size: 0.9em;
+        }
+        .css-1d391kg {
+            padding: 1rem 0.5rem;
+        }
+        h1 {
+            font-size: 1.8em !important;
+        }
+        h2 {
+            font-size: 1.3em !important;
+        }
+        h3 {
+            font-size: 1.1em !important;
+        }
+    }
+    
+    /* Visual indicator cards */
+    .status-card {
+        text-align: center;
+        padding: 20px;
+        background: #f0f2f6;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+    
+    .status-emoji {
+        font-size: 3em;
+        margin-bottom: 10px;
+    }
+    
+    /* Agricultural guidance */
+    .agriculture-section {
+        background: #e8f5e9;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid #4caf50;
+        margin: 15px 0;
+    }
+    
+    /* Export buttons */
+    .stDownloadButton button {
+        width: 100%;
+    }
+    
+    /* Better spacing for tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        padding: 12px 20px;
+    }
+    
+    /* Improved expander */
+    .streamlit-expanderHeader {
+        font-size: 1.1em;
+        font-weight: 600;
+    }
+    
+    /* Forecast cards */
+    .forecast-warning {
+        background: #fff3cd;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid #ff9800;
+        margin: 15px 0;
+    }
+    
+    .forecast-good {
+        background: #d4edda;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid #28a745;
+        margin: 15px 0;
+    }
+    
+    /* High contrast for accessibility */
+    .stMetric label {
+        font-weight: 600;
+    }
+    
+    /* Better table readability */
+    .dataframe {
+        font-size: 0.9em;
+    }
+    
+    /* Touch-friendly buttons */
+    button {
+        min-height: 44px;
+        padding: 0.5rem 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Load data
 df = load_county_data()
 
@@ -856,6 +968,35 @@ severity_label = {
 }[county_row['Severity']]
 st.sidebar.metric("Risk Level", severity_label)
 
+# Export Data Section
+if EXPORT_AVAILABLE:
+    st.sidebar.divider()
+    st.sidebar.subheader("📥 Export Data")
+    
+    # County Summary Report
+    summary_report = export_county_summary_report(
+        selected_county,
+        county_row.to_dict(),
+        datetime.now()
+    )
+    st.sidebar.download_button(
+        label="📄 Download County Report",
+        data=summary_report,
+        file_name=f"{selected_county}_report_{datetime.now().strftime('%Y%m%d')}.txt",
+        mime="text/plain",
+        help="Human-readable summary report"
+    )
+    
+    # CSV Export
+    county_csv = export_county_data_csv(df[df['County'] == selected_county])
+    st.sidebar.download_button(
+        label="📊 Download County CSV",
+        data=county_csv,
+        file_name=f"{selected_county}_data_{datetime.now().strftime('%Y%m%d')}.csv",
+        mime="text/csv",
+        help="Data for spreadsheet analysis"
+    )
+
 if SCORING_AVAILABLE and 'Confidence' in county_row:
     st.sidebar.caption(f"Confidence: {county_row['Confidence']:.0f}%")
 
@@ -912,6 +1053,55 @@ with col_overview2:
         delta_color="inverse",
         help="Weighted combination of all indices"
     )
+
+# Visual Status Indicators
+if VISUALS_AVAILABLE:
+    st.divider()
+    st.subheader("📊 Quick Status")
+    
+    wsi = county_row['WSI']
+    current_month = datetime.now().month
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        emoji = get_stress_emoji(wsi)
+        status_text = get_stress_text(wsi, 'en')
+        st.markdown(f"""
+        <div style="text-align: center; padding: 20px; background: #f0f2f6; border-radius: 10px;">
+            <div style="font-size: 3em;">{emoji}</div>
+            <div style="font-size: 1.2em; font-weight: bold; margin-top: 10px;">{status_text}</div>
+            <div style="font-size: 0.9em; color: #666;">Water Status</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        icon, action = get_action_required(wsi, 'en')
+        st.markdown(f"""
+        <div style="text-align: center; padding: 20px; background: #f0f2f6; border-radius: 10px;">
+            <div style="font-size: 3em;">{icon}</div>
+            <div style="font-size: 1.0em; margin-top: 10px;">{action}</div>
+            <div style="font-size: 0.9em; color: #666;">Action Required</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        plant_rec = get_planting_recommendation(wsi, current_month, is_asal, 'en')
+        st.markdown(f"""
+        <div style="text-align: center; padding: 20px; background: #f0f2f6; border-radius: 10px;">
+            <div style="font-size: 1.2em; margin-top: 10px;">{plant_rec}</div>
+            <div style="font-size: 0.9em; color: #666;">Planting Advice</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        forecast_text = get_simple_forecast(county_row['Current_Stress'], forecast['short'], 'en')
+        st.markdown(f"""
+        <div style="text-align: center; padding: 20px; background: #f0f2f6; border-radius: 10px;">
+            <div style="font-size: 1.2em; margin-top: 10px;">{forecast_text}</div>
+            <div style="font-size: 0.9em; color: #666;">Short-term Outlook</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 st.divider()
 
@@ -988,6 +1178,54 @@ else:
         </p>
     </div>
     """, unsafe_allow_html=True)
+
+st.divider()
+
+# Agricultural Guidance for Farmers
+if AGRICULTURE_AVAILABLE:
+    st.subheader("🌾 Agricultural Guidance")
+    
+    advice = get_planting_advice(
+        selected_county,
+        is_asal,
+        county_row['WSI'],
+        datetime.now().month
+    )
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.markdown(f"""
+        <div style="background: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 5px solid #4caf50;">
+            <h4 style="margin-top: 0;">📅 Current Season</h4>
+            <p style="font-size: 1.1em;"><strong>{advice['season']}</strong></p>
+            <p style="margin: 10px 0;">
+                <strong>Recommendation:</strong> <span style="font-size: 1.2em;">{advice['action']}</span><br>
+                <em>{advice['timing']}</em>
+            </p>
+            <p style="margin: 10px 0;">
+                <strong>Stress Level:</strong> <span style="text-transform: uppercase; font-weight: bold;">{advice['stress_level']}</span>
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("**💧 Water-Saving Tips:**")
+        for tip in advice['water_saving_tips']:
+            st.markdown(f"- {tip}")
+    
+    with col2:
+        st.markdown("**🌱 Recommended Crops:**")
+        for crop in advice['recommended_crops']:
+            st.markdown(f"- {crop}")
+        
+        st.markdown("**⚡ Critical Actions:**")
+        for action in advice['critical_actions']:
+            st.markdown(f"{action}")
+        
+        next_window, dates = get_next_planting_window(datetime.now().month, is_asal)
+        st.info(f"📅 **Next Planting Window:** {next_window} ({dates})")
+        
+        st.caption(f"💁 **Need Help?** Contact {advice['contact']}")
 
 st.divider()
 
@@ -1105,6 +1343,34 @@ with st.expander("📊 Compare All 47 Counties"):
             use_container_width=True,
             height=400
         )
+    
+    # Excel Export Button
+    if EXPORT_AVAILABLE:
+        st.markdown("---")
+        col_export1, col_export2, col_export3 = st.columns([1, 1, 2])
+        
+        with col_export1:
+            excel_data = export_all_counties_excel(df)
+            st.download_button(
+                label="📊 Download Excel (All Counties)",
+                data=excel_data,
+                file_name=f"OpenResilience_AllCounties_{datetime.now().strftime('%Y%m%d')}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                help="Multi-sheet Excel with summary statistics"
+            )
+        
+        with col_export2:
+            csv_data = export_county_data_csv(df)
+            st.download_button(
+                label="📄 Download CSV (All Counties)",
+                data=csv_data,
+                file_name=f"OpenResilience_AllCounties_{datetime.now().strftime('%Y%m%d')}.csv",
+                mime="text/csv",
+                help="All counties data as CSV"
+            )
+        
+        with col_export3:
+            st.caption("💡 **Tip:** Excel file includes multiple sheets: All Counties, ASAL Counties, High Risk, and Summary Statistics")
 
 # Community water point reporting
 with st.expander("📝 Report Water Point Status (Community Reporting)"):
