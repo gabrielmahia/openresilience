@@ -49,6 +49,16 @@ def export_county_summary_report(
     Returns:
         Formatted text report
     """
+    # Convert Severity number to risk level text
+    severity = county_data.get('Severity', 0)
+    risk_level_map = {
+        3: "🔴 CRITICAL",
+        2: "🟠 HIGH",
+        1: "🟡 MODERATE",
+        0: "🟢 LOW"
+    }
+    risk_level = risk_level_map.get(severity, "Unknown")
+    
     report = f"""
 OPENRESILIENCE KENYA - COUNTY SUMMARY REPORT
 {'=' * 60}
@@ -66,7 +76,7 @@ Composite Resilience (CRI):   {county_data.get('CRI', 0):.1%}
 
 RISK ASSESSMENT
 {'=' * 60}
-Risk Level: {county_data.get('RiskLevel', 'Unknown')}
+Risk Level: {risk_level}
 ASAL Classification: {'Yes' if county_data.get('ASAL', 'No') == 'Yes' else 'No'}
 
 SATELLITE OBSERVATIONS
@@ -89,10 +99,10 @@ RECOMMENDATIONS
 {'=' * 60}
 """
     
-    # Add recommendations based on risk level
-    risk = county_data.get('RiskLevel', 'MODERATE')
+    # Add recommendations based on severity level
+    # Severity: 3=CRITICAL, 2=HIGH, 1=MODERATE, 0=LOW
     
-    if risk == 'SEVERE':
+    if severity >= 3:
         report += """
 ⚠️  URGENT ACTION REQUIRED:
 - Activate emergency water distribution
@@ -101,7 +111,7 @@ RECOMMENDATIONS
 - Deploy water trucking immediately
 - Consider livestock destocking programs
 """
-    elif risk == 'HIGH':
+    elif severity == 2:
         report += """
 ⚡ HIGH PRIORITY ACTIONS:
 - Increase monitoring frequency
@@ -110,7 +120,7 @@ RECOMMENDATIONS
 - Prepare water rationing plans
 - Issue agricultural advisories
 """
-    elif risk == 'MODERATE':
+    elif severity == 1:
         report += """
 📊 STANDARD MONITORING:
 - Continue routine monitoring
@@ -160,24 +170,24 @@ def export_all_counties_excel(df: pd.DataFrame) -> bytes:
             asal_df = df[df['ASAL'] == 'Yes']
             asal_df.to_excel(writer, sheet_name='ASAL Counties', index=False)
         
-        # High risk counties
-        if 'RiskLevel' in df.columns:
-            high_risk = df[df['RiskLevel'].isin(['HIGH', 'SEVERE'])]
+        # High risk counties (Severity >= 2 means HIGH or CRITICAL)
+        if 'Severity' in df.columns:
+            high_risk = df[df['Severity'] >= 2]
             high_risk.to_excel(writer, sheet_name='High Risk', index=False)
         
         # Summary statistics
         summary_data = {
             'Metric': ['Average WSI', 'Average FSI', 'Average MSI', 'Average CRI', 
-                      'Counties in Severe Risk', 'Counties in High Risk',
+                      'Counties in Critical Risk (Severity 3)', 'Counties in High Risk (Severity 2+)',
                       'Total Population Affected', 'ASAL Counties'],
             'Value': [
                 f"{df['WSI'].mean():.1%}" if 'WSI' in df.columns else 'N/A',
                 f"{df['FSI'].mean():.1%}" if 'FSI' in df.columns else 'N/A',
                 f"{df['MSI'].mean():.1%}" if 'MSI' in df.columns else 'N/A',
                 f"{df['CRI'].mean():.1%}" if 'CRI' in df.columns else 'N/A',
-                len(df[df['RiskLevel'] == 'SEVERE']) if 'RiskLevel' in df.columns else 'N/A',
-                len(df[df['RiskLevel'] == 'HIGH']) if 'RiskLevel' in df.columns else 'N/A',
-                f"{df[df['RiskLevel'].isin(['HIGH', 'SEVERE'])]['Population'].sum():,}" if 'Population' in df.columns else 'N/A',
+                len(df[df['Severity'] == 3]) if 'Severity' in df.columns else 'N/A',
+                len(df[df['Severity'] >= 2]) if 'Severity' in df.columns else 'N/A',
+                f"{df[df['Severity'] >= 2]['Population'].sum():,}" if 'Population' in df.columns and 'Severity' in df.columns else 'N/A',
                 len(df[df['ASAL'] == 'Yes']) if 'ASAL' in df.columns else 'N/A'
             ]
         }
