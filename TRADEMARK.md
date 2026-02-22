@@ -78,7 +78,7 @@ If you fork or modify this project, use descriptive names:
 ## 📄 **Requesting Permission**
 
 For uses beyond these guidelines, contact:
-- Email: [Your Email]
+- Email: contact@aikungfu.dev
 - Subject: "OpenResilience Trademark Usage Request"
 
 Include:
@@ -113,7 +113,7 @@ We prefer friendly resolution but will protect the brand.
 ## 📞 **Questions?**
 
 Unsure if your use is permitted?
-- Email: [Your Email]
+- Email: contact@aikungfu.dev
 - GitHub Discussions: Open a "Trademark Question" thread
 
 We typically respond within 3-5 business days.

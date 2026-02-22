@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
-# For commercial licensing options, contact: [Your Email]
+# For commercial licensing options, contact: contact@aikungfu.dev
 #
 # Project: OpenResilience Kenya - Maji na Kilimo
 # Focus: 47 Counties + Makongeni & Thika Landless Areas
@@ -657,6 +657,14 @@ with col_h1:
 with col_h2:
     lang = st.selectbox("", ["English", "Kiswahili"], label_visibility="collapsed")
     st.session_state.language = lang
+
+# ── Trust / Data-mode banner ────────────────────────────────────────────────
+st.warning(
+    "🔶 **DEMO DATA** — Indices are computed from synthetic inputs. "
+    "No current reading should be used for operational decisions. "
+    "[Index methodology and production data roadmap →](docs/INDEX_METHODOLOGY.md)",
+    icon=None
+)
 
 # Enhanced Mobile-Responsive CSS for Farmers + NGO Administrators
 st.markdown("""

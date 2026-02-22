@@ -301,7 +301,7 @@ Add:
 
 **OpenResilience:**
 - GitHub Issues: Report bugs
-- Email: [Your Email]
+- Email: contact@aikungfu.dev
 
 ---
 

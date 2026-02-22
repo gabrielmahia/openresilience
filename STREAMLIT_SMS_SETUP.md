@@ -202,7 +202,7 @@ SMS alerts are now LIVE in your Streamlit app!
 
 **OpenResilience:**
 - GitHub Issues: Report problems
-- Email: [Your Email]
+- Email: contact@aikungfu.dev
 
 ---
 
