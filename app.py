@@ -66,7 +66,7 @@ except ImportError as e:
 # =============================================================================
 
 st.set_page_config(
-    page_title="OpenResilience Kenya • Maji na Kilimo",
+    page_title="Stahimili — Drought & Water Intelligence Kenya",
     layout="wide",
     page_icon="💧",
     initial_sidebar_state="expanded"
@@ -668,7 +668,7 @@ if DB_AVAILABLE:
 # Header
 col_h1, col_h2 = st.columns([5, 1])
 with col_h1:
-    st.title("💧 OpenResilience Kenya")
+    st.title("💧 Stahimili — Drought & Water Intelligence")
     st.subheader("🇰🇪 Maji na Kilimo • Water & Agricultural Planning for 47 Counties")
 with col_h2:
     lang = st.selectbox("", ["English", "Kiswahili"], label_visibility="collapsed")
