@@ -232,6 +232,21 @@ st.markdown("""
             border-left-color: #f5576c;
         }
     }
+
+    /* ── Mobile responsive ──────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+        [data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+        }
+        [data-testid="stMetricValue"] { font-size: 1.4rem !important; }
+        [data-testid="stPlotlyChart"] > div { width: 100% !important; }
+        iframe { width: 100% !important; max-width: 100% !important; }
+        [data-testid="stDataFrame"] { overflow-x: auto !important; }
+        section[data-testid="stSidebar"] { min-width: 200px !important; }
+        .stButton > button { width: 100% !important; min-height: 48px !important; }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1319,83 +1334,64 @@ if VISUALS_AVAILABLE:
     
     wsi = county_row['WSI']
     current_month = datetime.now().month
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        emoji = get_stress_emoji(wsi)
-        status_text = get_stress_text(wsi, 'en')
-        st.markdown(f"""
-        <div style="text-align: center; padding: 20px; background: #f0f2f6; border-radius: 10px;">
-            <div style="font-size: 3em;">{emoji}</div>
-            <div style="font-size: 1.2em; font-weight: bold; margin-top: 10px;">{status_text}</div>
-            <div style="font-size: 0.9em; color: #666;">Water Status</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        icon, action = get_action_required(wsi, 'en')
-        st.markdown(f"""
-        <div style="text-align: center; padding: 20px; background: #f0f2f6; border-radius: 10px;">
-            <div style="font-size: 3em;">{icon}</div>
-            <div style="font-size: 1.0em; margin-top: 10px;">{action}</div>
-            <div style="font-size: 0.9em; color: #666;">Action Required</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        plant_rec = get_planting_recommendation(wsi, current_month, is_asal, 'en')
-        st.markdown(f"""
-        <div style="text-align: center; padding: 20px; background: #f0f2f6; border-radius: 10px;">
-            <div style="font-size: 1.2em; margin-top: 10px;">{plant_rec}</div>
-            <div style="font-size: 0.9em; color: #666;">Planting Advice</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        forecast_text = get_simple_forecast(county_row['Current_Stress'], forecast['short'], 'en')
-        st.markdown(f"""
-        <div style="text-align: center; padding: 20px; background: #f0f2f6; border-radius: 10px;">
-            <div style="font-size: 1.2em; margin-top: 10px;">{forecast_text}</div>
-            <div style="font-size: 0.9em; color: #666;">Short-term Outlook</div>
-        </div>
-        """, unsafe_allow_html=True)
+
+    emoji = get_stress_emoji(wsi)
+    status_text = get_stress_text(wsi, 'en')
+    icon, action = get_action_required(wsi, 'en')
+    plant_rec = get_planting_recommendation(wsi, current_month, is_asal, 'en')
+    forecast_text = get_simple_forecast(county_row['Current_Stress'], forecast['short'], 'en')
+
+    st.markdown(f"""
+    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin:0.5rem 0 1rem;">
+      <div style="flex:1 1 140px;min-width:130px;text-align:center;padding:1.1rem 0.75rem;
+                  background:#f0f2f6;border-radius:10px;">
+        <div style="font-size:2.4rem;">{emoji}</div>
+        <div style="font-size:1rem;font-weight:700;margin-top:0.4rem;">{status_text}</div>
+        <div style="font-size:0.78rem;color:#666;">Water Status</div>
+      </div>
+      <div style="flex:1 1 140px;min-width:130px;text-align:center;padding:1.1rem 0.75rem;
+                  background:#f0f2f6;border-radius:10px;">
+        <div style="font-size:2.4rem;">{icon}</div>
+        <div style="font-size:0.9rem;margin-top:0.4rem;">{action}</div>
+        <div style="font-size:0.78rem;color:#666;">Action Required</div>
+      </div>
+      <div style="flex:1 1 140px;min-width:130px;text-align:center;padding:1.1rem 0.75rem;
+                  background:#f0f2f6;border-radius:10px;">
+        <div style="font-size:0.95rem;font-weight:600;margin-top:0.4rem;">{plant_rec}</div>
+        <div style="font-size:0.78rem;color:#666;">Planting Advice</div>
+      </div>
+      <div style="flex:1 1 140px;min-width:130px;text-align:center;padding:1.1rem 0.75rem;
+                  background:#f0f2f6;border-radius:10px;">
+        <div style="font-size:0.95rem;font-weight:600;margin-top:0.4rem;">{forecast_text}</div>
+        <div style="font-size:0.78rem;color:#666;">Short-term Outlook</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.divider()
 
 # Forecast timeline (forecast already generated above for visual indicators)
 st.subheader("🔮 Forecast Timeline")
-col1, col2, col3, col4, col5 = st.columns(5)
 
-col1.metric(
-    "Current",
-    f"{county_row['Current_Stress']:.0%}",
-    delta=severity_label,
-    delta_color="inverse"
-)
-col2.metric(
-    "1-2 Months",
-    f"{forecast['short']:.0%}",
-    delta=f"{(forecast['short'] - county_row['Current_Stress']):.1%}",
-    delta_color="inverse"
-)
-col3.metric(
-    "3-6 Months",
-    f"{forecast['medium']:.0%}",
-    delta=f"{(forecast['medium'] - county_row['Current_Stress']):.1%}",
-    delta_color="inverse"
-)
-col4.metric(
-    "7-12 Months",
-    f"{forecast['long']:.0%}",
-    delta=f"{(forecast['long'] - county_row['Current_Stress']):.1%}",
-    delta_color="inverse"
-)
-col5.metric(
-    "Trend",
-    forecast['trend'].title(),
-    delta=forecast['season_note']
-)
+forecast_periods = [
+    ("Current", f"{county_row['Current_Stress']:.0%}", severity_label),
+    ("1–2 Months", f"{forecast['short']:.0%}", f"{(forecast['short'] - county_row['Current_Stress']):.1%}"),
+    ("3–6 Months", f"{forecast['medium']:.0%}", f"{(forecast['medium'] - county_row['Current_Stress']):.1%}"),
+    ("7–12 Months", f"{forecast['long']:.0%}", f"{(forecast['long'] - county_row['Current_Stress']):.1%}"),
+    ("Trend", forecast['trend'].title(), forecast['season_note']),
+]
+fp_html = '<div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1rem;">'
+for label, value, delta in forecast_periods:
+    fp_html += (
+        f'<div style="flex:1 1 100px;min-width:90px;background:#f0f2f6;border-radius:8px;'
+        f'padding:0.75rem;text-align:center;">'
+        f'<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.04em;">{label}</div>'
+        f'<div style="font-size:1.3rem;font-weight:800;margin:0.2rem 0;">{value}</div>'
+        f'<div style="font-size:0.75rem;color:#888;">{delta}</div>'
+        f'</div>'
+    )
+fp_html += '</div>'
+st.markdown(fp_html, unsafe_allow_html=True)
 
 # Trend alert card
 if forecast['trend'] == 'worsening':
