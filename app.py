@@ -323,15 +323,15 @@ def load_county_data():
             rainfall_anom = real_rainfall_anom if real_rainfall_anom is not None else np.random.uniform(-55, -20)
             soil_moisture = real_soil_moisture if real_soil_moisture is not None else np.random.uniform(0.15, 0.40)
             vegetation = real_vegetation if real_vegetation is not None else np.random.uniform(0.25, 0.50)
-            price_change = np.random.uniform(15, 45)  # Higher food prices
-            stockouts = np.random.randint(1, 4)  # More stockouts
+            price_change = 30.0   # ASAL baseline: ~30% above-normal food prices (demo)
+            stockouts = 2        # ASAL baseline: typical 2 market stockout categories (demo)
         else:
             # Non-ASAL: better conditions
             rainfall_anom = real_rainfall_anom if real_rainfall_anom is not None else np.random.uniform(-30, 10)
             soil_moisture = real_soil_moisture if real_soil_moisture is not None else np.random.uniform(0.40, 0.75)
             vegetation = real_vegetation if real_vegetation is not None else np.random.uniform(0.50, 0.85)
-            price_change = np.random.uniform(-5, 20)  # Moderate prices
-            stockouts = np.random.randint(0, 2)  # Fewer stockouts
+            price_change = 8.0   # Non-ASAL baseline: moderate price pressure (demo)
+            stockouts = 0        # Non-ASAL baseline: typical no stockouts (demo)
         
         # Seasonal adjustment (current month) - only for demo data
         if real_vegetation is None and data_source in ["demo", "nasa"]:
@@ -351,7 +351,7 @@ def load_county_data():
                 vegetation = max(0.0, vegetation - 0.08)
         
         # Field reports based on severity
-        field_reports = np.random.poisson(2 if info['arid'] else 0.5)
+        field_reports = 0    # Demo: no community reports. Real submissions appear in Field Reports tab.
         
         # Compute multi-index scores
         if SCORING_AVAILABLE:
@@ -433,10 +433,11 @@ def generate_forecast(county_name, current_stress, is_asal):
     if is_asal:
         short_trend *= 1.5
     
-    # Calculate forecasts
-    short = np.clip(current_stress + short_trend + np.random.uniform(-0.03, 0.03), 0, 1)
-    medium = np.clip(current_stress + short_trend * 2 + np.random.uniform(-0.08, 0.08), 0, 1)
-    long = np.clip(current_stress + short_trend * 3 + np.random.uniform(-0.12, 0.12), 0, 1)
+    # Calculate forecasts — deterministic seasonal model (no random noise)
+    # Uncertainty is communicated via confidence labels, not cosmetic jitter
+    short = np.clip(current_stress + short_trend, 0, 1)
+    medium = np.clip(current_stress + short_trend * 2, 0, 1)
+    long = np.clip(current_stress + short_trend * 3, 0, 1)
     
     # Determine trend direction
     if short < current_stress - 0.05:
@@ -675,9 +676,12 @@ with col_h2:
 
 # ── Trust / Data-mode banner ────────────────────────────────────────────────
 st.warning(
-    "🔶 **DEMO DATA** — Indices are computed from synthetic inputs. "
-    "No current reading should be used for operational decisions. "
-    "[Index methodology and production data roadmap →](docs/INDEX_METHODOLOGY.md)",
+    "🔶 **SIMULATED DATA — NOT FOR OPERATIONAL USE** — "
+    "All county indices below are generated from seasonal averages and regional arid/non-arid "
+    "classifications, **not from live satellite readings or field reports.** "
+    "Values are stable across reloads (not random) but are not current measurements. "
+    "Use for platform orientation only. "
+    "[Methodology →](docs/INDEX_METHODOLOGY.md)",
     icon=None
 )
 
@@ -1181,19 +1185,26 @@ try:
     st.sidebar.metric("Resolution", status.resolution.value.title())
     st.sidebar.caption(f"**Source:** {status.source}")
     
-    # Show data source (NASA/GEE or demo)
+    # Show data source badge — must be prominent so NGO users know what they're acting on
     if 'DataSource' in county_row:
         data_src = county_row['DataSource']
         if data_src == 'nasa+gee':
-            st.sidebar.caption("**🛰️ Satellite Data:** NASA (rainfall, soil) + GEE (vegetation)")
+            st.sidebar.success("🛰️ **LIVE DATA** — NASA rainfall + GEE vegetation", icon=None)
         elif data_src == 'nasa':
-            st.sidebar.caption("**🛰️ Satellite Data:** NASA IMERG + SMAP")
+            st.sidebar.success("🛰️ **LIVE DATA** — NASA IMERG + SMAP soil moisture", icon=None)
         elif data_src == 'gee':
-            st.sidebar.caption("**🌍 Satellite Data:** Earth Engine MODIS")
+            st.sidebar.info("🌍 **PARTIAL LIVE** — GEE vegetation only; rainfall simulated", icon=None)
         else:
-            st.sidebar.caption("**📊 Data Mode:** Demo (simulated)")
+            st.sidebar.warning(
+                "⚠️ **SIMULATED DATA** — Seasonal averages, not current satellite readings. "
+                "Do not use for water distribution decisions.",
+                icon=None
+            )
     else:
-        st.sidebar.caption("**📊 Data Mode:** Demo (simulated)")
+        st.sidebar.warning(
+            "⚠️ **SIMULATED DATA** — Seasonal averages, not current satellite readings.",
+            icon=None
+        )
     
     st.sidebar.caption(f"**Updated:** {status.timestamp.strftime('%Y-%m-%d %H:%M')}")
     

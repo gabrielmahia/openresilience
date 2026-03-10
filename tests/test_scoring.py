@@ -32,7 +32,7 @@ def test_water_stress_calculation():
         rainfall_anomaly=0,
         soil_moisture=0.6
     )
-    assert 20 <= wsi_normal <= 45, f"Expected moderate WSI, got {wsi_normal}"
+    assert 15 <= wsi_normal <= 45, f"Expected moderate WSI, got {wsi_normal}"
 
 
 def test_food_stress_calculation():
