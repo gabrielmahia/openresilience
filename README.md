@@ -1,16 +1,19 @@
-# 💧 Where Is The Water? — OpenResilience Kenya
+# 💧 WapiMaji — Water & Drought Intelligence Kenya
+
+> **Wapi Maji?** /wɑːpi mɑːdʒi/ — *Kiswahili*: "Where is the water?"
 
 **Water & food stress intelligence for Kenya's 47 counties.**  
 Built for farmers, NGOs, county governments, and community leaders.
 
+[![Live App](https://img.shields.io/badge/Live%20App-wapimaji.streamlit.app-FF4B4B?logo=streamlit)](https://wapimaji.streamlit.app/)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 [![Status](https://img.shields.io/badge/status-Demo%20Data-orange)](docs/INDEX_METHODOLOGY.md)
-[![Coverage](https://img.shields.io/badge/coverage-47%20Counties-brightgreen)](https://openresilience-whereisthewater.streamlit.app/)
+[![Coverage](https://img.shields.io/badge/coverage-47%20Counties-brightgreen)](https://wapimaji.streamlit.app/)
 [![SMS](https://img.shields.io/badge/SMS-Africa's%20Talking-green)](QUICKSTART_SMS.md)
 
 > 🔶 **DEMO MODE** — Current data is synthetic. Indices are computed from real formulas against generated inputs. [Index methodology](docs/INDEX_METHODOLOGY.md) is documented and production data adapters are underway.
 
-**[→ Open the live platform](https://openresilience-whereisthewater.streamlit.app/)**
+**[→ Open the live platform](https://wapimaji.streamlit.app/)**
 
 ---
 
