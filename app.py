@@ -401,15 +401,7 @@ def load_county_data():
             'DataSource': data_source  # Track if using real NASA data
         })
     
-    # Show NASA data usage summary
-    if nasa_success_count > 0:
-        st.sidebar.success(f"🛰️ Using NASA satellite data for {nasa_success_count} counties")
-    
-    # Show Earth Engine data usage summary
-    if gee_success_count > 0:
-        st.sidebar.success(f"🌍 Using Earth Engine vegetation data for {gee_success_count} counties")
-    
-    return pd.DataFrame(county_list)
+    return pd.DataFrame(county_list), nasa_success_count, gee_success_count
 
 def generate_forecast(county_name, current_stress, is_asal):
     """Generate actionable short, mid, long-term forecast."""
@@ -1010,7 +1002,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Load data
-df = load_county_data()
+df, _nasa_count, _gee_count = load_county_data()
+# Display data source banners outside the cached function (safe to call sidebar here)
+if _nasa_count > 0:
+    st.sidebar.success(f"🛰️ Using NASA satellite data for {_nasa_count} counties")
+if _gee_count > 0:
+    st.sidebar.success(f"🌍 Using Earth Engine vegetation data for {_gee_count} counties")
 
 # Tab navigation
 tab1, tab2, tab3 = st.tabs([
@@ -1659,9 +1656,9 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                 st.success("✅ SMS Service Connected! Ready to send alerts!")
                 
                 # Two tabs: Send Test SMS | About Service
-                tab1, tab2 = st.tabs(["📤 Send Test Alert", "ℹ️ About Service"])
+                sms_tab1, sms_tab2 = st.tabs(["📤 Send Test Alert", "ℹ️ About Service"])
                 
-                with tab1:
+                with sms_tab1:
                     st.subheader("Send Test Water Stress Alert")
                     
                     col1, col2 = st.columns([1, 1])
@@ -1756,7 +1753,7 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                                     st.error(f"❌ Failed to send SMS: {result.get('error')}")
                                     st.warning("⚠️ Sandbox mode: Phone must be registered in Africa's Talking dashboard")
                 
-                with tab2:
+                with sms_tab2:
                     col1, col2 = st.columns([1, 1])
                     
                     with col1:
@@ -2093,5 +2090,5 @@ with tab3:
 st.divider()
 st.caption("💧 OpenResilience Kenya • Built WITH and FOR Kenyan Communities")
 st.caption("🇰🇪 Data Sovereignty • Community Resilience • Climate Adaptation • Agricultural Planning")
-st.caption("© 2026 | In Partnership with County Governments & National Drought Management Authority")
+st.caption("© 2026 | Built for use by County Governments & National Drought Management Authority")
 st.caption("🙏 Special thanks to communities in Makongeni, Thika Landless, and all 47 counties")
