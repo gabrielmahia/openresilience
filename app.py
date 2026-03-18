@@ -31,6 +31,8 @@ from io import BytesIO
 from PIL import Image
 import sys
 import hashlib
+import xml.etree.ElementTree as ET
+import re
 
 # Add src to path for imports
 sys.path.insert(0, 'src')
@@ -71,6 +73,66 @@ st.set_page_config(
     page_icon="💧",
     initial_sidebar_state="expanded"
 )
+
+
+# ── Live data functions ────────────────────────────────────────────────────
+
+@st.cache_data(ttl=3600)
+def fetch_county_weather(lat: float, lon: float, county: str):
+    """7-day rainfall + current conditions from Open-Meteo (free, no key)."""
+    try:
+        url = (
+            f"https://api.open-meteo.com/v1/forecast"
+            f"?latitude={lat}&longitude={lon}"
+            f"&daily=precipitation_sum,temperature_2m_max,et0_fao_evapotranspiration"
+            f"&current=precipitation,temperature_2m,relative_humidity_2m"
+            f"&forecast_days=7&timezone=Africa%2FNairobi"
+        )
+        with urllib.request.urlopen(url, timeout=8) as r:
+            d = json.loads(r.read())
+        curr  = d.get("current", {})
+        daily = d.get("daily",   {})
+        precip_7d = daily.get("precipitation_sum", [])
+        return {
+            "county":         county,
+            "temp_c":         curr.get("temperature_2m"),
+            "humidity_pct":   curr.get("relative_humidity_2m"),
+            "precip_now":     curr.get("precipitation", 0),
+            "precip_7d":      precip_7d,
+            "precip_total":   round(sum(precip_7d), 1),
+            "et0_7d":         daily.get("et0_fao_evapotranspiration", []),
+            "temp_max_7d":    daily.get("temperature_2m_max", []),
+            "dates":          daily.get("time", []),
+            "drought_signal": sum(precip_7d) < 5,   # <5mm/week = dry signal
+            "flood_signal":   sum(precip_7d) > 80,  # >80mm/week = flood risk
+            "live":           True,
+            "source":         "Open-Meteo (api.open-meteo.com)",
+        }
+    except Exception:
+        return {"county": county, "live": False}
+
+
+@st.cache_data(ttl=7200)
+def fetch_ndma_alerts():
+    """Latest NDMA drought/emergency updates from ndma.go.ke RSS."""
+    try:
+        req = urllib.request.Request(
+            "https://www.ndma.go.ke/feed/",
+            headers={"User-Agent": "openresilience-kenya/1.0"},
+        )
+        with urllib.request.urlopen(req, timeout=8) as r:
+            root = ET.fromstring(r.read())
+        items = []
+        for item in root.findall(".//item")[:5]:
+            title = item.findtext("title", "").strip()
+            link  = item.findtext("link",  "").strip()
+            date  = item.findtext("pubDate", "").strip()[:16]
+            desc  = re.sub(r"<[^>]+>", "", item.findtext("description", "")).strip()[:200]
+            if title:
+                items.append({"title": title, "link": link, "date": date, "summary": desc})
+        return items
+    except Exception:
+        return []
 
 # =============================================================================
 # KENYA DATA - ALL 47 COUNTIES
@@ -1106,6 +1168,31 @@ selected_county = st.sidebar.selectbox(
     sorted(KENYA_COUNTIES.keys()),
     index=sorted(KENYA_COUNTIES.keys()).index("Nairobi")
 )
+
+# ── Live weather for selected county ──────────────────────────────────────
+_cc = KENYA_COUNTIES.get(selected_county, {})
+if _cc:
+    _wx = fetch_county_weather(_cc["lat"], _cc["lon"], selected_county)
+    _ndma = fetch_ndma_alerts()
+    if _wx.get("live"):
+        st.sidebar.divider()
+        st.sidebar.markdown("**📡 Live Weather**")
+        st.sidebar.metric("Temperature", f"{_wx['temp_c']:.0f}°C")
+        st.sidebar.metric("7-day rainfall", f"{_wx['precip_total']}mm",
+            delta="⚠️ Flood risk" if _wx["flood_signal"] else
+                  ("🔴 Drought signal" if _wx["drought_signal"] else "Normal"),
+            delta_color="inverse" if _wx["flood_signal"] or _wx["drought_signal"] else "off")
+        st.sidebar.metric("Humidity", f"{_wx['humidity_pct']:.0f}%")
+        st.sidebar.caption(f"Open-Meteo · hourly")
+        if _wx["drought_signal"]:
+            st.sidebar.error(f"Drought signal: {_wx['precip_total']}mm forecast (<5mm threshold)")
+        if _wx["flood_signal"]:
+            st.sidebar.warning(f"Flood risk: {_wx['precip_total']}mm forecast (>80mm threshold)")
+    if _ndma:
+        with st.sidebar.expander(f"📡 NDMA ({len(_ndma)} alerts)", expanded=False):
+            for _item in _ndma[:3]:
+                _link = f"[{_item['title'][:55]}…]({_item['link']})  *{_item['date']}*"
+                st.markdown(_link)
 
 # Geographic hierarchy selectors (optional, based on data availability)
 try:
