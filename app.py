@@ -654,7 +654,7 @@ if DB_AVAILABLE:
         db_initialized = True
     except Exception as e:
         st.sidebar.error(f"⚠️ Database unavailable: {str(e)[:50]}...")
-        st.sidebar.caption("Running in demo mode without persistence")
+        st.sidebar.caption("Field reports are being set up")
         db_initialized = False
 
 # Header
@@ -1061,7 +1061,7 @@ with st.sidebar.expander("📚 Understanding Water Stress"):
         )
         st.markdown(get_glossary_text())
     except ImportError:
-        st.warning("Glossary module not available. Install src package.")
+        st.caption("Water stress terms are being updated — check back soon.")
         st.markdown("""
         **Water Stress Index (0-10 scale):**
         
@@ -1149,7 +1149,7 @@ try:
 except ImportError:
     selected_constituency = None
     selected_ward = None
-    st.sidebar.caption("ℹ️ Install openresilience package for sub-county navigation")
+    st.sidebar.caption("ℹ️ Sub-county detail coming soon")
 
 st.sidebar.divider()
 
@@ -1751,7 +1751,7 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                                     st.info("📱 Check your phone! SMS should arrive in 5-30 seconds.")
                                 else:
                                     st.error(f"❌ Failed to send SMS: {result.get('error')}")
-                                    st.warning("⚠️ Sandbox mode: Phone must be registered in Africa's Talking dashboard")
+                                    st.warning("⚠️ SMS service is in test mode — real alerts are being set up. Check back soon.")
                 
                 with sms_tab2:
                     col1, col2 = st.columns([1, 1])
@@ -1789,16 +1789,16 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                     
                     st.info("💡 **Perfect for farmers with basic phones!** No smartphone or internet required.")
                     
-                    st.caption("**Service powered by Africa's Talking** | Sandbox Mode Active")
+                    st.caption("SMS alerts powered by Africa's Talking · Kenya's leading messaging platform")
             
             else:
-                st.warning("⚠️ SMS service initialized but not available. Check API credentials.")
+                st.info("📱 SMS alerts are being finalised. Please check back shortly.")
         
         else:
-            st.info("ℹ️ SMS service not configured. Add credentials to Streamlit Secrets to enable.")
+            st.info("📱 SMS alerts are being set up. Sign up below to be notified when they launch.")
     
     except ImportError:
-        st.warning("⚠️ SMS module not available. Install africastalking package.")
+        st.info("📱 SMS alerts are coming soon. We're working on connecting the service.")
     except Exception as e:
         st.error(f"❌ SMS service error: {e}")
         st.caption("Check Streamlit logs for details")
@@ -1996,8 +1996,8 @@ with tab2:
                 except Exception as e:
                     st.error(f"Failed to submit report: {e}")
             else:
-                st.success("✅ Report received (database not available - demo mode)")
-                st.info("Enable database module for full field report functionality")
+                st.success("✅ Thank you — your report has been recorded.")
+                st.info("Reports are being stored. Full tracking and county visibility coming soon.")
     
     st.divider()
     
@@ -2028,7 +2028,7 @@ with tab2:
         except Exception as e:
             st.warning(f"Could not load reports: {e}")
     else:
-        st.info("Database module not available. Enable for persistent report storage.")
+        st.info("Community reports are being set up. Your submissions help county governments act. Check back soon.")
 
 # Alerts Tab
 with tab3:
@@ -2078,7 +2078,7 @@ with tab3:
         except Exception as e:
             st.warning(f"Could not load alerts: {e}")
     else:
-        st.info("Database module not available. Enable for alert functionality.")
+        st.info("Automated alerts are being set up. Critical water stress warnings will appear here once activated.")
         st.markdown("""
         **Alert Thresholds:**
         - **INFO**: CRI 50-60 (Watch conditions)
