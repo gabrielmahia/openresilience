@@ -27,6 +27,7 @@ jobs:
         run: |
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
-          git add data/nasa_cache/ data/gee_cache/
-          git diff --staged --quiet || git commit -m "chore: update satellite data [automated - $(date +'%Y-%m-%d %H:%M UTC')]"
+          git add data/nasa_cache/ data/gee_cache/ || true
+          git diff --staged --quiet || git commit -m 'chore: update satellite cache data [skip ci]'
+          git push || true -m "chore: update satellite data [automated - $(date +'%Y-%m-%d %H:%M UTC')]"
           git push
