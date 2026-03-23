@@ -11,6 +11,25 @@ from datetime import datetime, timedelta
 import base64
 from io import BytesIO
 from PIL import Image
+import sys
+import hashlib
+
+# Add src to path for imports
+sys.path.insert(0, 'src')
+
+# Import OpenResilience modules
+try:
+    from openresilience.scoring import compute_resilience_scores, ResilienceScores
+    from openresilience.database import (
+        init_database, ensure_region, insert_run, get_recent_runs,
+        insert_field_report, get_recent_reports, create_alert, get_active_alerts
+    )
+    SCORING_AVAILABLE = True
+    DB_AVAILABLE = True
+except ImportError as e:
+    SCORING_AVAILABLE = False
+    DB_AVAILABLE = False
+    print(f"OpenResilience modules not available: {e}")
 
 # =============================================================================
 # CONFIGURATION - KENYA FOCUS
@@ -197,23 +216,72 @@ if 'initialized' not in st.session_state:
 
 @st.cache_data(ttl=3600)  # Cache for 1 hour for performance
 def load_county_data():
-    """Generate water stress data for all 47 counties."""
+    """Generate water stress data for all 47 counties with multi-index scoring."""
     np.random.seed(42)
     
     county_list = []
     for county, info in KENYA_COUNTIES.items():
-        # More realistic stress based on region
+        # Generate realistic input signals based on region type
         if info['arid']:
-            base_stress = np.random.uniform(0.65, 0.95)
+            # ASAL regions: drier conditions
+            rainfall_anom = np.random.uniform(-55, -20)  # Rainfall deficit
+            soil_moisture = np.random.uniform(0.15, 0.40)  # Dry soil
+            vegetation = np.random.uniform(0.25, 0.50)  # Poor vegetation
+            price_change = np.random.uniform(15, 45)  # Higher food prices
+            stockouts = np.random.randint(1, 4)  # More stockouts
         else:
-            base_stress = np.random.uniform(0.25, 0.60)
+            # Non-ASAL: better conditions
+            rainfall_anom = np.random.uniform(-30, 10)  # Near normal
+            soil_moisture = np.random.uniform(0.40, 0.75)  # Moist soil
+            vegetation = np.random.uniform(0.50, 0.85)  # Healthy vegetation
+            price_change = np.random.uniform(-5, 20)  # Moderate prices
+            stockouts = np.random.randint(0, 2)  # Fewer stockouts
         
         # Seasonal adjustment (current month)
         month = datetime.now().month
         if 3 <= month <= 5 or 10 <= month <= 12:  # Rainy seasons
-            stress = max(0.1, base_stress - 0.15)
+            rainfall_anom += 15  # Better rainfall
+            soil_moisture = min(1.0, soil_moisture + 0.15)
+            vegetation = min(1.0, vegetation + 0.10)
         else:  # Dry seasons
-            stress = min(0.98, base_stress + 0.10)
+            rainfall_anom -= 10  # Worse rainfall
+            soil_moisture = max(0.0, soil_moisture - 0.10)
+            vegetation = max(0.0, vegetation - 0.08)
+        
+        # Field reports based on severity
+        field_reports = np.random.poisson(2 if info['arid'] else 0.5)
+        
+        # Compute multi-index scores
+        if SCORING_AVAILABLE:
+            try:
+                scores = compute_resilience_scores(
+                    rainfall_anomaly=rainfall_anom,
+                    soil_moisture=soil_moisture,
+                    vegetation_health=vegetation,
+                    staple_price_change=price_change,
+                    market_stockouts=stockouts,
+                    field_reports_24h=field_reports
+                )
+                
+                wsi = scores.wsi / 100  # Convert to 0-1 for display
+                fsi = scores.fsi / 100
+                msi = scores.msi / 100
+                cri = scores.cri / 100
+                confidence = scores.confidence
+            except Exception as e:
+                # Fallback to simple calculation
+                wsi = ((-rainfall_anom / 100) * 0.6 + (1 - soil_moisture) * 0.4)
+                fsi = wsi * 0.8
+                msi = (price_change / 100) * 0.7
+                cri = (wsi * 0.45 + fsi * 0.35 + msi * 0.20)
+                confidence = 50
+        else:
+            # Simple fallback calculation
+            wsi = ((-rainfall_anom / 100) * 0.6 + (1 - soil_moisture) * 0.4)
+            fsi = wsi * 0.8
+            msi = (price_change / 100) * 0.7
+            cri = (wsi * 0.45 + fsi * 0.35 + msi * 0.20)
+            confidence = 50
         
         county_list.append({
             'County': county,
@@ -221,8 +289,13 @@ def load_county_data():
             'Lon': info['lon'],
             'Population': info['pop'],
             'ASAL': 'Yes' if info['arid'] else 'No',
-            'Current_Stress': stress,
-            'Severity': 3 if stress > 0.80 else 2 if stress > 0.60 else 1 if stress > 0.40 else 0
+            'Current_Stress': cri,  # Use CRI as primary stress indicator
+            'WSI': wsi,  # Water Stress Index
+            'FSI': fsi,  # Food Stress Index
+            'MSI': msi,  # Market Stress Index
+            'CRI': cri,  # Composite Risk Index
+            'Confidence': confidence,
+            'Severity': 3 if cri > 0.70 else 2 if cri > 0.50 else 1 if cri > 0.30 else 0
         })
     
     return pd.DataFrame(county_list)
@@ -469,6 +542,13 @@ def get_community_advice(stress, forecast, county, is_asal, population):
 # MAIN APP
 # =============================================================================
 
+# Initialize database (silent fail if not available)
+if DB_AVAILABLE:
+    try:
+        init_database()
+    except Exception as e:
+        st.sidebar.warning(f"Database initialization skipped: {e}")
+
 # Header
 col_h1, col_h2 = st.columns([5, 1])
 with col_h1:
@@ -481,24 +561,36 @@ with col_h2:
 # Load data
 df = load_county_data()
 
+# Tab navigation
+tab1, tab2, tab3 = st.tabs([
+    "📊 Dashboard / Dashibodi",
+    "📝 Field Reports / Ripoti",
+    "🚨 Alerts / Tahadhari"
+])
+
+# Store selected tab in session state
+if 'selected_region_id' not in st.session_state:
+    st.session_state.selected_region_id = None
+
 # Disclaimer
-with st.expander("⚠️ Important - Please Read / Soma Kwanza", expanded=False):
-    if lang == "Kiswahili":
-        st.markdown("""
-        **Elimu Tu:** Zana ya elimu. Hakikisha taarifa na serikali kabla ya maamuzi.
-        
-        **Data:** Kwa sasa tunatumia data ya majaribio. Baadaye, data halisi ya NASA.
-        
-        **Uhakiki:** Thibitisha maji kupitia vyanzo vya karibu kabla ya hatua yoyote.
-        """)
-    else:
-        st.markdown("""
-        **Educational Tool:** For planning purposes. Verify with local authorities before major decisions.
-        
-        **Data:** Currently demonstration data. Production system uses real NASA satellite data (IMERG + SMAP).
-        
-        **Verification:** Always confirm water availability through local sources before acting.
-        """)
+with tab1:
+    with st.expander("⚠️ Important - Please Read / Soma Kwanza", expanded=False):
+        if lang == "Kiswahili":
+            st.markdown("""
+            **Elimu Tu:** Zana ya elimu. Hakikisha taarifa na serikali kabla ya maamuzi.
+            
+            **Data:** Kwa sasa tunatumia data ya majaribio. Baadaye, data halisi ya NASA.
+            
+            **Uhakiki:** Thibitisha maji kupitia vyanzo vya karibu kabla ya hatua yoyote.
+            """)
+        else:
+            st.markdown("""
+            **Educational Tool:** For planning purposes. Verify with local authorities before major decisions.
+            
+            **Data:** Currently demonstration data. Production system uses real NASA satellite data (IMERG + SMAP).
+            
+            **Verification:** Always confirm water availability through local sources before acting.
+            """)
 
 st.divider()
 
@@ -651,7 +743,22 @@ st.sidebar.divider()
 county_row = df[df['County'] == selected_county].iloc[0]
 st.sidebar.metric("Population", f"{county_row['Population']:,}")
 st.sidebar.metric("ASAL Status", county_row['ASAL'])
-st.sidebar.metric("Current Stress", f"{county_row['Current_Stress']:.0%}")
+
+# Multi-Index Display
+st.sidebar.subheader("📈 Resilience Indices")
+col_idx1, col_idx2 = st.sidebar.columns(2)
+
+with col_idx1:
+    st.metric("WSI (Water)", f"{county_row['WSI']:.0%}", 
+              help="Water Stress Index")
+    st.metric("FSI (Food)", f"{county_row['FSI']:.0%}",
+              help="Food Stress Index")
+
+with col_idx2:
+    st.metric("MSI (Market)", f"{county_row['MSI']:.0%}",
+              help="Market Stress Index")
+    st.metric("CRI (Overall)", f"{county_row['CRI']:.0%}",
+              help="Composite Risk Index", delta_color="inverse")
 
 severity_label = {
     3: "🔴 CRITICAL",
@@ -661,9 +768,64 @@ severity_label = {
 }[county_row['Severity']]
 st.sidebar.metric("Risk Level", severity_label)
 
+if SCORING_AVAILABLE and 'Confidence' in county_row:
+    st.sidebar.caption(f"Confidence: {county_row['Confidence']:.0f}%")
+
 # =============================================================================
 # MAIN CONTENT - FORECAST & GUIDANCE
 # =============================================================================
+
+# Multi-Index Overview
+st.subheader(f"📊 Resilience Dashboard: {selected_county} County")
+
+col_overview1, col_overview2 = st.columns([2, 1])
+
+with col_overview1:
+    # Create bar chart data
+    indices_data = pd.DataFrame({
+        'Index': ['Water\nStress', 'Food\nStress', 'Market\nStress', 'Composite\nRisk'],
+        'Score': [
+            county_row['WSI'] * 100,
+            county_row['FSI'] * 100,
+            county_row['MSI'] * 100,
+            county_row['CRI'] * 100
+        ],
+        'Color': ['#3498db', '#27ae60', '#f39c12', '#e74c3c']
+    })
+    
+    # Display as bar chart
+    st.bar_chart(
+        indices_data.set_index('Index')['Score'],
+        height=250,
+        use_container_width=True
+    )
+    st.caption("All indices on 0-100 scale (higher = more stress/risk)")
+
+with col_overview2:
+    st.metric(
+        "🌊 Water Stress (WSI)",
+        f"{county_row['WSI']:.0%}",
+        help="Rainfall deficit + soil dryness"
+    )
+    st.metric(
+        "🌾 Food Stress (FSI)",
+        f"{county_row['FSI']:.0%}",
+        help="Vegetation decline + water stress"
+    )
+    st.metric(
+        "🛒 Market Stress (MSI)",
+        f"{county_row['MSI']:.0%}",
+        help="Price inflation + stockouts"
+    )
+    st.metric(
+        "⚠️ Composite Risk (CRI)",
+        f"{county_row['CRI']:.0%}",
+        delta=severity_label,
+        delta_color="inverse",
+        help="Weighted combination of all indices"
+    )
+
+st.divider()
 
 # Generate forecast
 is_asal = KENYA_COUNTIES[selected_county]['arid']
@@ -673,8 +835,8 @@ forecast = generate_forecast(
     is_asal
 )
 
-# Key metrics row
-st.subheader(f"📊 Water Stress Analysis: {selected_county} County")
+# Forecast timeline
+st.subheader("🔮 Forecast Timeline")
 col1, col2, col3, col4, col5 = st.columns(5)
 
 col1.metric(
@@ -917,6 +1079,220 @@ with col_sms2:
     
     Or form your own neighborhood water committee!
     """)
+
+# Field Reports Tab
+with tab2:
+    st.header("📝 Field Reports / Ripoti za Uwanja")
+    
+    col_intro1, col_intro2 = st.columns([2, 1])
+    with col_intro1:
+        if lang == "Kiswahili":
+            st.markdown("""
+            Tuma ripoti kutoka eneo lako kuhusu hali ya maji, chakula, na soko.
+            Ripoti zako husaidia maamuzi ya serikali na kusambaza misaada.
+            """)
+        else:
+            st.markdown("""
+            Submit ground-truth reports from your area about water, food, and market conditions.
+            Your reports help authorities make informed decisions and allocate resources effectively.
+            """)
+    
+    with col_intro2:
+        st.metric("Recent Reports", len(get_recent_reports(limit=100)) if DB_AVAILABLE else "N/A")
+    
+    st.divider()
+    
+    # Report Submission Form
+    st.subheader("Submit New Report" if lang == "English" else "Wasilisha Ripoti Mpya")
+    
+    col_f1, col_f2, col_f3 = st.columns(3)
+    
+    with col_f1:
+        report_county = st.selectbox(
+            "County / Kaunti",
+            sorted(KENYA_COUNTIES.keys()),
+            key="field_report_county"
+        )
+    
+    with col_f2:
+        report_category = st.selectbox(
+            "Category / Aina",
+            ["Water / Maji", "Food / Chakula", "Market / Soko", "Health / Afya", "Security / Usalama"],
+            key="field_report_category"
+        )
+    
+    with col_f3:
+        report_severity = st.select_slider(
+            "Severity / Ukali",
+            options=[1, 2, 3, 4, 5],
+            value=3,
+            format_func=lambda x: {
+                1: "1 - Minor / Ndogo",
+                2: "2 - Moderate / Wastani",
+                3: "3 - Significant / Muhimu",
+                4: "4 - Severe / Kali",
+                5: "5 - Critical / Hatari"
+            }[x],
+            key="field_report_severity"
+        )
+    
+    report_message = st.text_area(
+        "Description / Maelezo",
+        placeholder="Describe what you're observing in your area...",
+        height=100,
+        key="field_report_message"
+    )
+    
+    col_sub1, col_sub2 = st.columns([3, 1])
+    
+    with col_sub1:
+        geo_hint = st.text_input(
+            "Location hint (optional) / Mahali",
+            placeholder="e.g., 'Near Thika market' (do NOT provide exact GPS)",
+            key="field_report_geo"
+        )
+    
+    with col_sub2:
+        contact_optional = st.text_input(
+            "Contact (optional) / Mawasiliano",
+            placeholder="Phone/email",
+            type="password",
+            key="field_report_contact"
+        )
+    
+    if st.button("📤 Submit Report", type="primary", use_container_width=True):
+        if not report_message.strip():
+            st.error("Please provide a description")
+        else:
+            if DB_AVAILABLE:
+                try:
+                    # Get or create region
+                    region_id = ensure_region(
+                        report_county,
+                        level="county",
+                        **KENYA_COUNTIES[report_county]
+                    )
+                    
+                    # Hash contact if provided (privacy-preserving)
+                    contact_hash = None
+                    if contact_optional.strip():
+                        contact_hash = hashlib.sha256(
+                            contact_optional.strip().encode()
+                        ).hexdigest()[:16]
+                    
+                    # Extract category key
+                    category_key = report_category.split("/")[0].strip().lower()
+                    
+                    # Insert report
+                    report_id = insert_field_report(
+                        region_id=region_id,
+                        category=category_key,
+                        severity=report_severity,
+                        message=report_message.strip(),
+                        contact_hash=contact_hash,
+                        geo_hint=geo_hint.strip() if geo_hint.strip() else None
+                    )
+                    
+                    st.success(f"✅ Report #{report_id} submitted for {report_county}. Thank you!")
+                    st.info("Your report helps county governments prioritize resource allocation.")
+                    
+                    # Check if this should trigger an alert
+                    if report_severity >= 4:
+                        st.session_state.selected_region_id = region_id
+                        st.warning("⚠️ High severity report - review alerts tab for potential notifications")
+                
+                except Exception as e:
+                    st.error(f"Failed to submit report: {e}")
+            else:
+                st.success("✅ Report received (database not available - demo mode)")
+                st.info("Enable database module for full field report functionality")
+    
+    st.divider()
+    
+    # Recent Reports Display
+    st.subheader("Recent Reports" if lang == "English" else "Ripoti za Hivi Karibuni")
+    
+    if DB_AVAILABLE:
+        try:
+            reports = get_recent_reports(limit=20)
+            
+            if reports:
+                for report in reports:
+                    severity_emoji = {1: "🟢", 2: "🟡", 3: "🟠", 4: "🔴", 5: "🚨"}
+                    
+                    with st.expander(
+                        f"{severity_emoji.get(report['severity'], '⚪')} "
+                        f"{report['category'].title()} - "
+                        f"{report['timestamp'][:10]}"
+                    ):
+                        st.markdown(f"**Severity:** {report['severity']}/5")
+                        st.markdown(f"**Message:** {report['message']}")
+                        if report.get('geo_hint'):
+                            st.caption(f"📍 Location hint: {report['geo_hint']}")
+                        st.caption(f"⏰ {report['timestamp']}")
+            else:
+                st.info("No recent reports. Be the first to submit!")
+        
+        except Exception as e:
+            st.warning(f"Could not load reports: {e}")
+    else:
+        st.info("Database module not available. Enable for persistent report storage.")
+
+# Alerts Tab
+with tab3:
+    st.header("🚨 Alerts / Tahadhari")
+    
+    if lang == "Kiswahili":
+        st.markdown("""
+        Angalizo la muda wa hali mbaya ya maji, chakula, au soko.
+        Tahadhari hizi zinaundwa kiotomatiki wakati mazingira yanafikia kiwango cha hatari.
+        """)
+    else:
+        st.markdown("""
+        Real-time alerts for critical water, food, or market stress conditions.
+        Alerts are automatically generated when indices exceed risk thresholds.
+        """)
+    
+    st.divider()
+    
+    if DB_AVAILABLE:
+        try:
+            active_alerts = get_active_alerts()
+            
+            if active_alerts:
+                st.warning(f"⚠️ **{len(active_alerts)} active alert(s)**")
+                
+                for alert in active_alerts:
+                    level_config = {
+                        "info": ("ℹ️", "blue"),
+                        "warning": ("⚠️", "orange"),
+                        "critical": ("🚨", "red")
+                    }
+                    
+                    emoji, color = level_config.get(alert['level'], ("⚪", "gray"))
+                    
+                    with st.container():
+                        st.markdown(f"### {emoji} {alert['title']}")
+                        st.markdown(f"**Region:** {alert['region_name']}")
+                        st.markdown(f"**Level:** {alert['level'].upper()}")
+                        st.markdown(f"**CRI:** {alert['cri']:.1f}/100")
+                        st.markdown(f"**Detail:** {alert['detail']}")
+                        st.caption(f"🕐 {alert['timestamp']}")
+                        st.divider()
+            else:
+                st.success("✅ No active alerts. All regions within normal parameters.")
+                st.info("Alerts trigger when Composite Risk Index (CRI) exceeds 70/100")
+        
+        except Exception as e:
+            st.warning(f"Could not load alerts: {e}")
+    else:
+        st.info("Database module not available. Enable for alert functionality.")
+        st.markdown("""
+        **Alert Thresholds:**
+        - **INFO**: CRI 50-60 (Watch conditions)
+        - **WARNING**: CRI 60-70 (Prepare for action)
+        - **CRITICAL**: CRI 70+ (Immediate response needed)
+        """)
 
 # Footer
 st.divider()
