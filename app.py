@@ -326,6 +326,14 @@ st.markdown("""
     [data-theme="dark"] [data-testid="stMetricDelta"],
     .stApp[data-theme="dark"] [data-testid="stMetricDelta"] { color: #cccccc !important; }
 
+
+    @media (prefers-color-scheme: dark) {
+        .advice-card   { background-color: #1a3d24 !important; color: #7dcea0 !important; border-color: #28a745 !important; }
+        .critical-card { background-color: #3d3010 !important; color: #f0c060 !important; border-color: #ffc107 !important; }
+    }
+    [data-theme="dark"] .advice-card,   .stApp[data-theme="dark"] .advice-card   { background-color: #1a3d24 !important; color: #7dcea0 !important; border-color: #28a745 !important; }
+    [data-theme="dark"] .critical-card, .stApp[data-theme="dark"] .critical-card { background-color: #3d3010 !important; color: #f0c060 !important; border-color: #ffc107 !important; }
+
 </style>
 """, unsafe_allow_html=True)
 
