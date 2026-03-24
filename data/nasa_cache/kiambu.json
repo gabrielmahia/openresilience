@@ -2,9 +2,9 @@
   "county": "Kiambu",
   "lat": -1.171,
   "lon": 36.835,
-  "timestamp": "2026-03-24T07:14:20.600759",
-  "rainfall_anomaly": -3.98,
-  "soil_moisture": 0.343,
+  "timestamp": "2026-03-24T13:41:10.399538",
+  "rainfall_anomaly": 31.14,
+  "soil_moisture": 0.735,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
