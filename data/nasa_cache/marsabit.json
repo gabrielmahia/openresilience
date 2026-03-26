@@ -2,9 +2,9 @@
   "county": "Marsabit",
   "lat": 2.334,
   "lon": 37.988,
-  "timestamp": "2026-03-26T07:20:51.154239",
-  "rainfall_anomaly": 4.54,
-  "soil_moisture": 0.356,
+  "timestamp": "2026-03-26T13:46:06.631585",
+  "rainfall_anomaly": -12.23,
+  "soil_moisture": 0.249,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
