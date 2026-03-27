@@ -2,9 +2,9 @@
   "county": "Baringo",
   "lat": 0.467,
   "lon": 36.083,
-  "timestamp": "2026-03-27T03:18:51.454094",
-  "rainfall_anomaly": 1.78,
-  "soil_moisture": 0.265,
+  "timestamp": "2026-03-27T07:19:23.725071",
+  "rainfall_anomaly": -26.46,
+  "soil_moisture": 0.155,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
