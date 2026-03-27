@@ -2,9 +2,9 @@
   "county": "Homa Bay",
   "lat": -0.517,
   "lon": 34.467,
-  "timestamp": "2026-03-27T13:23:09.399060",
-  "rainfall_anomaly": 34.51,
-  "soil_moisture": 0.696,
+  "timestamp": "2026-03-27T19:05:02.785528",
+  "rainfall_anomaly": 3.58,
+  "soil_moisture": 0.496,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
