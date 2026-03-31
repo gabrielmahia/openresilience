@@ -2,9 +2,9 @@
   "county": "Taita-Taveta",
   "lat": -3.316,
   "lon": 38.35,
-  "timestamp": "2026-03-30T19:10:47.462698",
-  "rainfall_anomaly": -5.2,
-  "soil_moisture": 0.312,
+  "timestamp": "2026-03-31T03:17:48.517659",
+  "rainfall_anomaly": -16.43,
+  "soil_moisture": 0.217,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
