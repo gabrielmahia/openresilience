@@ -2,9 +2,9 @@
   "county": "Machakos",
   "lat": -1.518,
   "lon": 37.263,
-  "timestamp": "2026-04-02T19:06:38.449278",
-  "rainfall_anomaly": -28.74,
-  "soil_moisture": 0.099,
+  "timestamp": "2026-04-03T03:15:50.578896",
+  "rainfall_anomaly": -1.66,
+  "soil_moisture": 0.321,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
