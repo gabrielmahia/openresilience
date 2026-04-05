@@ -2,9 +2,9 @@
   "county": "Murang'a",
   "lat": -0.721,
   "lon": 37.152,
-  "timestamp": "2026-04-05T13:13:52.379217",
-  "rainfall_anomaly": 48.72,
-  "soil_moisture": 0.821,
+  "timestamp": "2026-04-05T18:56:07.586114",
+  "rainfall_anomaly": 35.15,
+  "soil_moisture": 0.74,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
