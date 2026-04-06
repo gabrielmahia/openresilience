@@ -2,9 +2,9 @@
   "county": "Uasin Gishu",
   "lat": 0.52,
   "lon": 35.283,
-  "timestamp": "2026-04-06T03:28:32.513560",
-  "rainfall_anomaly": 19.26,
-  "soil_moisture": 0.609,
+  "timestamp": "2026-04-06T07:55:47.591133",
+  "rainfall_anomaly": 27.67,
+  "soil_moisture": 0.654,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
