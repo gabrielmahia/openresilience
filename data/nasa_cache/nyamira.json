@@ -2,9 +2,9 @@
   "county": "Nyamira",
   "lat": -0.567,
   "lon": 34.933,
-  "timestamp": "2026-04-07T07:42:52.540778",
-  "rainfall_anomaly": 12.14,
-  "soil_moisture": 0.558,
+  "timestamp": "2026-04-07T13:48:51.769343",
+  "rainfall_anomaly": 21.59,
+  "soil_moisture": 0.569,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
