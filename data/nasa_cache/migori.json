@@ -2,9 +2,9 @@
   "county": "Migori",
   "lat": -1.063,
   "lon": 34.467,
-  "timestamp": "2026-04-10T07:52:40.348918",
-  "rainfall_anomaly": -11.79,
-  "soil_moisture": 0.312,
+  "timestamp": "2026-04-10T13:39:36.932327",
+  "rainfall_anomaly": -0.96,
+  "soil_moisture": 0.37,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
