@@ -2,9 +2,9 @@
   "county": "Tharaka-Nithi",
   "lat": -0.291,
   "lon": 37.664,
-  "timestamp": "2026-04-10T19:04:43.150556",
-  "rainfall_anomaly": 16.16,
-  "soil_moisture": 0.53,
+  "timestamp": "2026-04-11T02:52:31.009953",
+  "rainfall_anomaly": 8.3,
+  "soil_moisture": 0.541,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
