@@ -2,9 +2,9 @@
   "county": "Kirinyaga",
   "lat": -0.66,
   "lon": 37.383,
-  "timestamp": "2026-04-20T08:21:37.553924",
-  "rainfall_anomaly": 16.53,
-  "soil_moisture": 0.536,
+  "timestamp": "2026-04-20T14:01:50.918429",
+  "rainfall_anomaly": 43.48,
+  "soil_moisture": 0.829,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
