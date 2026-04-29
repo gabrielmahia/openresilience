@@ -2,9 +2,9 @@
   "county": "Nakuru",
   "lat": -0.303,
   "lon": 36.08,
-  "timestamp": "2026-04-29T14:21:11.950824",
-  "rainfall_anomaly": 16.29,
-  "soil_moisture": 0.566,
+  "timestamp": "2026-04-29T19:45:39.657279",
+  "rainfall_anomaly": 39.13,
+  "soil_moisture": 0.761,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
