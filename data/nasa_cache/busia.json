@@ -2,9 +2,9 @@
   "county": "Busia",
   "lat": 0.435,
   "lon": 34.113,
-  "timestamp": "2026-05-01T13:43:55.108349",
-  "rainfall_anomaly": 7.01,
-  "soil_moisture": 0.475,
+  "timestamp": "2026-05-01T19:21:18.620589",
+  "rainfall_anomaly": 24.73,
+  "soil_moisture": 0.623,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
