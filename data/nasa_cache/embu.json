@@ -2,9 +2,9 @@
   "county": "Embu",
   "lat": -0.531,
   "lon": 37.457,
-  "timestamp": "2026-05-03T19:10:07.457802",
-  "rainfall_anomaly": 45.59,
-  "soil_moisture": 0.77,
+  "timestamp": "2026-05-04T03:54:38.468785",
+  "rainfall_anomaly": 27.26,
+  "soil_moisture": 0.635,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
