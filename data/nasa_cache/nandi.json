@@ -2,9 +2,9 @@
   "county": "Nandi",
   "lat": 0.183,
   "lon": 35.133,
-  "timestamp": "2026-05-06T08:36:43.361759",
-  "rainfall_anomaly": 23.69,
-  "soil_moisture": 0.65,
+  "timestamp": "2026-05-06T14:33:09.524126",
+  "rainfall_anomaly": 37.43,
+  "soil_moisture": 0.761,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
