@@ -2,9 +2,9 @@
   "county": "Garissa",
   "lat": -0.463,
   "lon": 39.662,
-  "timestamp": "2026-05-08T14:05:51.954392",
-  "rainfall_anomaly": 7.3,
-  "soil_moisture": 0.325,
+  "timestamp": "2026-05-08T19:39:00.609867",
+  "rainfall_anomaly": -14.81,
+  "soil_moisture": 0.181,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
