@@ -2,9 +2,9 @@
   "county": "Kisumu",
   "lat": -0.091702,
   "lon": 34.767956,
-  "timestamp": "2026-05-12T14:40:56.959367",
-  "rainfall_anomaly": 33.12,
-  "soil_moisture": 0.71,
+  "timestamp": "2026-05-12T20:02:50.225948",
+  "rainfall_anomaly": 12.89,
+  "soil_moisture": 0.57,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
