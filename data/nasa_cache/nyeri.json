@@ -2,9 +2,9 @@
   "county": "Nyeri",
   "lat": -0.42,
   "lon": 36.947,
-  "timestamp": "2026-05-22T04:18:09.683391",
-  "rainfall_anomaly": 24.39,
-  "soil_moisture": 0.634,
+  "timestamp": "2026-05-22T09:41:06.381512",
+  "rainfall_anomaly": 17.48,
+  "soil_moisture": 0.526,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
