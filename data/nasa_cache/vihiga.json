@@ -2,9 +2,9 @@
   "county": "Vihiga",
   "lat": 0.078,
   "lon": 34.724,
-  "timestamp": "2026-05-25T15:22:51.056185",
-  "rainfall_anomaly": 30.62,
-  "soil_moisture": 0.636,
+  "timestamp": "2026-05-25T19:51:09.460829",
+  "rainfall_anomaly": 13.42,
+  "soil_moisture": 0.511,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
