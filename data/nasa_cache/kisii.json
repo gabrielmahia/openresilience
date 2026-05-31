@@ -2,9 +2,9 @@
   "county": "Kisii",
   "lat": -0.677,
   "lon": 34.767,
-  "timestamp": "2026-05-31T08:56:16.745288",
-  "rainfall_anomaly": 39.49,
-  "soil_moisture": 0.777,
+  "timestamp": "2026-05-31T14:01:10.828865",
+  "rainfall_anomaly": 34.66,
+  "soil_moisture": 0.723,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
