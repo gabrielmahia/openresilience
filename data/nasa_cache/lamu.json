@@ -2,8 +2,8 @@
   "county": "Lamu",
   "lat": -2.271,
   "lon": 40.9,
-  "timestamp": "2026-06-02T16:47:23.749964",
-  "rainfall_anomaly": -77.7,
+  "timestamp": "2026-06-02T21:17:47.676136",
+  "rainfall_anomaly": -74.28,
   "soil_moisture": 0.0,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
