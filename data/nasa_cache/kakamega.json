@@ -2,9 +2,9 @@
   "county": "Kakamega",
   "lat": 0.282,
   "lon": 34.752,
-  "timestamp": "2026-06-03T21:23:33.865035",
-  "rainfall_anomaly": -46.25,
-  "soil_moisture": 0.071,
+  "timestamp": "2026-06-04T04:51:06.835557",
+  "rainfall_anomaly": -35.75,
+  "soil_moisture": 0.12,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
