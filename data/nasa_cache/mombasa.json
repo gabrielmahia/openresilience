@@ -2,9 +2,9 @@
   "county": "Mombasa",
   "lat": -4.043,
   "lon": 39.658,
-  "timestamp": "2026-06-09T09:57:25.207420",
-  "rainfall_anomaly": -53.65,
-  "soil_moisture": 0.079,
+  "timestamp": "2026-06-09T15:19:55.621172",
+  "rainfall_anomaly": -29.22,
+  "soil_moisture": 0.253,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
