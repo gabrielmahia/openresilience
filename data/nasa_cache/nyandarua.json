@@ -2,9 +2,9 @@
   "county": "Nyandarua",
   "lat": -0.18,
   "lon": 36.478,
-  "timestamp": "2026-06-28T09:22:27.036008",
-  "rainfall_anomaly": -14.77,
-  "soil_moisture": 0.296,
+  "timestamp": "2026-06-28T14:04:31.447198",
+  "rainfall_anomaly": -31.59,
+  "soil_moisture": 0.136,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
