@@ -2,9 +2,9 @@
   "county": "Tana River",
   "lat": -1.528,
   "lon": 40.127,
-  "timestamp": "2026-07-01T20:03:55.413419",
-  "rainfall_anomaly": -63.34,
-  "soil_moisture": 0.059,
+  "timestamp": "2026-07-02T04:09:14.956608",
+  "rainfall_anomaly": -54.43,
+  "soil_moisture": 0.031,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
