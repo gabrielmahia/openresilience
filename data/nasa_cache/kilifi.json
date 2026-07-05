@@ -2,9 +2,9 @@
   "county": "Kilifi",
   "lat": -3.507,
   "lon": 39.909,
-  "timestamp": "2026-07-05T04:07:59.374981",
-  "rainfall_anomaly": -25.7,
-  "soil_moisture": 0.348,
+  "timestamp": "2026-07-05T09:16:09.486765",
+  "rainfall_anomaly": -1.69,
+  "soil_moisture": 0.55,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
