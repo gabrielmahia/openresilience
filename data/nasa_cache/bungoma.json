@@ -2,9 +2,9 @@
   "county": "Bungoma",
   "lat": 0.563,
   "lon": 34.56,
-  "timestamp": "2026-07-17T13:53:38.329362",
-  "rainfall_anomaly": -24.25,
-  "soil_moisture": 0.222,
+  "timestamp": "2026-07-17T19:20:08.479573",
+  "rainfall_anomaly": -41.69,
+  "soil_moisture": 0.081,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
