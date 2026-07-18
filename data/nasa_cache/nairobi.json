@@ -2,9 +2,9 @@
   "county": "Nairobi",
   "lat": -1.286389,
   "lon": 36.817223,
-  "timestamp": "2026-07-18T13:37:05.727009",
-  "rainfall_anomaly": -36.13,
-  "soil_moisture": 0.089,
+  "timestamp": "2026-07-18T19:13:30.292123",
+  "rainfall_anomaly": -35.76,
+  "soil_moisture": 0.14,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
