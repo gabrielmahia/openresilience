@@ -2,9 +2,9 @@
   "county": "Meru",
   "lat": 0.352,
   "lon": 37.649,
-  "timestamp": "2026-07-23T03:31:38.297630",
-  "rainfall_anomaly": -3.2,
-  "soil_moisture": 0.421,
+  "timestamp": "2026-07-23T08:40:08.075032",
+  "rainfall_anomaly": -19.54,
+  "soil_moisture": 0.259,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
