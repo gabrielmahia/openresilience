@@ -2,8 +2,8 @@
   "county": "Turkana",
   "lat": 3.312,
   "lon": 35.564,
-  "timestamp": "2026-07-23T19:35:55.411252",
-  "rainfall_anomaly": -57.18,
+  "timestamp": "2026-07-24T03:27:12.919717",
+  "rainfall_anomaly": -52.07,
   "soil_moisture": 0.0,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
