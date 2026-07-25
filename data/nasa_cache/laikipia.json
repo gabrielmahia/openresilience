@@ -2,9 +2,9 @@
   "county": "Laikipia",
   "lat": 0.367,
   "lon": 36.783,
-  "timestamp": "2026-07-25T03:25:06.692532",
-  "rainfall_anomaly": -65.6,
-  "soil_moisture": 0.0,
+  "timestamp": "2026-07-25T08:16:43.792435",
+  "rainfall_anomaly": -40.63,
+  "soil_moisture": 0.054,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
