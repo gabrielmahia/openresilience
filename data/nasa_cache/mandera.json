@@ -2,9 +2,9 @@
   "county": "Mandera",
   "lat": 3.563,
   "lon": 41.167,
-  "timestamp": "2026-07-27T10:03:19.612701",
-  "rainfall_anomaly": -50.19,
-  "soil_moisture": 0.031,
+  "timestamp": "2026-07-27T14:51:24.579082",
+  "rainfall_anomaly": -65.34,
+  "soil_moisture": 0.0,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
