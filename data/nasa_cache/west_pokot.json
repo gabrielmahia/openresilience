@@ -2,8 +2,8 @@
   "county": "West Pokot",
   "lat": 1.621,
   "lon": 35.112,
-  "timestamp": "2026-07-30T02:54:12.590945",
-  "rainfall_anomaly": -51.62,
+  "timestamp": "2026-07-30T08:39:50.052682",
+  "rainfall_anomaly": -58.2,
   "soil_moisture": 0.0,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
