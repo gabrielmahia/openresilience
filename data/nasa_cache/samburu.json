@@ -2,9 +2,9 @@
   "county": "Samburu",
   "lat": 1.211,
   "lon": 36.946,
-  "timestamp": "2026-08-07T00:08:19.701607",
-  "rainfall_anomaly": -46.69,
-  "soil_moisture": 0.0,
+  "timestamp": "2026-08-07T07:26:23.733419",
+  "rainfall_anomaly": -47.38,
+  "soil_moisture": 0.05,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
