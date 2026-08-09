@@ -2,9 +2,9 @@
   "county": "Kitui",
   "lat": -1.367,
   "lon": 38.017,
-  "timestamp": "2026-08-09T02:14:17.284149",
-  "rainfall_anomaly": -65.17,
-  "soil_moisture": 0.0,
+  "timestamp": "2026-08-09T07:05:42.476903",
+  "rainfall_anomaly": -46.9,
+  "soil_moisture": 0.017,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }

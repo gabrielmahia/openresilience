@@ -2,9 +2,9 @@
   "county": "Kericho",
   "lat": -0.183,
   "lon": 35.283,
-  "timestamp": "2026-08-09T02:14:17.284149",
-  "rainfall_anomaly": -21.59,
-  "soil_moisture": 0.287,
+  "timestamp": "2026-08-09T07:05:42.476903",
+  "rainfall_anomaly": -46.15,
+  "soil_moisture": 0.044,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
