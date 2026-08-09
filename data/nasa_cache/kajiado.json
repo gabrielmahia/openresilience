@@ -2,9 +2,9 @@
   "county": "Kajiado",
   "lat": -2.098,
   "lon": 36.777,
-  "timestamp": "2026-08-08T18:48:37.321667",
-  "rainfall_anomaly": -49.1,
-  "soil_moisture": 0.049,
+  "timestamp": "2026-08-09T02:14:17.284149",
+  "rainfall_anomaly": -49.53,
+  "soil_moisture": 0.0,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
