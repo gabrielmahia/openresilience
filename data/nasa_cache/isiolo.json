@@ -2,9 +2,9 @@
   "county": "Isiolo",
   "lat": 0.354,
   "lon": 37.582,
-  "timestamp": "2026-08-09T18:50:59.295230",
-  "rainfall_anomaly": -42.69,
-  "soil_moisture": 0.025,
+  "timestamp": "2026-08-10T02:21:20.731128",
+  "rainfall_anomaly": -47.76,
+  "soil_moisture": 0.045,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
