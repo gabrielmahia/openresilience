@@ -2,9 +2,9 @@
   "county": "Elgeyo-Marakwet",
   "lat": 0.827,
   "lon": 35.479,
-  "timestamp": "2026-08-14T13:20:52.533688",
-  "rainfall_anomaly": -22.62,
-  "soil_moisture": 0.231,
+  "timestamp": "2026-08-14T19:02:40.063647",
+  "rainfall_anomaly": -35.37,
+  "soil_moisture": 0.083,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
