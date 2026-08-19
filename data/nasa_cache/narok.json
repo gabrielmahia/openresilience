@@ -2,8 +2,8 @@
   "county": "Narok",
   "lat": -1.083,
   "lon": 35.867,
-  "timestamp": "2026-08-19T12:58:35.510582",
-  "rainfall_anomaly": -56.64,
+  "timestamp": "2026-08-19T18:43:44.555043",
+  "rainfall_anomaly": -61.9,
   "soil_moisture": 0.0,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
