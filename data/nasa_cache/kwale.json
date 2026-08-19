@@ -2,9 +2,9 @@
   "county": "Kwale",
   "lat": -4.176,
   "lon": 39.451,
-  "timestamp": "2026-08-19T06:54:40.700209",
-  "rainfall_anomaly": 6.32,
-  "soil_moisture": 0.443,
+  "timestamp": "2026-08-19T12:58:35.510582",
+  "rainfall_anomaly": -14.56,
+  "soil_moisture": 0.333,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
