@@ -2,9 +2,9 @@
   "county": "Trans-Nzoia",
   "lat": 1.053,
   "lon": 34.95,
-  "timestamp": "2026-08-29T16:36:11.213201",
-  "rainfall_anomaly": -30.05,
-  "soil_moisture": 0.161,
+  "timestamp": "2026-08-29T20:48:57.205391",
+  "rainfall_anomaly": -31.2,
+  "soil_moisture": 0.175,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
