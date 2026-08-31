@@ -2,9 +2,9 @@
   "county": "Wajir",
   "lat": 1.747,
   "lon": 40.057,
-  "timestamp": "2026-08-31T13:23:35.080828",
-  "rainfall_anomaly": -22.36,
-  "soil_moisture": 0.163,
+  "timestamp": "2026-08-31T22:43:05.838839",
+  "rainfall_anomaly": -25.91,
+  "soil_moisture": 0.129,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
