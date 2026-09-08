@@ -2,9 +2,9 @@
   "county": "Siaya",
   "lat": -0.063,
   "lon": 34.287,
-  "timestamp": "2026-09-08T11:02:21.534142",
-  "rainfall_anomaly": -17.99,
-  "soil_moisture": 0.268,
+  "timestamp": "2026-09-08T16:28:07.109910",
+  "rainfall_anomaly": -17.08,
+  "soil_moisture": 0.271,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
