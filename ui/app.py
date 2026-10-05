@@ -135,7 +135,5 @@ with tabs[7]:
 
 with tabs[8]:
     st.subheader("Admin")
-    st.markdown(f"Exports:  
-- {API_BASE}/exports/alerts.csv  
-- {API_BASE}/exports/indicators.csv?metric=cri")
+    st.markdown(f"Exports:  \n- {API_BASE}/exports/alerts.csv  \n- {API_BASE}/exports/indicators.csv?metric=cri")
     st.caption("Notifier is enabled; MSG_PROVIDER=mock prints sends to logs.")
