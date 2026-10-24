@@ -2,9 +2,9 @@
   "county": "Bomet",
   "lat": -0.78,
   "lon": 35.308,
-  "timestamp": "2026-10-24T15:45:18.522306",
-  "rainfall_anomaly": -13.84,
-  "soil_moisture": 0.335,
+  "timestamp": "2026-10-24T20:33:48.168580",
+  "rainfall_anomaly": 15.76,
+  "soil_moisture": 0.534,
   "data_source": "simulated_realistic",
   "note": "Realistic simulation based on Kenya climate patterns"
 }
