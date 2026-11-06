@@ -1,4 +1,6 @@
 import time
+
+
 def token_bucket_allow(redis, key, capacity, refill_per_sec):
     now = time.time()
     pipe = redis.pipeline()

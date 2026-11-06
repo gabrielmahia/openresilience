@@ -13,12 +13,11 @@ Requires:
 Install: pip install earthengine-api
 """
 
-import sys
-import os
-from pathlib import Path
-from datetime import datetime
 import json
 import logging
+import sys
+from datetime import datetime
+from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -57,25 +56,25 @@ def fetch_and_cache_county_vegetation(
 ) -> bool:
     """
     Fetch NDVI data for a county and cache it.
-    
+
     Args:
         adapter: Authenticated Earth Engine adapter
         county_name: County name
         lat, lon: County coordinates
-    
+
     Returns:
         True if successful, False otherwise
     """
     try:
         logger.info(f"Fetching NDVI for {county_name}...")
-        
+
         # Fetch NDVI data
         ndvi_data = adapter.get_ndvi(lat, lon, days=16)
-        
+
         if not ndvi_data:
             logger.error(f"No NDVI data available for {county_name}")
             return False
-        
+
         # Prepare cache data
         cache_data = {
             'county': county_name,
@@ -88,19 +87,19 @@ def fetch_and_cache_county_vegetation(
             'modis_timestamp': ndvi_data['timestamp'],
             'confidence': ndvi_data['confidence']
         }
-        
+
         # Save to cache
         cache_dir = Path("data/gee_cache")
         cache_dir.mkdir(parents=True, exist_ok=True)
-        
+
         cache_file = cache_dir / f"{county_name.lower().replace(' ', '_')}.json"
-        
+
         with open(cache_file, 'w') as f:
             json.dump(cache_data, f, indent=2)
-        
+
         logger.info(f"Cached NDVI for {county_name}: {ndvi_data['vegetation_health']:.3f}")
         return True
-    
+
     except Exception as e:
         logger.error(f"Failed to fetch data for {county_name}: {e}")
         return False
@@ -109,18 +108,18 @@ def fetch_and_cache_county_vegetation(
 def main():
     """Main execution: Update Earth Engine data for all counties."""
     logger.info("Starting Earth Engine data update...")
-    
+
     # Initialize adapter
     adapter = EarthEngineAdapter()
-    
+
     if not adapter.is_available():
         logger.error("Earth Engine not available!")
         logger.error("Install: pip install earthengine-api")
         logger.error("Authenticate: Set GEE_SERVICE_ACCOUNT or run ee.Authenticate()")
         sys.exit(1)
-    
+
     logger.info("Earth Engine authentication successful")
-    
+
     # Process each county
     success_count = 0
     for county_name, coords in KENYA_COUNTIES.items():
@@ -128,9 +127,9 @@ def main():
             adapter, county_name, coords['lat'], coords['lon']
         ):
             success_count += 1
-    
+
     logger.info(f"Update complete: {success_count}/{len(KENYA_COUNTIES)} counties")
-    
+
     if success_count == 0:
         logger.error("No data collected - check Earth Engine authentication")
         sys.exit(1)

@@ -7,28 +7,29 @@ Provides CSV, Excel, and summary report exports for:
 - Researchers conducting studies
 """
 
-import pandas as pd
-from datetime import datetime
-from typing import Dict, Any, List
 import io
+from datetime import datetime
+from typing import Any, Dict, List
+
+import pandas as pd
 
 
 def export_county_data_csv(df: pd.DataFrame) -> bytes:
     """
     Export county data to CSV format.
-    
+
     Args:
         df: DataFrame with county resilience data
-    
+
     Returns:
         CSV file as bytes
     """
     # Create buffer
     buffer = io.StringIO()
-    
+
     # Write CSV
     df.to_csv(buffer, index=False)
-    
+
     # Get bytes
     return buffer.getvalue().encode('utf-8')
 
@@ -40,12 +41,12 @@ def export_county_summary_report(
 ) -> str:
     """
     Generate human-readable summary report for a county.
-    
+
     Args:
         county_name: County name
         county_data: Dict with all county metrics
         timestamp: Report generation time
-    
+
     Returns:
         Formatted text report
     """
@@ -58,7 +59,7 @@ def export_county_summary_report(
         0: "🟢 LOW"
     }
     risk_level = risk_level_map.get(severity, "Unknown")
-    
+
     report = f"""
 OPENRESILIENCE KENYA - COUNTY SUMMARY REPORT
 {'=' * 60}
@@ -98,10 +99,10 @@ Current Stress Level: {county_data.get('Current_Stress', 0):.0%}
 RECOMMENDATIONS
 {'=' * 60}
 """
-    
+
     # Add recommendations based on severity level
     # Severity: 3=CRITICAL, 2=HIGH, 1=MODERATE, 0=LOW
-    
+
     if severity >= 3:
         report += """
 ⚠️  URGENT ACTION REQUIRED:
@@ -136,7 +137,7 @@ RECOMMENDATIONS
 - Update contingency plans
 - Conduct community training
 """
-    
+
     report += f"""
 
 {'=' * 60}
@@ -145,39 +146,39 @@ Data Sovereignty: Community-owned, locally-managed
 Contact: {county_name} County Water Office / NDMA
 {'=' * 60}
 """
-    
+
     return report
 
 
 def export_all_counties_excel(df: pd.DataFrame) -> bytes:
     """
     Export all counties data to Excel with multiple sheets.
-    
+
     Args:
         df: DataFrame with all county data
-    
+
     Returns:
         Excel file as bytes
     """
     buffer = io.BytesIO()
-    
+
     with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
         # Main data sheet
         df.to_excel(writer, sheet_name='All Counties', index=False)
-        
+
         # ASAL counties only
         if 'ASAL' in df.columns:
             asal_df = df[df['ASAL'] == 'Yes']
             asal_df.to_excel(writer, sheet_name='ASAL Counties', index=False)
-        
+
         # High risk counties (Severity >= 2 means HIGH or CRITICAL)
         if 'Severity' in df.columns:
             high_risk = df[df['Severity'] >= 2]
             high_risk.to_excel(writer, sheet_name='High Risk', index=False)
-        
+
         # Summary statistics
         summary_data = {
-            'Metric': ['Average WSI', 'Average FSI', 'Average MSI', 'Average CRI', 
+            'Metric': ['Average WSI', 'Average FSI', 'Average MSI', 'Average CRI',
                       'Counties in Critical Risk (Severity 3)', 'Counties in High Risk (Severity 2+)',
                       'Total Population Affected', 'ASAL Counties'],
             'Value': [
@@ -193,7 +194,7 @@ def export_all_counties_excel(df: pd.DataFrame) -> bytes:
         }
         summary_df = pd.DataFrame(summary_data)
         summary_df.to_excel(writer, sheet_name='Summary', index=False)
-    
+
     buffer.seek(0)
     return buffer.getvalue()
 
@@ -201,10 +202,10 @@ def export_all_counties_excel(df: pd.DataFrame) -> bytes:
 def export_field_reports_csv(reports: List[Dict]) -> bytes:
     """
     Export field reports to CSV.
-    
+
     Args:
         reports: List of field report dictionaries
-    
+
     Returns:
         CSV file as bytes
     """
@@ -213,7 +214,7 @@ def export_field_reports_csv(reports: List[Dict]) -> bytes:
         df = pd.DataFrame(columns=['Timestamp', 'County', 'Location', 'Type', 'Description', 'Status'])
     else:
         df = pd.DataFrame(reports)
-    
+
     buffer = io.StringIO()
     df.to_csv(buffer, index=False)
     return buffer.getvalue().encode('utf-8')

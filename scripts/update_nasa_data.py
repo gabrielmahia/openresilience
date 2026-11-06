@@ -12,12 +12,11 @@ Requires:
 Set in environment or .env file.
 """
 
-import sys
-import os
-from pathlib import Path
-from datetime import datetime, timedelta
 import json
 import logging
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -46,26 +45,26 @@ KENYA_COUNTIES = {
 def calculate_rainfall_anomaly(rainfall_data: list) -> float:
     """
     Calculate rainfall anomaly from time series.
-    
+
     Args:
         rainfall_data: List of daily rainfall values (mm)
-    
+
     Returns:
         Anomaly as percentage (-100 to +100)
     """
     if not rainfall_data:
         return 0.0
-    
+
     # Calculate 30-day total
     total_rainfall = sum(rainfall_data)
-    
+
     # Kenya climatology: ~50mm/month average (varies by region)
     # This should be region-specific in production
     expected_rainfall = 50.0
-    
+
     # Calculate anomaly
     anomaly = ((total_rainfall - expected_rainfall) / expected_rainfall) * 100
-    
+
     # Clamp to reasonable range
     return max(-100, min(100, anomaly))
 
@@ -73,22 +72,22 @@ def calculate_rainfall_anomaly(rainfall_data: list) -> float:
 def calculate_soil_moisture_average(soil_data: list) -> float:
     """
     Calculate average soil moisture from time series.
-    
+
     Args:
         soil_data: List of soil moisture values (0-1)
-    
+
     Returns:
         Average soil moisture (0-1)
     """
     if not soil_data:
         return 0.5
-    
+
     # Filter out invalid values
     valid_data = [v for v in soil_data if 0 <= v <= 1]
-    
+
     if not valid_data:
         return 0.5
-    
+
     return sum(valid_data) / len(valid_data)
 
 
@@ -100,12 +99,12 @@ def fetch_and_cache_county_data(
 ) -> bool:
     """
     Fetch NASA data for a county and cache it.
-    
+
     Args:
         client: Authenticated NASA client
         county_name: County name
         lat, lon: County coordinates
-    
+
     Returns:
         True if successful, False otherwise
     """
@@ -113,33 +112,33 @@ def fetch_and_cache_county_data(
         # Date range: last 30 days
         end_date = datetime.now()
         start_date = end_date - timedelta(days=30)
-        
+
         start_str = start_date.strftime('%Y-%m-%d')
         end_str = end_date.strftime('%Y-%m-%d')
-        
+
         # Products to request
         products = [
             'GPM_3IMERGDL_06_precipitation',  # IMERG Daily
             'SPL3SMP_E_005_soil_moisture'      # SMAP Enhanced
         ]
-        
+
         logger.info(f"Submitting request for {county_name}...")
-        
+
         # Submit request
         task_id = client.submit_point_request(
             lat, lon, start_str, end_str, products
         )
-        
+
         if not task_id:
             logger.error(f"Failed to submit request for {county_name}")
             return False
-        
+
         logger.info(f"Task submitted: {task_id}")
-        
+
         # NOTE: AppEEARS is asynchronous
         # Task takes 5-30 minutes to complete
         # For production: Store task_id, check status later, download when ready
-        
+
         # For immediate deployment: Use demo data while tasks process
         # Placeholder cache entry
         cache_data = {
@@ -153,19 +152,19 @@ def fetch_and_cache_county_data(
             'soil_moisture': None,
             'note': 'Real NASA data processing - using demo until ready'
         }
-        
+
         # Save to cache
         cache_dir = Path("data/nasa_cache")
         cache_dir.mkdir(parents=True, exist_ok=True)
-        
+
         cache_file = cache_dir / f"{county_name.lower().replace(' ', '_')}.json"
-        
+
         with open(cache_file, 'w') as f:
             json.dump(cache_data, f, indent=2)
-        
+
         logger.info(f"Cached placeholder for {county_name}")
         return True
-    
+
     except Exception as e:
         logger.error(f"Failed to fetch data for {county_name}: {e}")
         return False
@@ -174,22 +173,22 @@ def fetch_and_cache_county_data(
 def main():
     """Main execution: Update NASA data for all counties."""
     logger.info("Starting NASA data update...")
-    
+
     # Initialize client
     client = NASAAppEEARSClient()
-    
+
     if not client.is_available():
         logger.error("NASA credentials not configured!")
         logger.error("Set NASA_EARTHDATA_USERNAME and NASA_EARTHDATA_PASSWORD")
         sys.exit(1)
-    
+
     # Authenticate
     if not client.authenticate():
         logger.error("NASA authentication failed!")
         sys.exit(1)
-    
+
     logger.info("NASA authentication successful")
-    
+
     # Process each county
     success_count = 0
     for county_name, coords in KENYA_COUNTIES.items():
@@ -197,9 +196,9 @@ def main():
             client, county_name, coords['lat'], coords['lon']
         ):
             success_count += 1
-    
+
     logger.info(f"Update complete: {success_count}/{len(KENYA_COUNTIES)} counties")
-    
+
     # Note: This is Phase 1 - submits requests
     # Phase 2: Run separate script to check task status and download results
     # Phase 3: Parse downloaded data and update cache with actual values

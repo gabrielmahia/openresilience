@@ -1,5 +1,7 @@
-import os, requests
+import os
+
 import pandas as pd
+import requests
 import streamlit as st
 
 API_BASE = os.environ.get("API_BASE","http://api:8000")

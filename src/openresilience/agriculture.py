@@ -9,7 +9,6 @@ and water management guidance based on:
 - ASAL vs non-ASAL zones
 """
 
-from datetime import datetime
 from typing import Dict, List, Tuple
 
 
@@ -33,18 +32,18 @@ def get_planting_advice(
 ) -> Dict[str, any]:
     """
     Get comprehensive planting advice for farmers.
-    
+
     Args:
         county_name: Kenya county name
         is_asal: Whether county is in ASAL zone
         water_stress: Current water stress index (0-1)
         month: Current month (1-12)
-    
+
     Returns:
         Dict with planting recommendations, crops, and water advice
     """
     season = get_season_name(month)
-    
+
     # Determine stress level
     if water_stress < 0.3:
         stress_level = "low"
@@ -52,41 +51,41 @@ def get_planting_advice(
         stress_level = "moderate"
     else:
         stress_level = "high"
-    
+
     # Base recommendations by season
     if 3 <= month <= 5:  # Long rains
         action = "PLANT" if water_stress < 0.7 else "WAIT"
         timing = "Now is planting season" if water_stress < 0.7 else "Delay planting until rains improve"
-        
+
         if is_asal:
             recommended_crops = ["Sorghum", "Millet", "Cowpeas", "Green grams", "Pigeon peas"]
             water_saving = ["Use drought-tolerant varieties", "Plant in basins to capture water", "Mulch heavily"]
         else:
             recommended_crops = ["Maize", "Beans", "Potatoes", "Vegetables", "Kale (Sukuma wiki)"]
             water_saving = ["Plant early to maximize rain", "Use organic mulch", "Practice crop rotation"]
-    
+
     elif 10 <= month <= 12:  # Short rains
         action = "PLANT" if water_stress < 0.7 else "WAIT"
         timing = "Short rains planting window" if water_stress < 0.7 else "Wait for better rainfall"
-        
+
         if is_asal:
             recommended_crops = ["Fast-maturing sorghum", "Green grams", "Cowpeas"]
             water_saving = ["Choose 60-day varieties", "Plant densely to shade soil", "Harvest rainwater"]
         else:
             recommended_crops = ["Short-season maize", "Beans", "Tomatoes", "Onions"]
             water_saving = ["Use improved varieties", "Apply mulch", "Plant cover crops"]
-    
+
     else:  # Dry seasons
         action = "MAINTAIN"
         timing = "Dry season - focus on water conservation"
-        
+
         if is_asal:
             recommended_crops = ["Irrigated vegetables (if water available)", "Fodder crops for livestock"]
             water_saving = ["Drip irrigation essential", "Harvest any available water", "Reduce crop area"]
         else:
             recommended_crops = ["High-value vegetables (if irrigation available)"]
             water_saving = ["Irrigate only critical crops", "Use shade nets", "Conserve water in tanks"]
-    
+
     # Critical actions by stress level
     if stress_level == "high":
         critical_actions = [
@@ -109,7 +108,7 @@ def get_planting_advice(
             "✅ Ensure water storage is ready",
             "✅ Plan crop rotation"
         ]
-    
+
     return {
         'season': season,
         'action': action,
@@ -125,7 +124,7 @@ def get_planting_advice(
 def get_next_planting_window(month: int, is_asal: bool) -> Tuple[str, str]:
     """
     Get next planting window information.
-    
+
     Returns:
         Tuple of (window_name, date_range)
     """
@@ -144,7 +143,7 @@ def get_next_planting_window(month: int, is_asal: bool) -> Tuple[str, str]:
 def get_crop_calendar(is_asal: bool) -> Dict[str, List[Tuple[str, str]]]:
     """
     Get full year crop calendar.
-    
+
     Returns:
         Dict mapping crop name to list of (month, activity) tuples
     """

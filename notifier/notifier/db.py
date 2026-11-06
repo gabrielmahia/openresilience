@@ -1,4 +1,7 @@
-import os, psycopg
+import os
+
+import psycopg
+
 
 def conn():
     c=psycopg.connect(os.environ['POSTGRES_URL'])

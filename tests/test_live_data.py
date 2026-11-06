@@ -1,5 +1,6 @@
 """Smoke tests for live data functions — openresilience."""
-import sys, os
+import sys
+
 sys.path.insert(0, "/tmp/openresilience")
 import unittest.mock as mock
 

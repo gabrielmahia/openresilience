@@ -9,10 +9,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from openresilience.glossary import (
+    WATER_STRESS_SCALE,
+    get_glossary_text,
     get_stress_category,
     get_stress_interpretation,
-    get_glossary_text,
-    WATER_STRESS_SCALE
 )
 
 
@@ -42,7 +42,7 @@ def test_stress_category_boundaries():
 def test_stress_interpretation_completeness():
     """Verify all categories have interpretations."""
     categories = ["minimal", "low", "moderate", "high", "extreme"]
-    
+
     for category in categories:
         interp = get_stress_interpretation(category)
         assert "meaning" in interp
@@ -65,7 +65,7 @@ def test_glossary_text_format():
 def test_interpretation_trust_labeling():
     """Verify all interpretations include demo data warnings."""
     categories = ["minimal", "low", "moderate", "high", "extreme"]
-    
+
     for category in categories:
         interp = get_stress_interpretation(category)
         confidence = interp["confidence"].lower()

@@ -1,9 +1,11 @@
 from fastapi import Request
+from or_shared.rate_limit import token_bucket_allow
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
+
 from api.redis_client import rconn
-from or_shared.rate_limit import token_bucket_allow
 from api.settings import Settings
+
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):

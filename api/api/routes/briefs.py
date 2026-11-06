@@ -1,9 +1,10 @@
+from io import BytesIO
+
+from api.db import conn
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
-from api.db import conn
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from io import BytesIO
 
 router = APIRouter()
 

@@ -43,9 +43,9 @@ try:
         lon=36.817223,
         days=16
     )
-    
+
     if result:
-        print(f"   ✓ NDVI fetched successfully!")
+        print("   ✓ NDVI fetched successfully!")
         print(f"   - NDVI value: {result['ndvi']:.3f}")
         print(f"   - Vegetation health: {result['vegetation_health']:.3f}")
         print(f"   - Quality flag: {result['quality']}")
@@ -54,7 +54,7 @@ try:
     else:
         print("   ✗ No NDVI data returned")
         print("   This might be normal if there's recent cloud cover")
-        
+
 except Exception as e:
     print(f"   ✗ Error fetching NDVI: {e}")
     sys.exit(1)

@@ -1,4 +1,6 @@
 import os
+
+
 class Provider:
     def send(self, to_hash: str, channel: str, text: str) -> None:
         raise NotImplementedError

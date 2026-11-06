@@ -1,7 +1,9 @@
+import csv
+import io
+
+from api.db import conn
 from fastapi import APIRouter
 from fastapi.responses import PlainTextResponse
-from api.db import conn
-import csv, io
 
 router = APIRouter()
 

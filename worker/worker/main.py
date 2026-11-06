@@ -1,10 +1,13 @@
 from datetime import timedelta, timezone
-from worker.settings import Settings
-from worker.db import conn
-from worker.adapters.synthetic import load_synthetic
-from worker.logic import compute_scores
-from or_shared.timeutils import utcnow, iso_z
+
+from or_shared.timeutils import iso_z, utcnow
 from or_shared.trust import confidence_from_inputs
+
+from worker.adapters.synthetic import load_synthetic
+from worker.db import conn
+from worker.logic import compute_scores
+from worker.settings import Settings
+
 
 def region_id_for_cell(lat_center, lon_center, step):
     return f"grid_{str(step).replace('.','p')}_lat_{lat_center:.2f}_lon_{lon_center:.2f}"

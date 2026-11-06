@@ -1,5 +1,7 @@
 import redis
+
 from api.settings import Settings
+
 
 def rconn():
     s=Settings()

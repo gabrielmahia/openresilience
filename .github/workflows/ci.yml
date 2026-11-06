@@ -14,7 +14,7 @@ jobs:
           python-version: "3.11"
       - name: Install deps
         run: |
-          pip install --upgrade pip ruff pytest
+          pip install --upgrade pip ruff==0.16.4 pytest
           pip install -r requirements.txt
       - name: Lint
         run: ruff check . --ignore E501

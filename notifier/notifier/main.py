@@ -1,7 +1,10 @@
-import os, time
-from datetime import datetime, timezone, timedelta
+import os
+import time
+from datetime import datetime, timedelta, timezone
+
 from notifier.db import conn
 from notifier.providers import get_provider
+
 
 def format_alert(a):
     return f"[{a['domain'].upper()} S{a['severity']}] {a['title']} • {a['region_id']}"

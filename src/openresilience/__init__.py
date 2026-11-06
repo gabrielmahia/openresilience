@@ -11,13 +11,10 @@ Modules:
 - visuals: Simple visual indicators for farmers
 """
 
-from . import scoring
-from . import resolution
+from . import resolution, scoring
 
 try:
-    from . import agriculture
-    from . import export
-    from . import visuals
+    from . import agriculture, export, visuals
 except ImportError:
     # New modules may not be available in older deployments
     pass
