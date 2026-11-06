@@ -14,29 +14,27 @@ Uses Africa's Talking API - Kenya's leading SMS platform
 
 import os
 from datetime import datetime
-from typing import List, Dict, Optional
-import hashlib
 
 
 class SMSAlertService:
     """
     Manages SMS subscriptions and sends alerts via Africa's Talking.
-    
+
     Subscription: SMS 'MAJI' to 22555
     Cost: Free (standard SMS rates apply)
     """
-    
+
     def __init__(self, api_key: str = None, username: str = None):
         """
         Initialize SMS service.
-        
+
         Args:
             api_key: Africa's Talking API key (or from environment)
             username: Africa's Talking username (or from environment)
         """
         self.api_key = api_key or os.getenv('AFRICASTALKING_API_KEY')
         self.username = username or os.getenv('AFRICASTALKING_USERNAME', 'sandbox')
-        
+
         # Initialize Africa's Talking
         try:
             import africastalking
@@ -49,21 +47,21 @@ class SMSAlertService:
         except Exception as e:
             print(f"SMS service initialization failed: {e}")
             self.available = False
-    
+
     def send_alert(
         self,
         phone_number: str,
         message: str,
         county: str = None
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send SMS alert to a phone number.
-        
+
         Args:
             phone_number: Kenyan phone number (+254...)
             message: Alert message (max 160 chars for single SMS)
             county: County name for tracking
-        
+
         Returns:
             Dict with status and details
         """
@@ -73,13 +71,13 @@ class SMSAlertService:
                 'error': 'SMS service not available',
                 'message': message
             }
-        
+
         # Format phone number for Kenya
         phone = self._format_kenyan_number(phone_number)
-        
+
         try:
             response = self.sms.send(message, [phone])
-            
+
             return {
                 'success': True,
                 'phone': phone,
@@ -95,7 +93,7 @@ class SMSAlertService:
                 'phone': phone,
                 'message': message
             }
-    
+
     def send_water_stress_alert(
         self,
         phone_number: str,
@@ -103,17 +101,17 @@ class SMSAlertService:
         stress_level: float,
         action: str,
         language: str = 'en'
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send water stress alert.
-        
+
         Args:
             phone_number: Recipient phone
             county: County name
             stress_level: Water stress (0-1)
             action: Required action
             language: 'en' or 'sw'
-        
+
         Returns:
             Send status
         """
@@ -128,7 +126,7 @@ class SMSAlertService:
             else:
                 status = "WASTANI"  # Moderate
                 emoji = "🟡"
-            
+
             message = (
                 f"{emoji} OPENRESILIENCE\n"
                 f"{county}: {status}\n"
@@ -146,39 +144,39 @@ class SMSAlertService:
             else:
                 status = "MODERATE"
                 emoji = "🟡"
-            
+
             message = (
                 f"{emoji} OPENRESILIENCE\n"
                 f"{county}: {status}\n"
                 f"Action: {action}\n"
                 f"SMS STOP to 22555 to unsubscribe"
             )
-        
+
         return self.send_alert(phone_number, message, county)
-    
+
     def send_planting_reminder(
         self,
         phone_number: str,
         county: str,
         season: str,
-        recommended_crops: List[str],
+        recommended_crops: list[str],
         language: str = 'en'
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send planting season reminder.
-        
+
         Args:
             phone_number: Recipient phone
             county: County name
             season: Season name
             recommended_crops: List of crops to plant
             language: 'en' or 'sw'
-        
+
         Returns:
             Send status
         """
         crops = ", ".join(recommended_crops[:3])  # Max 3 crops to fit SMS
-        
+
         if language == 'sw':
             message = (
                 f"🌱 MSIMU WA KUPANDA\n"
@@ -193,9 +191,9 @@ class SMSAlertService:
                 f"Plant: {crops}\n"
                 f"OpenResilience Kenya"
             )
-        
+
         return self.send_alert(phone_number, message, county)
-    
+
     def send_water_truck_schedule(
         self,
         phone_number: str,
@@ -203,17 +201,17 @@ class SMSAlertService:
         time: str,
         cost: str,
         language: str = 'en'
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send water truck schedule.
-        
+
         Args:
             phone_number: Recipient phone
             location: Delivery location
             time: Delivery time
             cost: Cost per 20L
             language: 'en' or 'sw'
-        
+
         Returns:
             Send status
         """
@@ -233,9 +231,9 @@ class SMSAlertService:
                 f"Cost: {cost}\n"
                 f"OpenResilience"
             )
-        
+
         return self.send_alert(phone_number, message)
-    
+
     def send_weekly_summary(
         self,
         phone_number: str,
@@ -244,10 +242,10 @@ class SMSAlertService:
         forecast: str,
         tip: str,
         language: str = 'en'
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send weekly water stress summary.
-        
+
         Args:
             phone_number: Recipient phone
             county: County name
@@ -255,7 +253,7 @@ class SMSAlertService:
             forecast: Short forecast
             tip: Water-saving tip
             language: 'en' or 'sw'
-        
+
         Returns:
             Send status
         """
@@ -275,22 +273,22 @@ class SMSAlertService:
                 f"Tip: {tip}\n"
                 f"OpenResilience"
             )
-        
+
         return self.send_alert(phone_number, message, county)
-    
+
     def _format_kenyan_number(self, phone: str) -> str:
         """
         Format phone number to Kenya format (+254...).
-        
+
         Args:
             phone: Raw phone number
-        
+
         Returns:
             Formatted +254... number
         """
         # Remove spaces and special chars
         clean = ''.join(c for c in phone if c.isdigit() or c == '+')
-        
+
         # Convert to +254 format
         if clean.startswith('+254'):
             return clean
@@ -302,27 +300,27 @@ class SMSAlertService:
             return f'+254{clean}'
         else:
             return clean
-    
-    def parse_incoming_sms(self, from_number: str, text: str) -> Dict[str, any]:
+
+    def parse_incoming_sms(self, from_number: str, text: str) -> dict[str, any]:
         """
         Parse incoming SMS for subscription/commands.
-        
+
         Commands:
         - MAJI: Subscribe to alerts
         - STOP: Unsubscribe
         - HELP: Get help
         - STATUS <county>: Get current status
-        
+
         Args:
             from_number: Sender phone number
             text: SMS text
-        
+
         Returns:
             Dict with command and response
         """
         text_upper = text.strip().upper()
         phone = self._format_kenyan_number(from_number)
-        
+
         if text_upper == 'MAJI':
             return {
                 'command': 'subscribe',
@@ -334,7 +332,7 @@ class SMSAlertService:
                     "SMS HELP for commands."
                 )
             }
-        
+
         elif text_upper == 'STOP':
             return {
                 'command': 'unsubscribe',
@@ -344,7 +342,7 @@ class SMSAlertService:
                     "SMS MAJI to 22555 to resubscribe anytime."
                 )
             }
-        
+
         elif text_upper == 'HELP':
             return {
                 'command': 'help',
@@ -357,19 +355,19 @@ class SMSAlertService:
                     "Free service, SMS rates apply"
                 )
             }
-        
+
         elif text_upper.startswith('STATUS'):
             # Extract county name
             parts = text_upper.split()
             county = parts[1] if len(parts) > 1 else None
-            
+
             return {
                 'command': 'status_request',
                 'phone': phone,
                 'county': county,
                 'response': None  # Will be filled by app with real data
             }
-        
+
         else:
             return {
                 'command': 'unknown',
@@ -386,13 +384,13 @@ class SMSAlertService:
 class SubscriptionManager:
     """
     Manages SMS subscriptions.
-    
+
     In production, use PostgreSQL or similar.
     """
-    
+
     def __init__(self):
         self.subscriptions = {}  # phone -> {county, language, active}
-    
+
     def subscribe(
         self,
         phone: str,
@@ -401,12 +399,12 @@ class SubscriptionManager:
     ) -> bool:
         """
         Subscribe phone number to alerts.
-        
+
         Args:
             phone: Phone number
             county: County to monitor
             language: 'en' or 'sw'
-        
+
         Returns:
             Success status
         """
@@ -417,14 +415,14 @@ class SubscriptionManager:
             'subscribed_at': datetime.now().isoformat()
         }
         return True
-    
+
     def unsubscribe(self, phone: str) -> bool:
         """
         Unsubscribe phone number.
-        
+
         Args:
             phone: Phone number
-        
+
         Returns:
             Success status
         """
@@ -433,14 +431,14 @@ class SubscriptionManager:
             self.subscriptions[phone]['unsubscribed_at'] = datetime.now().isoformat()
             return True
         return False
-    
-    def get_subscribers_for_county(self, county: str) -> List[Dict]:
+
+    def get_subscribers_for_county(self, county: str) -> list[dict]:
         """
         Get all active subscribers for a county.
-        
+
         Args:
             county: County name
-        
+
         Returns:
             List of subscriber dicts
         """
@@ -449,11 +447,11 @@ class SubscriptionManager:
             for phone, data in self.subscriptions.items()
             if data.get('active') and data.get('county') == county
         ]
-    
-    def get_all_active_subscribers(self) -> List[Dict]:
+
+    def get_all_active_subscribers(self) -> list[dict]:
         """
         Get all active subscribers.
-        
+
         Returns:
             List of subscriber dicts
         """

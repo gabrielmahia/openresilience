@@ -3,8 +3,8 @@ Smoke tests for resolution engine.
 """
 
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -14,7 +14,7 @@ from openresilience.resolution import (
     Resolution,
     ResolutionStatus,
     determine_resolution,
-    get_current_status
+    get_current_status,
 )
 
 
@@ -22,7 +22,7 @@ def test_enums_exist():
     """Verify enums are properly defined."""
     assert DataMode.DEMO.value == "demo"
     assert DataMode.LIVE.value == "live"
-    
+
     assert Resolution.WARD.value == "ward"
     assert Resolution.CONSTITUENCY.value == "constituency"
     assert Resolution.COUNTY.value == "county"
@@ -32,7 +32,7 @@ def test_enums_exist():
 def test_resolution_status_creation():
     """Verify ResolutionStatus can be created."""
     status = ResolutionStatus()
-    
+
     assert status.mode == DataMode.DEMO
     assert status.resolution == Resolution.COUNTY
     assert isinstance(status.timestamp, datetime)
@@ -43,7 +43,7 @@ def test_resolution_status_to_dict():
     """Verify status can be exported as dictionary."""
     status = ResolutionStatus()
     d = status.to_dict()
-    
+
     assert "mode" in d
     assert "resolution" in d
     assert "source" in d
@@ -95,7 +95,7 @@ def test_determine_resolution_fallback():
 def test_get_current_status_smoke():
     """Verify get_current_status doesn't crash."""
     status = get_current_status("Nairobi")
-    
+
     assert isinstance(status, ResolutionStatus)
     assert status.mode == DataMode.DEMO
     assert status.resolution in [r for r in Resolution]
@@ -105,6 +105,6 @@ def test_get_current_status_smoke():
 def test_status_includes_demo_warning():
     """Verify status includes demo data warnings."""
     status = get_current_status("Nairobi")
-    
+
     assert status.notes is not None
     assert "demo" in status.notes.lower() or "Demo" in status.notes

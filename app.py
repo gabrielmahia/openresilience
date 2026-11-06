@@ -1,6 +1,6 @@
 # OpenResilience Kenya - Community Water & Agricultural Planning System
 # Copyright (C) 2026 Gabriel Mahia
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
 # by the Free Software Foundation, either version 3 of the License, or
@@ -20,35 +20,51 @@
 # Focus: 47 Counties + Makongeni & Thika Landless Areas
 # Built for Kenyan Communities 🇰🇪
 
-import streamlit as st
-import pandas as pd
-import numpy as np
-import folium
-from streamlit_folium import folium_static
-from datetime import datetime, timedelta
-import base64
-from io import BytesIO
-from PIL import Image
-import sys
 import hashlib
-import xml.etree.ElementTree as ET
+import json
 import re
+import sys
+import urllib.request
+import xml.etree.ElementTree as ET
+from datetime import datetime
+
+import folium
+import numpy as np
+import pandas as pd
+import streamlit as st
+from streamlit_folium import folium_static
 
 # Add src to path for imports
 sys.path.insert(0, 'src')
 
 # Import OpenResilience modules
 try:
-    from openresilience.scoring import compute_resilience_scores, ResilienceScores
+    from openresilience.agriculture import get_next_planting_window, get_planting_advice
     from openresilience.database import (
-        init_database, ensure_region, insert_run, get_recent_runs,
-        insert_field_report, get_recent_reports, create_alert, get_active_alerts
+        create_alert,  # noqa: F401 - part of the availability check for the optional module
+        ensure_region,
+        get_active_alerts,
+        get_recent_reports,
+        get_recent_runs,  # noqa: F401 - part of the availability check for the optional module
+        init_database,
+        insert_field_report,
+        insert_run,  # noqa: F401 - part of the availability check for the optional module
     )
-    from openresilience.agriculture import get_planting_advice, get_next_planting_window
-    from openresilience.export import export_county_data_csv, export_county_summary_report, export_all_counties_excel
+    from openresilience.export import (
+        export_all_counties_excel,
+        export_county_data_csv,
+        export_county_summary_report,
+    )
+    from openresilience.scoring import (  # noqa: F401 - part of the availability check for the optional module
+        ResilienceScores,
+        compute_resilience_scores,
+    )
     from openresilience.visuals import (
-        get_stress_emoji, get_stress_text, get_action_required,
-        get_planting_recommendation, get_simple_forecast
+        get_action_required,
+        get_planting_recommendation,
+        get_simple_forecast,
+        get_stress_emoji,
+        get_stress_text,
     )
     SCORING_AVAILABLE = True
     DB_AVAILABLE = True
@@ -145,7 +161,7 @@ KENYA_COUNTIES = {
     "Murang'a": {"lat": -0.7833, "lon": 37.1500, "pop": 1056640, "arid": False},
     "Nyeri": {"lat": -0.4197, "lon": 36.9475, "pop": 759164, "arid": False},
     "Nyandarua": {"lat": -0.1833, "lon": 36.4667, "pop": 638289, "arid": False},
-    
+
     # Former Coast Province
     "Mombasa": {"lat": -4.0435, "lon": 39.6682, "pop": 1208333, "arid": False},
     "Kwale": {"lat": -4.1833, "lon": 39.4500, "pop": 866820, "arid": False},
@@ -153,7 +169,7 @@ KENYA_COUNTIES = {
     "Tana River": {"lat": -1.5167, "lon": 39.9833, "pop": 315943, "arid": True},
     "Lamu": {"lat": -2.2717, "lon": 40.9020, "pop": 143920, "arid": False},
     "Taita Taveta": {"lat": -3.3167, "lon": 38.3500, "pop": 340671, "arid": True},
-    
+
     # Former Eastern Province
     "Marsabit": {"lat": 2.3284, "lon": 37.9891, "pop": 459785, "arid": True},
     "Isiolo": {"lat": 0.3556, "lon": 37.5817, "pop": 268002, "arid": True},
@@ -163,15 +179,15 @@ KENYA_COUNTIES = {
     "Kitui": {"lat": -1.3667, "lon": 38.0167, "pop": 1136187, "arid": True},
     "Machakos": {"lat": -1.5177, "lon": 37.2634, "pop": 1421932, "arid": True},
     "Makueni": {"lat": -2.2667, "lon": 37.8333, "pop": 987653, "arid": True},
-    
+
     # Nairobi (Capital)
     "Nairobi": {"lat": -1.2921, "lon": 36.8219, "pop": 4397073, "arid": False},
-    
+
     # Former North Eastern Province (ASAL - Arid & Semi-Arid Lands)
     "Garissa": {"lat": -0.4569, "lon": 39.6580, "pop": 841353, "arid": True},
     "Wajir": {"lat": 1.7500, "lon": 40.0667, "pop": 781263, "arid": True},
     "Mandera": {"lat": 3.9167, "lon": 41.8500, "pop": 1025756, "arid": True},
-    
+
     # Former Nyanza Province
     "Siaya": {"lat": -0.0636, "lon": 34.2864, "pop": 993183, "arid": False},
     "Kisumu": {"lat": -0.0917, "lon": 34.7680, "pop": 1155574, "arid": False},
@@ -179,7 +195,7 @@ KENYA_COUNTIES = {
     "Migori": {"lat": -1.0634, "lon": 34.4731, "pop": 1116436, "arid": False},
     "Kisii": {"lat": -0.6817, "lon": 34.7680, "pop": 1266860, "arid": False},
     "Nyamira": {"lat": -0.5667, "lon": 34.9333, "pop": 605576, "arid": False},
-    
+
     # Former Rift Valley Province
     "Turkana": {"lat": 3.1167, "lon": 35.6000, "pop": 1016867, "arid": True},
     "West Pokot": {"lat": 1.6215, "lon": 35.1121, "pop": 621241, "arid": True},
@@ -195,7 +211,7 @@ KENYA_COUNTIES = {
     "Kajiado": {"lat": -2.0978, "lon": 36.7820, "pop": 1117840, "arid": True},
     "Kericho": {"lat": -0.3681, "lon": 35.2839, "pop": 901777, "arid": False},
     "Bomet": {"lat": -0.8000, "lon": 35.3333, "pop": 875689, "arid": False},
-    
+
     # Former Western Province
     "Kakamega": {"lat": 0.2827, "lon": 34.7519, "pop": 1867579, "arid": False},
     "Vihiga": {"lat": 0.0667, "lon": 34.7167, "pop": 590013, "arid": False},
@@ -206,7 +222,7 @@ KENYA_COUNTIES = {
 # Special Focus Areas - Vulnerable Communities
 SPECIAL_AREAS = {
     "Makongeni (Thika)": {
-        "lat": -1.0332, "lon": 37.0893, 
+        "lat": -1.0332, "lon": 37.0893,
         "type": "Informal Settlement",
         "county": "Kiambu",
         "challenges": ["Unreliable piped water", "Expensive water kiosks", "No rainwater harvesting"],
@@ -215,7 +231,7 @@ SPECIAL_AREAS = {
     },
     "Thika Landless": {
         "lat": -1.0419, "lon": 37.0977,
-        "type": "Landless Community", 
+        "type": "Landless Community",
         "county": "Kiambu",
         "challenges": ["No land for wells", "Dependent on vendors", "High water costs"],
         "population": 8000
@@ -239,11 +255,11 @@ SPECIAL_AREAS = {
 # Styling
 st.markdown("""
 <style>
-    .stButton>button { 
-        width: 100%; 
-        border-radius: 6px; 
-        height: 3em; 
-        font-weight: 600; 
+    .stButton>button {
+        width: 100%;
+        border-radius: 6px;
+        height: 3em;
+        font-weight: 600;
         transition: all 0.3s;
     }
     .forecast-good {
@@ -350,7 +366,7 @@ if 'initialized' not in st.session_state:
 def load_county_data():
     """Generate water stress data for all 47 counties with multi-index scoring."""
     np.random.seed(42)
-    
+
     # Try to import NASA adapter
     nasa_available = False
     try:
@@ -358,7 +374,7 @@ def load_county_data():
         nasa_available = True
     except ImportError:
         pass
-    
+
     # Try to import Earth Engine adapter
     gee_available = False
     try:
@@ -366,17 +382,17 @@ def load_county_data():
         gee_available = True
     except ImportError:
         pass
-    
+
     county_list = []
     nasa_success_count = 0
     gee_success_count = 0
-    
+
     for county, info in KENYA_COUNTIES.items():
         # TRY REAL NASA DATA FIRST
         real_rainfall_anom = None
         real_soil_moisture = None
         data_source = "demo"
-        
+
         if nasa_available:
             try:
                 real_rainfall_anom, real_soil_moisture = get_nasa_data_for_county(
@@ -385,9 +401,9 @@ def load_county_data():
                 if real_rainfall_anom is not None and real_soil_moisture is not None:
                     data_source = "nasa"
                     nasa_success_count += 1
-            except Exception as e:
+            except Exception:
                 pass  # Silently fall back to demo
-        
+
         # TRY REAL EARTH ENGINE VEGETATION DATA
         real_vegetation = None
         if gee_available:
@@ -401,9 +417,9 @@ def load_county_data():
                     else:
                         data_source = "gee"
                     gee_success_count += 1
-            except Exception as e:
+            except Exception:
                 pass  # Silently fall back to demo
-        
+
         # Generate realistic input signals based on region type
         if info['arid']:
             # ASAL regions: drier conditions
@@ -419,13 +435,13 @@ def load_county_data():
             vegetation = real_vegetation if real_vegetation is not None else np.random.uniform(0.50, 0.85)
             price_change = 8.0   # Non-ASAL baseline: moderate price pressure (demo)
             stockouts = 0        # Non-ASAL baseline: typical no stockouts (demo)
-        
+
         # Seasonal adjustment (current month) - only for demo data
         if real_vegetation is None and data_source in ["demo", "nasa"]:
             month = datetime.now().month
             if 3 <= month <= 5 or 10 <= month <= 12:  # Rainy seasons
                 vegetation = min(1.0, vegetation + 0.10)
-        
+
         # Only adjust non-real data for rainfall/soil
         if data_source == "demo":
             month = datetime.now().month
@@ -436,10 +452,10 @@ def load_county_data():
                 rainfall_anom -= 10  # Worse rainfall
                 soil_moisture = max(0.0, soil_moisture - 0.10)
                 vegetation = max(0.0, vegetation - 0.08)
-        
+
         # Field reports based on severity
         field_reports = 0    # Demo: no community reports. Real submissions appear in Field Reports tab.
-        
+
         # Compute multi-index scores
         if SCORING_AVAILABLE:
             try:
@@ -451,13 +467,13 @@ def load_county_data():
                     market_stockouts=stockouts,
                     field_reports_24h=field_reports
                 )
-                
+
                 wsi = scores.wsi / 100  # Convert to 0-1 for display
                 fsi = scores.fsi / 100
                 msi = scores.msi / 100
                 cri = scores.cri / 100
                 confidence = scores.confidence
-            except Exception as e:
+            except Exception:
                 # Fallback to simple calculation
                 wsi = ((-rainfall_anom / 100) * 0.6 + (1 - soil_moisture) * 0.4)
                 fsi = wsi * 0.8
@@ -471,7 +487,7 @@ def load_county_data():
             msi = (price_change / 100) * 0.7
             cri = (wsi * 0.45 + fsi * 0.35 + msi * 0.20)
             confidence = 50
-        
+
         county_list.append({
             'County': county,
             'Lat': info['lat'],
@@ -487,13 +503,13 @@ def load_county_data():
             'Severity': 3 if cri > 0.70 else 2 if cri > 0.50 else 1 if cri > 0.30 else 0,
             'DataSource': data_source  # Track if using real NASA data
         })
-    
+
     return pd.DataFrame(county_list), nasa_success_count, gee_success_count
 
 def generate_forecast(county_name, current_stress, is_asal):
     """Generate actionable short, mid, long-term forecast."""
     month = datetime.now().month
-    
+
     # Determine seasonal trend
     if 3 <= month <= 5:  # Long rains (Mar-May)
         short_trend = -0.08
@@ -507,17 +523,17 @@ def generate_forecast(county_name, current_stress, is_asal):
     else:  # Jan-Feb dry period
         short_trend = 0.08
         season_note = "Peak dry season"
-    
+
     # ASAL areas have more extreme swings
     if is_asal:
         short_trend *= 1.5
-    
+
     # Calculate forecasts — deterministic seasonal model (no random noise)
     # Uncertainty is communicated via confidence labels, not cosmetic jitter
     short = np.clip(current_stress + short_trend, 0, 1)
     medium = np.clip(current_stress + short_trend * 2, 0, 1)
     long = np.clip(current_stress + short_trend * 3, 0, 1)
-    
+
     # Determine trend direction
     if short < current_stress - 0.05:
         trend = "improving"
@@ -528,7 +544,7 @@ def generate_forecast(county_name, current_stress, is_asal):
     else:
         trend = "stable"
         trend_emoji = "➡️"
-    
+
     return {
         'short': short,
         'medium': medium,
@@ -541,7 +557,7 @@ def generate_forecast(county_name, current_stress, is_asal):
 
 def get_community_advice(stress, forecast, county, is_asal, population):
     """Generate hyperlocal, actionable advice."""
-    
+
     advice = {
         'immediate': [],
         'water_mgmt': [],
@@ -550,7 +566,7 @@ def get_community_advice(stress, forecast, county, is_asal, population):
         'resources': [],
         'timeline': []
     }
-    
+
     # IMMEDIATE ACTIONS (Next 2 weeks)
     if stress > 0.80:
         advice['immediate'] = [
@@ -573,7 +589,7 @@ def get_community_advice(stress, forecast, county, is_asal, population):
             "🏗️ Use this time to improve water infrastructure",
             "📊 Monitor your household water usage patterns"
         ]
-    
+
     # WATER MANAGEMENT STRATEGIES
     if stress > 0.70:
         advice['water_mgmt'] = [
@@ -598,7 +614,7 @@ def get_community_advice(stress, forecast, county, is_asal, population):
             "🌧️ Install rainwater system BEFORE crisis (cheaper now)",
             "📱 Join county water WhatsApp group for updates"
         ]
-    
+
     # AGRICULTURAL GUIDANCE
     month = datetime.now().month
     if 1 <= month <= 3:  # Planning for long rains
@@ -653,7 +669,7 @@ def get_community_advice(stress, forecast, county, is_asal, population):
             "🚜 Maintain farm equipment",
             "📚 Attend farmer training programs"
         ]
-    
+
     # LIVESTOCK MANAGEMENT (especially for ASAL counties)
     if is_asal:
         if stress > 0.75:
@@ -680,7 +696,7 @@ def get_community_advice(stress, forecast, county, is_asal, population):
                 "💉 Good time for vaccinations and treatments",
                 "🌾 Consider growing fodder crops (Napier grass)"
             ]
-    
+
     # RESOURCES & CONTACTS
     advice['resources'] = [
         "**Emergency Contacts:**",
@@ -698,7 +714,7 @@ def get_community_advice(stress, forecast, county, is_asal, population):
         "  • Typical cost: 50-100 KES per 20L jerrican",
         "  • Bowser delivery: 2000-5000 KES per 10,000L"
     ]
-    
+
     # TIMELINE FOR NEXT 12 MONTHS
     if forecast['trend'] == 'worsening':
         advice['timeline'] = [
@@ -726,7 +742,7 @@ def get_community_advice(stress, forecast, county, is_asal, population):
             "  • Normal water availability expected",
             "  • Focus on preparedness for next dry spell"
         ]
-    
+
     return advice
 
 # =============================================================================
@@ -770,13 +786,13 @@ st.markdown("""
     /* ========================================
        MOBILE-FIRST DESIGN (Farmers on phones)
        ======================================== */
-    
+
     /* Base: Optimized for small screens */
     body {
         font-size: 16px; /* Readable on mobile */
         line-height: 1.6;
     }
-    
+
     /* Large touch targets for farmers */
     button, .stDownloadButton button, .stButton button {
         min-height: 48px !important;
@@ -785,12 +801,12 @@ st.markdown("""
         font-size: 16px !important;
         font-weight: 600;
     }
-    
+
     /* High contrast text - critical for outdoor use */
     .stMarkdown, .stText, p, div {
         color: #1a1a1a;
     }
-    
+
     /* Visual indicator cards - mobile optimized */
     .status-card {
         text-align: center;
@@ -801,13 +817,13 @@ st.markdown("""
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         border: 2px solid #e0e0e0;
     }
-    
+
     .status-emoji {
         font-size: 2.5em;
         margin-bottom: 8px;
         display: block;
     }
-    
+
     /* Agricultural guidance - farmer-friendly */
     .agriculture-section {
         background: #e8f5e9;
@@ -818,17 +834,17 @@ st.markdown("""
         font-size: 1.05em;
         line-height: 1.8;
     }
-    
+
     .agriculture-section h4 {
         color: #2e7d32;
         margin-top: 0;
         font-size: 1.3em;
     }
-    
+
     .agriculture-section strong {
         color: #1b5e20;
     }
-    
+
     /* Alert boxes - EXCELLENT CONTRAST */
     .forecast-warning {
         background: #fff3cd;
@@ -838,19 +854,19 @@ st.markdown("""
         margin: 20px 0;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-    
+
     .forecast-warning h3 {
         color: #000000 !important;
         font-size: 1.4em;
         font-weight: 700;
         margin-top: 0 !important;
     }
-    
+
     .forecast-warning p {
         color: #000000 !important;
         font-size: 1.1em;
     }
-    
+
     .forecast-good {
         background: #d4edda;
         padding: 25px;
@@ -859,19 +875,19 @@ st.markdown("""
         margin: 20px 0;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-    
+
     .forecast-good h3 {
         color: #000000 !important;
         font-size: 1.4em;
         font-weight: 700;
         margin-top: 0 !important;
     }
-    
+
     .forecast-good p {
         color: #000000 !important;
         font-size: 1.1em;
     }
-    
+
     /* Metrics - larger for quick glance */
     .stMetric {
         background: #ffffff;
@@ -879,19 +895,19 @@ st.markdown("""
         border-radius: 8px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
-    
+
     .stMetric label {
         font-size: 0.95em !important;
         font-weight: 600 !important;
         color: #424242;
     }
-    
+
     .stMetric [data-testid="stMetricValue"] {
         font-size: 2em !important;
         font-weight: 700 !important;
         color: #1a1a1a;
     }
-    
+
     /* Export buttons - prominent */
     .stDownloadButton button {
         width: 100%;
@@ -900,104 +916,104 @@ st.markdown("""
         border: none !important;
         font-weight: 600 !important;
     }
-    
+
     .stDownloadButton button:hover {
         background: #1565c0 !important;
     }
-    
+
     /* ========================================
        TABLET & DESKTOP (NGO administrators)
        ======================================== */
-    
+
     @media (min-width: 768px) {
         /* More compact for desktop */
         .stMetric {
             padding: 10px;
         }
-        
+
         .status-card {
             padding: 20px;
         }
-        
+
         button {
             min-height: 44px !important;
         }
-        
+
         /* Better use of space */
         .agriculture-section {
             font-size: 1em;
         }
     }
-    
+
     @media (max-width: 767px) {
         /* MOBILE OPTIMIZATIONS */
-        
+
         /* Reduce header sizes for mobile */
         h1 {
             font-size: 1.6em !important;
             line-height: 1.2;
         }
-        
+
         h2 {
             font-size: 1.3em !important;
         }
-        
+
         h3 {
             font-size: 1.1em !important;
         }
-        
+
         /* Stack columns on mobile */
         .css-1d391kg {
             padding: 1rem 0.5rem;
         }
-        
+
         /* Larger tap targets */
         .stSelectbox, .stRadio {
             font-size: 16px !important;
         }
-        
+
         /* Better spacing */
         .stMarkdown {
             margin-bottom: 1rem;
         }
-        
+
         /* Simplified metrics */
         .stMetric [data-testid="stMetricValue"] {
             font-size: 1.8em !important;
         }
     }
-    
+
     /* ========================================
        ACCESSIBILITY (All devices)
        ======================================== */
-    
+
     /* High contrast for outdoor viewing */
     ::selection {
         background: #ffeb3b;
         color: #000;
     }
-    
+
     /* Focus indicators for keyboard navigation */
     button:focus, select:focus, input:focus {
         outline: 3px solid #2196f3 !important;
         outline-offset: 2px;
     }
-    
+
     /* Links - clearly visible */
     a {
         color: #1976d2;
         text-decoration: underline;
         font-weight: 600;
     }
-    
+
     a:hover {
         color: #1565c0;
     }
-    
+
     /* ========================================
        FARMER-SPECIFIC ENHANCEMENTS
        ======================================== */
-    
+
     /* Simple language indicators */
     .simple-indicator {
         font-size: 1.3em;
@@ -1007,25 +1023,25 @@ st.markdown("""
         border-radius: 10px;
         margin: 10px 0;
     }
-    
+
     .indicator-good {
         background: #c8e6c9;
         color: #1b5e20;
         border: 3px solid #4caf50;
     }
-    
+
     .indicator-moderate {
         background: #fff9c4;
         color: #f57f17;
         border: 3px solid #fdd835;
     }
-    
+
     .indicator-bad {
         background: #ffccbc;
         color: #bf360c;
         border: 3px solid #ff5722;
     }
-    
+
     /* Emoji sizing for clarity */
     .big-emoji {
         font-size: 3em;
@@ -1033,11 +1049,11 @@ st.markdown("""
         display: block;
         margin: 10px auto;
     }
-    
+
     /* ========================================
        PERFORMANCE OPTIMIZATIONS
        ======================================== */
-    
+
     /* Reduce animations on mobile to save battery */
     @media (max-width: 767px) {
         * {
@@ -1045,34 +1061,34 @@ st.markdown("""
             transition-duration: 0.01s !important;
         }
     }
-    
+
     /* Better table readability */
     .dataframe {
         font-size: 0.95em;
         line-height: 1.6;
     }
-    
+
     .dataframe th {
         background: #f5f5f5;
         font-weight: 700;
         color: #1a1a1a;
     }
-    
+
     .dataframe td {
         color: #424242;
     }
-    
+
     /* Tab navigation - larger touch targets */
     .stTabs [data-baseweb="tab-list"] {
         gap: 4px;
     }
-    
+
     .stTabs [data-baseweb="tab"] {
         padding: 14px 24px;
         font-size: 1.05em;
         font-weight: 600;
     }
-    
+
     /* Expander - clear interaction */
     .streamlit-expanderHeader {
         font-size: 1.15em;
@@ -1081,7 +1097,7 @@ st.markdown("""
         background: #f5f5f5;
         border-radius: 8px;
     }
-    
+
     .streamlit-expanderHeader:hover {
         background: #eeeeee;
     }
@@ -1113,17 +1129,17 @@ with tab1:
         if lang == "Kiswahili":
             st.markdown("""
             **Elimu Tu:** Zana ya elimu. Hakikisha taarifa na serikali kabla ya maamuzi.
-            
+
             **Data:** Kwa sasa tunatumia data ya majaribio. Baadaye, data halisi ya NASA.
-            
+
             **Uhakiki:** Thibitisha maji kupitia vyanzo vya karibu kabla ya hatua yoyote.
             """)
         else:
             st.markdown("""
             **Educational Tool:** For planning purposes. Verify with local authorities before major decisions.
-            
+
             **Data:** Currently demonstration data. Production system uses real NASA satellite data (IMERG + SMAP).
-            
+
             **Verification:** Always confirm water availability through local sources before acting.
             """)
 
@@ -1143,21 +1159,21 @@ with st.sidebar.expander("📚 Understanding Water Stress"):
     try:
         from openresilience.glossary import (
             get_glossary_text,
-            get_stress_category,
-            get_stress_interpretation
+            get_stress_category,  # noqa: F401 - part of the availability check for the optional module
+            get_stress_interpretation,  # noqa: F401 - part of the availability check for the optional module
         )
         st.markdown(get_glossary_text())
     except ImportError:
         st.caption("Water stress terms are being updated — check back soon.")
         st.markdown("""
         **Water Stress Index (0-10 scale):**
-        
-        - **0-2**: Minimal stress  
-        - **2-4**: Low stress  
-        - **4-6**: Moderate stress  
-        - **6-8**: High stress  
-        - **8-10**: Extreme stress  
-        
+
+        - **0-2**: Minimal stress
+        - **2-4**: Low stress
+        - **4-6**: Moderate stress
+        - **6-8**: High stress
+        - **8-10**: Extreme stress
+
         ⚠️ Demo data only - not real-time measurements
         """)
 
@@ -1175,10 +1191,10 @@ if special_area != "None":
     area_info = SPECIAL_AREAS[special_area]
     st.sidebar.markdown(f"""
     <div class="special-area-badge">{area_info['type'].upper()}</div>
-    
-    **Location**: {area_info['county']} County  
+
+    **Location**: {area_info['county']} County
     **Population**: ~{area_info['population']:,}
-    
+
     **Key Challenges**:
     """, unsafe_allow_html=True)
     for challenge in area_info['challenges']:
@@ -1208,7 +1224,7 @@ if _cc:
                   ("🔴 Drought signal" if _wx["drought_signal"] else "Normal"),
             delta_color="inverse" if _wx["flood_signal"] or _wx["drought_signal"] else "off")
         st.sidebar.metric("Humidity", f"{_wx['humidity_pct']:.0f}%")
-        st.sidebar.caption(f"Open-Meteo · hourly")
+        st.sidebar.caption("Open-Meteo · hourly")
         if _wx["drought_signal"]:
             st.sidebar.error(f"Drought signal: {_wx['precip_total']}mm forecast (<5mm threshold)")
         if _wx["flood_signal"]:
@@ -1222,22 +1238,22 @@ if _cc:
 # Geographic hierarchy selectors (optional, based on data availability)
 try:
     from openresilience.geo import load_hierarchy
-    
+
     geo = load_hierarchy()
-    
+
     if geo.is_available() and selected_county in geo.get_counties():
         constituencies = geo.get_constituencies(selected_county)
-        
+
         if constituencies:
             selected_constituency = st.sidebar.selectbox(
                 "Constituency (if available)",
                 ["County-wide"] + constituencies,
                 help="Sub-county administrative unit"
             )
-            
+
             if selected_constituency != "County-wide":
                 wards = geo.get_wards(selected_county, selected_constituency)
-                
+
                 if wards:
                     selected_ward = st.sidebar.selectbox(
                         "Ward (if available)",
@@ -1272,15 +1288,15 @@ county_row = df[df['County'] == selected_county].iloc[0]
 st.sidebar.subheader("📊 Data Status")
 try:
     from openresilience.resolution import get_current_status
-    
+
     # Check if geo hierarchy is available
     hierarchy_available = False
     if 'geo' in locals():
         try:
             hierarchy_available = geo.is_available()
-        except:
+        except Exception:
             pass
-    
+
     status = get_current_status(
         selected_county,
         selected_constituency if 'selected_constituency' in locals() else None,
@@ -1289,11 +1305,11 @@ try:
         ward_data_available=False,  # No ward data in demo
         data_source=county_row.get('DataSource', 'demo')
     )
-    
+
     st.sidebar.metric("Mode", status.mode.value.upper())
     st.sidebar.metric("Resolution", status.resolution.value.title())
     st.sidebar.caption(f"**Source:** {status.source}")
-    
+
     # Show data source badge — must be prominent so NGO users know what they're acting on
     if 'DataSource' in county_row:
         data_src = county_row['DataSource']
@@ -1314,12 +1330,12 @@ try:
             "⚠️ **SIMULATED DATA** — Seasonal averages, not current satellite readings.",
             icon=None
         )
-    
+
     st.sidebar.caption(f"**Updated:** {status.timestamp.strftime('%Y-%m-%d %H:%M')}")
-    
+
     if status.notes:
         st.sidebar.info(status.notes, icon="ℹ️")
-    
+
 except ImportError:
     st.sidebar.warning("Resolution engine not available", icon="⚠️")
 
@@ -1334,7 +1350,7 @@ st.sidebar.subheader("📈 Resilience Indices")
 col_idx1, col_idx2 = st.sidebar.columns(2)
 
 with col_idx1:
-    st.metric("WSI (Water)", f"{county_row['WSI']:.0%}", 
+    st.metric("WSI (Water)", f"{county_row['WSI']:.0%}",
               help="Water Stress Index")
     st.metric("FSI (Food)", f"{county_row['FSI']:.0%}",
               help="Food Stress Index")
@@ -1357,7 +1373,7 @@ st.sidebar.metric("Risk Level", severity_label)
 if EXPORT_AVAILABLE:
     st.sidebar.divider()
     st.sidebar.subheader("📥 Export Data")
-    
+
     # County Summary Report
     summary_report = export_county_summary_report(
         selected_county,
@@ -1371,7 +1387,7 @@ if EXPORT_AVAILABLE:
         mime="text/plain",
         help="Human-readable summary report"
     )
-    
+
     # CSV Export
     county_csv = export_county_data_csv(df[df['County'] == selected_county])
     st.sidebar.download_button(
@@ -1406,7 +1422,7 @@ with col_overview1:
         ],
         'Color': ['#3498db', '#27ae60', '#f39c12', '#e74c3c']
     })
-    
+
     # Display as bar chart
     st.bar_chart(
         indices_data.set_index('Index')['Score'],
@@ -1451,7 +1467,7 @@ forecast = generate_forecast(
 if VISUALS_AVAILABLE:
     st.divider()
     st.subheader("📊 Quick Status")
-    
+
     wsi = county_row['WSI']
     current_month = datetime.now().month
 
@@ -1519,7 +1535,7 @@ if forecast['trend'] == 'worsening':
     <div class="forecast-warning">
         <h3 style="color: #000; margin-top: 0;">{forecast['trend_emoji']} ⚠️ ALERT: Water Stress Increasing</h3>
         <p style="font-size: 1.1em; margin: 10px 0; color: #000;">
-        <strong>{selected_county} County</strong> is expected to experience <strong>worsening water stress</strong> 
+        <strong>{selected_county} County</strong> is expected to experience <strong>worsening water stress</strong>
         over the next 6-12 months.
         </p>
         <p style="margin: 5px 0; color: #000;">
@@ -1534,7 +1550,7 @@ else:
     <div class="forecast-good">
         <h3 style="color: #000; margin-top: 0;">{forecast['trend_emoji']} ✅ Good News: Conditions Improving</h3>
         <p style="font-size: 1.1em; margin: 10px 0; color: #000;">
-        <strong>{selected_county} County</strong> water stress is expected to <strong>improve or stabilize</strong> 
+        <strong>{selected_county} County</strong> water stress is expected to <strong>improve or stabilize</strong>
         over the next 6-12 months.
         </p>
         <p style="margin: 5px 0; color: #000;">
@@ -1550,16 +1566,16 @@ st.divider()
 # Agricultural Guidance for Farmers
 if AGRICULTURE_AVAILABLE:
     st.subheader("🌾 Agricultural Guidance")
-    
+
     advice = get_planting_advice(
         selected_county,
         is_asal,
         county_row['WSI'],
         datetime.now().month
     )
-    
+
     col1, col2 = st.columns([1, 1])
-    
+
     with col1:
         st.markdown(f"""
         <div style="background: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 5px solid #4caf50;">
@@ -1574,23 +1590,23 @@ if AGRICULTURE_AVAILABLE:
             </p>
         </div>
         """, unsafe_allow_html=True)
-        
+
         st.markdown("**💧 Water-Saving Tips:**")
         for tip in advice['water_saving_tips']:
             st.markdown(f"- {tip}")
-    
+
     with col2:
         st.markdown("**🌱 Recommended Crops:**")
         for crop in advice['recommended_crops']:
             st.markdown(f"- {crop}")
-        
+
         st.markdown("**⚡ Critical Actions:**")
         for action in advice['critical_actions']:
             st.markdown(f"{action}")
-        
+
         next_window, dates = get_next_planting_window(datetime.now().month, is_asal)
         st.info(f"📅 **Next Planting Window:** {next_window} ({dates})")
-        
+
         st.caption(f"💁 **Need Help?** Contact {advice['contact']}")
 
 st.divider()
@@ -1600,19 +1616,19 @@ col_map, col_advice = st.columns([2, 3])
 
 with col_map:
     st.subheader("🗺️ Kenya Water Stress Map")
-    
+
     # Create map
     m = folium.Map(
         location=[county_row['Lat'], county_row['Lon']],
         zoom_start=7,
         tiles="OpenStreetMap"
     )
-    
+
     # Add all 47 counties
     for _, row in df.iterrows():
         color = 'red' if row['Severity'] >= 3 else 'orange' if row['Severity'] >= 2 else 'yellow' if row['Severity'] >= 1 else 'green'
         size = 12 if row['County'] == selected_county else 6
-        
+
         folium.CircleMarker(
             location=[row['Lat'], row['Lon']],
             radius=size,
@@ -1623,7 +1639,7 @@ with col_map:
             popup=f"<b>{row['County']}</b><br>Stress: {row['Current_Stress']:.0%}<br>Pop: {row['Population']:,}",
             tooltip=row['County']
         ).add_to(m)
-    
+
     # Add special areas with star markers
     for area, info in SPECIAL_AREAS.items():
         folium.Marker(
@@ -1632,17 +1648,17 @@ with col_map:
             icon=folium.Icon(color='purple', icon='star'),
             tooltip=f"⭐ {area}"
         ).add_to(m)
-    
+
     folium_static(m, width=500, height=500)
-    
+
     st.caption("""
-    **Legend:** 🔴 Critical (>80%) • 🟠 High (60-80%) • 🟡 Moderate (40-60%) • 🟢 Low (<40%)  
+    **Legend:** 🔴 Critical (>80%) • 🟠 High (60-80%) • 🟡 Moderate (40-60%) • 🟢 Low (<40%)
     ⭐ Purple stars = Special focus areas (Makongeni, Thika Landless, etc.)
     """)
 
 with col_advice:
     st.subheader("📋 Practical Action Plan")
-    
+
     # Generate detailed advice
     advice = get_community_advice(
         county_row['Current_Stress'],
@@ -1651,7 +1667,7 @@ with col_advice:
         is_asal,
         county_row['Population']
     )
-    
+
     # Tabbed interface for different advice categories
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "🚨 Immediate",
@@ -1660,24 +1676,24 @@ with col_advice:
         "🐄 Livestock" if is_asal else "📅 Timeline",
         "📞 Resources"
     ])
-    
+
     with tab1:
         for item in advice['immediate']:
             st.markdown(item)
-    
+
     with tab2:
         for item in advice['water_mgmt']:
             st.markdown(item)
-    
+
     with tab3:
         for item in advice['agriculture']:
             st.markdown(item)
-    
+
     with tab4:
         items = advice['livestock'] if is_asal else advice['timeline']
         for item in items:
             st.markdown(item)
-    
+
     with tab5:
         for item in advice['resources']:
             st.markdown(item)
@@ -1709,12 +1725,12 @@ with st.expander("📊 Compare All 47 Counties"):
             use_container_width=True,
             height=400
         )
-    
+
     # Excel Export Button
     if EXPORT_AVAILABLE:
         st.markdown("---")
         col_export1, col_export2, col_export3 = st.columns([1, 1, 2])
-        
+
         with col_export1:
             excel_data = export_all_counties_excel(df)
             st.download_button(
@@ -1724,7 +1740,7 @@ with st.expander("📊 Compare All 47 Counties"):
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 help="Multi-sheet Excel with summary statistics"
             )
-        
+
         with col_export2:
             csv_data = export_county_data_csv(df)
             st.download_button(
@@ -1734,7 +1750,7 @@ with st.expander("📊 Compare All 47 Counties"):
                 mime="text/csv",
                 help="All counties data as CSV"
             )
-        
+
         with col_export3:
             st.caption("💡 **Tip:** Excel file includes multiple sheets: All Counties, ASAL Counties, High Risk, and Summary Statistics")
 
@@ -1748,33 +1764,33 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
+
     st.markdown("")
-    
+
     # Try to initialize SMS service
     try:
         # Import SMS service
         from openresilience.sms_alerts import SMSAlertService
-        
+
         # Get credentials from Streamlit secrets
         username = st.secrets.get("africastalking", {}).get("username", "sandbox")
         api_key = st.secrets.get("africastalking", {}).get("api_key")
-        
+
         if api_key:
             # Initialize service
             sms_service = SMSAlertService(api_key=api_key, username=username)
-            
+
             if sms_service.available:
                 st.success("✅ SMS Service Connected! Ready to send alerts!")
-                
+
                 # Two tabs: Send Test SMS | About Service
                 sms_tab1, sms_tab2 = st.tabs(["📤 Send Test Alert", "ℹ️ About Service"])
-                
+
                 with sms_tab1:
                     st.subheader("Send Test Water Stress Alert")
-                    
+
                     col1, col2 = st.columns([1, 1])
-                    
+
                     with col1:
                         # Phone number input
                         test_phone = st.text_input(
@@ -1782,28 +1798,28 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                             placeholder="0712345678 or +254712345678",
                             help="Enter a Kenya phone number to receive test SMS"
                         )
-                        
+
                         # County selector
                         test_county = st.selectbox(
                             "📍 County",
                             options=[selected_county] + [c for c in df['County'].tolist() if c != selected_county],
                             help="Select county for alert"
                         )
-                        
+
                         # Language selector
                         test_language = st.radio(
                             "🌐 Language",
                             options=["English", "Kiswahili"],
                             horizontal=True
                         )
-                    
+
                     with col2:
                         st.markdown("**Preview Message:**")
-                        
+
                         # Get county data
                         test_county_data = df[df['County'] == test_county].iloc[0]
                         test_wsi = test_county_data['WSI']
-                        
+
                         # Determine action
                         if test_wsi >= 0.7:
                             action = "Reduce water use by 40%"
@@ -1811,10 +1827,10 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                             action = "Reduce water use by 20%"
                         else:
                             action = "Monitor water usage"
-                        
+
                         # Show preview
                         lang_code = "sw" if test_language == "Kiswahili" else "en"
-                        
+
                         if lang_code == "sw":
                             if test_wsi >= 0.7:
                                 status = "DHARURA"
@@ -1825,7 +1841,7 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                             else:
                                 status = "WASTANI"
                                 emoji = "🟡"
-                            
+
                             preview = f"{emoji} OPENRESILIENCE\n{test_county}: {status}\nHatua: {action}\nTuma STOP kwa 22555 kusitisha"
                         else:
                             if test_wsi >= 0.7:
@@ -1837,12 +1853,12 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                             else:
                                 status = "MODERATE"
                                 emoji = "🟡"
-                            
+
                             preview = f"{emoji} OPENRESILIENCE\n{test_county}: {status}\nAction: {action}\nSMS STOP to 22555 to unsubscribe"
-                        
+
                         st.code(preview, language=None)
                         st.caption(f"Characters: {len(preview)}/160")
-                    
+
                     # Send button
                     if st.button("📤 Send Test SMS", type="primary", use_container_width=True):
                         if not test_phone:
@@ -1856,7 +1872,7 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                                     action=action,
                                     language=lang_code
                                 )
-                                
+
                                 if result.get('success'):
                                     st.success(f"✅ SMS sent successfully to {result['phone']}!")
                                     st.balloons()
@@ -1864,10 +1880,10 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                                 else:
                                     st.error(f"❌ Failed to send SMS: {result.get('error')}")
                                     st.warning("⚠️ SMS service is in test mode — real alerts are being set up. Check back soon.")
-                
+
                 with sms_tab2:
                     col1, col2 = st.columns([1, 1])
-                    
+
                     with col1:
                         st.markdown("""
                         **Farmers Receive:**
@@ -1875,15 +1891,15 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                         - ⚠️ Critical shortage warnings
                         - 🌱 Planting season reminders
                         - 🚛 Water truck schedules
-                        
+
                         **How to Subscribe:**
                         - SMS `MAJI` to `22555`
                         - Receive weekly alerts
                         - SMS `STOP` to unsubscribe
-                        
+
                         **Cost:** Free service (standard SMS rates apply - ~1 KES per SMS)
                         """)
-                    
+
                     with col2:
                         st.markdown("""
                         **SMS Commands:**
@@ -1891,24 +1907,24 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
                         - `STOP` - Unsubscribe
                         - `HELP` - Get help
                         - `STATUS <county>` - Check water status
-                        
+
                         **Example Messages:**
                         - Water stress alert
                         - Planting season reminder
                         - Weekly summary
                         - Water truck schedule
                         """)
-                    
+
                     st.info("💡 **Perfect for farmers with basic phones!** No smartphone or internet required.")
-                    
+
                     st.caption("SMS alerts powered by Africa's Talking · Kenya's leading messaging platform")
-            
+
             else:
                 st.info("📱 SMS alerts are being finalised. Please check back shortly.")
-        
+
         else:
             st.info("📱 SMS alerts are being set up. Sign up below to be notified when they launch.")
-    
+
     except ImportError:
         st.info("📱 SMS alerts are coming soon. We're working on connecting the service.")
     except Exception as e:
@@ -1918,7 +1934,7 @@ with st.expander("📱 SMS Alert Service - SEND ALERTS NOW!", expanded=False):
 # Community water point reporting
 with st.expander("📝 Report Water Point Status (Community Reporting)"):
     st.caption("Help your community by reporting water availability. Location is coarsened for safety.")
-    
+
     col_r1, col_r2, col_r3 = st.columns(3)
     with col_r1:
         report_county = st.selectbox("County", sorted(KENYA_COUNTIES.keys()), key="rep_county")
@@ -1935,11 +1951,11 @@ with st.expander("📝 Report Water Point Status (Community Reporting)"):
             "❌ Dry/Not working",
             "💰 Very expensive (>100 KES/20L)"
         ])
-    
+
     queue_time = st.slider("Waiting time (minutes)", 0, 180, 15)
     cost = st.number_input("Cost per 20L jerrican (KES)", 0, 200, 50, 10)
     notes = st.text_area("Additional details (optional)")
-    
+
     if st.button("Submit Report", use_container_width=True, type="primary"):
         st.success(f"✅ Report received for {report_county} County. Thank you!")
         st.info("In production: This data helps county governments allocate water trucks and prioritize infrastructure repairs.")
@@ -1952,14 +1968,14 @@ with col_sms1:
     st.subheader("📱 SMS Alert Service")
     st.info("""
     **Free water alerts via SMS** - No smartphone or internet needed!
-    
+
     Receive:
     - Weekly water stress updates
     - Critical shortage warnings
     - Planting season reminders
     - Water truck schedules
-    
-    **To register:** SMS 'MAJI' to 22555  
+
+    **To register:** SMS 'MAJI' to 22555
     **Cost:** Free service (standard SMS rates apply)
     """)
 
@@ -1971,16 +1987,16 @@ with col_sms2:
     - Coordinate water purchases
     - Share vendor information
     - Emergency assistance
-    
+
     **Contact your county water office** to join your area's WhatsApp group.
-    
+
     Or form your own neighborhood water committee!
     """)
 
 # Field Reports Tab
 with tab2:
     st.header("📝 Field Reports / Ripoti za Uwanja")
-    
+
     col_intro1, col_intro2 = st.columns([2, 1])
     with col_intro1:
         if lang == "Kiswahili":
@@ -1993,7 +2009,7 @@ with tab2:
             Submit ground-truth reports from your area about water, food, and market conditions.
             Your reports help authorities make informed decisions and allocate resources effectively.
             """)
-    
+
     with col_intro2:
         if db_initialized:
             try:
@@ -2003,28 +2019,28 @@ with tab2:
                 st.metric("Recent Reports", "Error")
         else:
             st.metric("Recent Reports", "N/A")
-    
+
     st.divider()
-    
+
     # Report Submission Form
     st.subheader("Submit New Report" if lang == "English" else "Wasilisha Ripoti Mpya")
-    
+
     col_f1, col_f2, col_f3 = st.columns(3)
-    
+
     with col_f1:
         report_county = st.selectbox(
             "County / Kaunti",
             sorted(KENYA_COUNTIES.keys()),
             key="field_report_county"
         )
-    
+
     with col_f2:
         report_category = st.selectbox(
             "Category / Aina",
             ["Water / Maji", "Food / Chakula", "Market / Soko", "Health / Afya", "Security / Usalama"],
             key="field_report_category"
         )
-    
+
     with col_f3:
         report_severity = st.select_slider(
             "Severity / Ukali",
@@ -2039,23 +2055,23 @@ with tab2:
             }[x],
             key="field_report_severity"
         )
-    
+
     report_message = st.text_area(
         "Description / Maelezo",
         placeholder="Describe what you're observing in your area...",
         height=100,
         key="field_report_message"
     )
-    
+
     col_sub1, col_sub2 = st.columns([3, 1])
-    
+
     with col_sub1:
         geo_hint = st.text_input(
             "Location hint (optional) / Mahali",
             placeholder="e.g., 'Near Thika market' (do NOT provide exact GPS)",
             key="field_report_geo"
         )
-    
+
     with col_sub2:
         contact_optional = st.text_input(
             "Contact (optional) / Mawasiliano",
@@ -2063,7 +2079,7 @@ with tab2:
             type="password",
             key="field_report_contact"
         )
-    
+
     if st.button("📤 Submit Report", type="primary", use_container_width=True):
         if not report_message.strip():
             st.error("Please provide a description")
@@ -2076,17 +2092,17 @@ with tab2:
                         level="county",
                         **KENYA_COUNTIES[report_county]
                     )
-                    
+
                     # Hash contact if provided (privacy-preserving)
                     contact_hash = None
                     if contact_optional.strip():
                         contact_hash = hashlib.sha256(
                             contact_optional.strip().encode()
                         ).hexdigest()[:16]
-                    
+
                     # Extract category key
                     category_key = report_category.split("/")[0].strip().lower()
-                    
+
                     # Insert report
                     report_id = insert_field_report(
                         region_id=region_id,
@@ -2096,34 +2112,34 @@ with tab2:
                         contact_hash=contact_hash,
                         geo_hint=geo_hint.strip() if geo_hint.strip() else None
                     )
-                    
+
                     st.success(f"✅ Report #{report_id} submitted for {report_county}. Thank you!")
                     st.info("Your report helps county governments prioritize resource allocation.")
-                    
+
                     # Check if this should trigger an alert
                     if report_severity >= 4:
                         st.session_state.selected_region_id = region_id
                         st.warning("⚠️ High severity report - review alerts tab for potential notifications")
-                
+
                 except Exception as e:
                     st.error(f"Failed to submit report: {e}")
             else:
                 st.success("✅ Thank you — your report has been recorded.")
                 st.info("Reports are being stored. Full tracking and county visibility coming soon.")
-    
+
     st.divider()
-    
+
     # Recent Reports Display
     st.subheader("Recent Reports" if lang == "English" else "Ripoti za Hivi Karibuni")
-    
+
     if db_initialized:
         try:
             reports = get_recent_reports(limit=20)
-            
+
             if reports:
                 for report in reports:
                     severity_emoji = {1: "🟢", 2: "🟡", 3: "🟠", 4: "🔴", 5: "🚨"}
-                    
+
                     with st.expander(
                         f"{severity_emoji.get(report['severity'], '⚪')} "
                         f"{report['category'].title()} - "
@@ -2136,7 +2152,7 @@ with tab2:
                         st.caption(f"⏰ {report['timestamp']}")
             else:
                 st.info("No recent reports. Be the first to submit!")
-        
+
         except Exception as e:
             st.warning(f"Could not load reports: {e}")
     else:
@@ -2145,7 +2161,7 @@ with tab2:
 # Alerts Tab
 with tab3:
     st.header("🚨 Alerts / Tahadhari")
-    
+
     if lang == "Kiswahili":
         st.markdown("""
         Angalizo la muda wa hali mbaya ya maji, chakula, au soko.
@@ -2156,25 +2172,25 @@ with tab3:
         Real-time alerts for critical water, food, or market stress conditions.
         Alerts are automatically generated when indices exceed risk thresholds.
         """)
-    
+
     st.divider()
-    
+
     if db_initialized:
         try:
             active_alerts = get_active_alerts()
-            
+
             if active_alerts:
                 st.warning(f"⚠️ **{len(active_alerts)} active alert(s)**")
-                
+
                 for alert in active_alerts:
                     level_config = {
                         "info": ("ℹ️", "blue"),
                         "warning": ("⚠️", "orange"),
                         "critical": ("🚨", "red")
                     }
-                    
+
                     emoji, color = level_config.get(alert['level'], ("⚪", "gray"))
-                    
+
                     with st.container():
                         st.markdown(f"### {emoji} {alert['title']}")
                         st.markdown(f"**Region:** {alert['region_name']}")
@@ -2186,7 +2202,7 @@ with tab3:
             else:
                 st.success("✅ No active alerts. All regions within normal parameters.")
                 st.info("Alerts trigger when Composite Risk Index (CRI) exceeds 70/100")
-        
+
         except Exception as e:
             st.warning(f"Could not load alerts: {e}")
     else:
@@ -2210,7 +2226,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(
         "**Was this useful?**\n\n"
-        f"[:pencil: Leave feedback](https://docs.google.com/forms/d/e/1FAIpQLSff_cjR102HNUeYU428ROv56TScLBzsQRc1JTwY4wGizvTQKw/viewform) (2 min)\n\n"
+        "[:pencil: Leave feedback](https://docs.google.com/forms/d/e/1FAIpQLSff_cjR102HNUeYU428ROv56TScLBzsQRc1JTwY4wGizvTQKw/viewform) (2 min)\n\n"
         "[:bug: Report a bug](https://github.com/gabrielmahia/openresilience/issues/new)\n\n"
         "---\n"
         "*Built by [Gabriel Mahia](https://aikungfu.dev)*\n\n"

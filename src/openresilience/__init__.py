@@ -11,15 +11,18 @@ Modules:
 - visuals: Simple visual indicators for farmers
 """
 
-from . import scoring
-from . import resolution
+from . import resolution, scoring
 
 try:
-    from . import agriculture
-    from . import export
-    from . import visuals
+    from . import (  # noqa: F401 - optional modules, absent in older deployments
+        agriculture,
+        export,
+        visuals,
+    )
 except ImportError:
     # New modules may not be available in older deployments
     pass
 
 __version__ = "1.0.0"
+
+__all__ = ["resolution", "scoring", "agriculture", "export", "visuals"]

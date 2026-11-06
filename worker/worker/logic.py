@@ -1,5 +1,6 @@
 import numpy as np
-from or_shared.scoring import sev_from_thresholds, composite_max
+from or_shared.scoring import composite_max, sev_from_thresholds
+
 
 def rain_anomaly(obs, typ, eps=1e-6):
     return (obs - typ) / np.maximum(typ, eps)

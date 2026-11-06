@@ -1,5 +1,7 @@
 import psycopg
+
 from worker.settings import Settings
+
 
 def conn():
     s=Settings()

@@ -1,5 +1,7 @@
-import os, requests
+import os
+
 import pandas as pd
+import requests
 import streamlit as st
 
 API_BASE = os.environ.get("API_BASE","http://api:8000")
@@ -19,13 +21,15 @@ def latest_run():
 @st.cache_data(ttl=60)
 def top(metric, sev_min, bbox):
     params = {"metric": metric, "severity_min": sev_min, "limit": 500}
-    if bbox: params.update(bbox)
+    if bbox:
+        params.update(bbox)
     return get_json(f"{API_BASE}/indicators/top", params=params)
 
 @st.cache_data(ttl=60)
 def alerts(sev_min, bbox):
     params = {"severity_min": sev_min, "limit": 300}
-    if bbox: params.update(bbox)
+    if bbox:
+        params.update(bbox)
     return get_json(f"{API_BASE}/alerts/latest", params=params)
 
 st.sidebar.header("Filters")
@@ -48,9 +52,11 @@ with tabs[0]:
     try:
         run = latest_run()
         st.success(f"Latest run: {run['run_time_utc']} • Adapter: {run['adapter']} • Version: {run['version']}")
-        if run.get("notes"): st.caption(run["notes"])
+        if run.get("notes"):
+            st.caption(run["notes"])
         df = pd.DataFrame(top(metric, sev_min, bbox))
-        if df.empty: st.info("No regions above threshold.")
+        if df.empty:
+            st.info("No regions above threshold.")
         else:
             df["value"] = df["value"].astype(float).round(2)
             st.dataframe(df, use_container_width=True, hide_index=True)

@@ -11,7 +11,6 @@ All indices use 0-100 scale where higher = more stress/risk.
 """
 
 from dataclasses import dataclass
-from typing import Dict, Any
 
 
 @dataclass
@@ -22,8 +21,8 @@ class ResilienceScores:
     msi: float  # Market Stress Index (0-100)
     cri: float  # Composite Risk Index (0-100)
     confidence: float  # Overall confidence (0-100)
-    
-    def to_dict(self) -> Dict[str, float]:
+
+    def to_dict(self) -> dict[str, float]:
         """Export as dictionary for storage/display."""
         return {
             "wsi": self.wsi,
@@ -37,12 +36,12 @@ class ResilienceScores:
 def clamp(value: float, minimum: float = 0.0, maximum: float = 100.0) -> float:
     """
     Clamp a value between minimum and maximum bounds.
-    
+
     Args:
         value: Value to clamp
         minimum: Lower bound (default 0.0)
         maximum: Upper bound (default 100.0)
-    
+
     Returns:
         Clamped value
     """
@@ -56,17 +55,17 @@ def compute_water_stress(
 ) -> float:
     """
     Calculate Water Stress Index (WSI).
-    
+
     Combines rainfall deficit with soil moisture depletion.
-    
+
     Args:
         rainfall_anomaly: % deviation from normal (-100 to +100)
         soil_moisture: Soil moisture ratio (0-1)
         **kwargs: Additional parameters (ignored for forward compatibility)
-    
+
     Returns:
         WSI score (0-100, higher = more stress)
-    
+
     Algorithm:
         WSI = 0.55 * rainfall_deficit + 0.45 * soil_dryness
         Where:
@@ -75,13 +74,13 @@ def compute_water_stress(
     """
     # Convert rainfall anomaly to stress (negative anomaly = stress)
     rainfall_deficit = clamp(-rainfall_anomaly, 0, 100)
-    
+
     # Convert soil moisture to dryness
     soil_dryness = clamp((1 - soil_moisture) * 100, 0, 100)
-    
+
     # Weighted combination (rainfall slightly more important)
     wsi = 0.55 * rainfall_deficit + 0.45 * soil_dryness
-    
+
     return clamp(wsi)
 
 
@@ -93,18 +92,18 @@ def compute_food_stress(
 ) -> float:
     """
     Calculate Food Stress Index (FSI).
-    
+
     Integrates vegetation decline, water stress, and ground reports.
-    
+
     Args:
         vegetation_health: Vegetation index (0-1, NDVI-like)
         water_stress: Pre-computed WSI score (0-100)
         field_reports_24h: Number of field reports indicating stress
         **kwargs: Additional parameters (ignored)
-    
+
     Returns:
         FSI score (0-100, higher = more stress)
-    
+
     Algorithm:
         FSI = 0.50 * vegetation_decline + 0.30 * water_stress + 0.20 * report_signal
         Where:
@@ -113,17 +112,17 @@ def compute_food_stress(
     """
     # Convert vegetation health to decline
     vegetation_decline = clamp((1 - vegetation_health) * 100, 0, 100)
-    
+
     # Scale field reports (each report = ~12 points, cap at 100)
     report_signal = clamp(field_reports_24h * 12, 0, 100)
-    
+
     # Weighted combination
     fsi = (
         0.50 * vegetation_decline +
         0.30 * water_stress +
         0.20 * report_signal
     )
-    
+
     return clamp(fsi)
 
 
@@ -134,17 +133,17 @@ def compute_market_stress(
 ) -> float:
     """
     Calculate Market Stress Index (MSI).
-    
+
     Tracks food price inflation and supply disruptions.
-    
+
     Args:
         staple_price_change: % change in staple food basket price
         market_stockouts: Number of essential items out of stock (0-5)
         **kwargs: Additional parameters (ignored)
-    
+
     Returns:
         MSI score (0-100, higher = more stress)
-    
+
     Algorithm:
         MSI = 0.70 * price_stress + 0.30 * availability_stress
         Where:
@@ -153,13 +152,13 @@ def compute_market_stress(
     """
     # Only price increases contribute to stress
     price_stress = clamp(staple_price_change, 0, 100)
-    
+
     # Each stockout = 20 points (5 stockouts = 100%)
     availability_stress = clamp(market_stockouts * 20, 0, 100)
-    
+
     # Price weighted more heavily than availability
     msi = 0.70 * price_stress + 0.30 * availability_stress
-    
+
     return clamp(msi)
 
 
@@ -171,21 +170,21 @@ def compute_composite_risk(
 ) -> float:
     """
     Calculate Composite Risk Index (CRI).
-    
+
     Drought-weighted aggregation of all stress indices.
-    
+
     Args:
         wsi: Water Stress Index (0-100)
         fsi: Food Stress Index (0-100)
         msi: Market Stress Index (0-100)
         **kwargs: Additional parameters (ignored)
-    
+
     Returns:
         CRI score (0-100, higher = more risk)
-    
+
     Algorithm:
         CRI = 0.45 * WSI + 0.35 * FSI + 0.20 * MSI
-        
+
         Rationale: Water stress is the primary driver in arid/semi-arid
         regions, with food security as secondary concern and market
         disruption as tertiary indicator.
@@ -203,46 +202,46 @@ def compute_confidence(
 ) -> float:
     """
     Estimate confidence in composite scoring.
-    
+
     Higher confidence when multiple signals align on stress direction.
-    
+
     Args:
         rainfall_anomaly: % deviation from normal
         soil_moisture: Soil moisture ratio (0-1)
         vegetation_health: Vegetation index (0-1)
         field_reports_24h: Field report count
         **kwargs: Additional parameters (ignored)
-    
+
     Returns:
         Confidence score (0-100, higher = more reliable)
-    
+
     Algorithm:
         Count aligned stress indicators:
         - Rainfall deficit > 20%
         - Soil moisture < 0.35
         - Vegetation health < 0.45
         - 2+ field reports
-        
+
         Confidence = (aligned_count / 4) * 100
     """
     aligned = 0
-    
+
     # Check if each signal indicates stress
     if rainfall_anomaly < -20:  # 20%+ rainfall deficit
         aligned += 1
-    
+
     if soil_moisture < 0.35:  # Significantly dry soil
         aligned += 1
-    
+
     if vegetation_health < 0.45:  # Poor vegetation
         aligned += 1
-    
+
     if field_reports_24h >= 2:  # Multiple ground reports
         aligned += 1
-    
+
     # Convert to percentage
     confidence = (aligned / 4.0) * 100
-    
+
     return clamp(confidence)
 
 
@@ -257,9 +256,9 @@ def compute_resilience_scores(
 ) -> ResilienceScores:
     """
     Compute all resilience indices from input signals.
-    
+
     This is the main entry point for multi-index scoring.
-    
+
     Args:
         rainfall_anomaly: % deviation from normal (-100 to +100)
         soil_moisture: Soil moisture ratio (0-1)
@@ -268,10 +267,10 @@ def compute_resilience_scores(
         market_stockouts: Count of unavailable staples (0-5)
         field_reports_24h: Ground truth reports in last 24h
         **kwargs: Additional parameters (forward compatibility)
-    
+
     Returns:
         ResilienceScores object with all indices
-    
+
     Example:
         >>> scores = compute_resilience_scores(
         ...     rainfall_anomaly=-45,  # 45% below normal
@@ -290,27 +289,27 @@ def compute_resilience_scores(
         soil_moisture=soil_moisture,
         **kwargs
     )
-    
+
     fsi = compute_food_stress(
         vegetation_health=vegetation_health,
         water_stress=wsi,
         field_reports_24h=field_reports_24h,
         **kwargs
     )
-    
+
     msi = compute_market_stress(
         staple_price_change=staple_price_change,
         market_stockouts=market_stockouts,
         **kwargs
     )
-    
+
     cri = compute_composite_risk(
         wsi=wsi,
         fsi=fsi,
         msi=msi,
         **kwargs
     )
-    
+
     confidence = compute_confidence(
         rainfall_anomaly=rainfall_anomaly,
         soil_moisture=soil_moisture,
@@ -318,7 +317,7 @@ def compute_resilience_scores(
         field_reports_24h=field_reports_24h,
         **kwargs
     )
-    
+
     return ResilienceScores(
         wsi=wsi,
         fsi=fsi,

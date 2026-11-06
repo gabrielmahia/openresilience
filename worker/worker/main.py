@@ -1,10 +1,13 @@
 from datetime import timedelta, timezone
-from worker.settings import Settings
-from worker.db import conn
-from worker.adapters.synthetic import load_synthetic
-from worker.logic import compute_scores
-from or_shared.timeutils import utcnow, iso_z
+
+from or_shared.timeutils import iso_z, utcnow
 from or_shared.trust import confidence_from_inputs
+
+from worker.adapters.synthetic import load_synthetic
+from worker.db import conn
+from worker.logic import compute_scores
+from worker.settings import Settings
+
 
 def region_id_for_cell(lat_center, lon_center, step):
     return f"grid_{str(step).replace('.','p')}_lat_{lat_center:.2f}_lon_{lon_center:.2f}"
@@ -43,8 +46,14 @@ def run_once():
                 def ins(metric, val, sev):
                     cur.execute("INSERT INTO indicators(run_id, region_id, metric, value, severity, confidence, provenance, updated_utc) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
                                 (run_db_id, rid, metric, float(val), int(sev), confidence, prov, now))
-                ins("rain_anom", anom[i,j], 0); ins("soil_pct", soil[i,j], 0); ins("ndvi_anom", ndvi[i,j], 0); ins("persistence_wk", pers[i,j], 0)
-                ins("wsi", wsi[i,j], wsi[i,j]); ins("fsi", fsi[i,j], fsi[i,j]); ins("msi", msi[i,j], msi[i,j]); ins("cri", cri[i,j], cri[i,j])
+                ins("rain_anom", anom[i,j], 0)
+                ins("soil_pct", soil[i,j], 0)
+                ins("ndvi_anom", ndvi[i,j], 0)
+                ins("persistence_wk", pers[i,j], 0)
+                ins("wsi", wsi[i,j], wsi[i,j])
+                ins("fsi", fsi[i,j], fsi[i,j])
+                ins("msi", msi[i,j], msi[i,j])
+                ins("cri", cri[i,j], cri[i,j])
                 sev = int(cri[i,j])
                 if sev >= 2:
                     title = "Crisis risk elevated" if sev == 2 else "Crisis risk severe"

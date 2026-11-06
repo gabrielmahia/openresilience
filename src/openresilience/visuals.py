@@ -7,16 +7,15 @@ Provides simple, clear visual indicators that work for:
 - Quick decision-making
 """
 
-from typing import Tuple
 
 
 def get_stress_emoji(stress_level: float) -> str:
     """
     Get emoji indicator for stress level.
-    
+
     Args:
         stress_level: Stress value 0-1
-    
+
     Returns:
         Emoji string
     """
@@ -33,11 +32,11 @@ def get_stress_emoji(stress_level: float) -> str:
 def get_stress_text(stress_level: float, language: str = 'en') -> str:
     """
     Get text description of stress level.
-    
+
     Args:
         stress_level: Stress value 0-1
         language: 'en' or 'sw' (Kiswahili)
-    
+
     Returns:
         Text description
     """
@@ -61,14 +60,14 @@ def get_stress_text(stress_level: float, language: str = 'en') -> str:
             return "Severe"
 
 
-def get_action_required(stress_level: float, language: str = 'en') -> Tuple[str, str]:
+def get_action_required(stress_level: float, language: str = 'en') -> tuple[str, str]:
     """
     Get action required for given stress level.
-    
+
     Args:
         stress_level: Stress value 0-1
         language: 'en' or 'sw'
-    
+
     Returns:
         Tuple of (icon, action_text)
     """
@@ -100,20 +99,20 @@ def get_planting_recommendation(
 ) -> str:
     """
     Get simple planting recommendation for farmers.
-    
+
     Args:
         stress_level: Water stress 0-1
         month: Current month (1-12)
         is_asal: Whether in ASAL zone
         language: 'en' or 'sw'
-    
+
     Returns:
         Simple text recommendation
     """
     # Planting seasons
     is_long_rains = 3 <= month <= 5
     is_short_rains = 10 <= month <= 12
-    
+
     if language == 'sw':
         if stress_level > 0.7:
             return "⛔ USIPANDE - Maji si ya kutosha"  # DON'T PLANT - Not enough water
@@ -137,16 +136,16 @@ def get_planting_recommendation(
 def format_phone_number(number: str) -> str:
     """
     Format phone number for SMS (Kenya format).
-    
+
     Args:
         number: Raw phone number
-    
+
     Returns:
         Formatted +254... number
     """
     # Remove spaces and special chars
     clean = ''.join(c for c in number if c.isdigit())
-    
+
     # Convert 07xx to +254 7xx
     if clean.startswith('0'):
         return f"+254{clean[1:]}"
@@ -165,17 +164,17 @@ def get_simple_forecast(
 ) -> str:
     """
     Get simple forecast message for farmers.
-    
+
     Args:
         current_stress: Current stress level
         forecast_1_2mo: Forecasted stress in 1-2 months
         language: 'en' or 'sw'
-    
+
     Returns:
         Simple forecast message
     """
     trend = forecast_1_2mo - current_stress
-    
+
     if language == 'sw':
         if trend > 0.1:
             return "📉 Hali itakuwa mbaya - Jiandae"  # Conditions worsening - Prepare

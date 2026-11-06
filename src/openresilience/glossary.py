@@ -5,7 +5,6 @@ Provides definitions, interpretation scales, and recommended actions
 for water stress indicators used in OpenResilience.
 """
 
-from typing import Dict, Tuple
 
 # Water Stress Index Scale (0-10)
 WATER_STRESS_SCALE = {
@@ -20,10 +19,10 @@ WATER_STRESS_SCALE = {
 def get_stress_category(stress_value: float) -> str:
     """
     Categorize a water stress value into human-readable category.
-    
+
     Args:
         stress_value: Numeric stress index (0-10 scale)
-    
+
     Returns:
         Category name: minimal, low, moderate, high, extreme
     """
@@ -39,13 +38,13 @@ def get_stress_category(stress_value: float) -> str:
         return "extreme"
 
 
-def get_stress_interpretation(category: str) -> Dict[str, str]:
+def get_stress_interpretation(category: str) -> dict[str, str]:
     """
     Get interpretation and recommended actions for a stress category.
-    
+
     Args:
         category: Stress category (minimal, low, moderate, high, extreme)
-    
+
     Returns:
         Dictionary with interpretation and recommended actions
     """
@@ -81,14 +80,14 @@ def get_stress_interpretation(category: str) -> Dict[str, str]:
             "confidence": "This is a demonstration value. Real water stress requires satellite and ground data."
         }
     }
-    
+
     return interpretations.get(category, interpretations["moderate"])
 
 
 def get_glossary_text() -> str:
     """
     Return full glossary text for UI display.
-    
+
     Returns:
         Markdown-formatted glossary content
     """
@@ -130,10 +129,10 @@ The Water Stress Index (0-10 scale) integrates:
 
 #### Recommended Actions by Category
 
-**Minimal (0-2):** Routine monitoring, conservation awareness  
-**Low (2-4):** Increase monitoring, prepare conservation messaging  
-**Moderate (4-6):** Voluntary conservation, community campaigns  
-**High (6-8):** Mandatory restrictions, emergency supplies  
+**Minimal (0-2):** Routine monitoring, conservation awareness
+**Low (2-4):** Increase monitoring, prepare conservation messaging
+**Moderate (4-6):** Voluntary conservation, community campaigns
+**High (6-8):** Mandatory restrictions, emergency supplies
 **Extreme (8-10):** Crisis protocols, humanitarian coordination
 
 #### Data Sovereignty Note

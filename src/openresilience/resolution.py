@@ -7,7 +7,7 @@ and data quality status for display in the UI.
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Dict, Any
+from typing import Any, Optional
 
 
 class DataMode(Enum):
@@ -29,11 +29,11 @@ class Resolution(Enum):
 class ResolutionStatus:
     """
     Container for current system resolution status.
-    
+
     Tracks what level of geographic detail is being used
     and what data sources are active.
     """
-    
+
     def __init__(
         self,
         mode: DataMode = DataMode.DEMO,
@@ -49,8 +49,8 @@ class ResolutionStatus:
         self.timestamp = timestamp or datetime.now()
         self.confidence = confidence
         self.notes = notes
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         """Export status as dictionary for UI display."""
         return {
             "mode": self.mode.value,
@@ -60,7 +60,7 @@ class ResolutionStatus:
             "confidence": self.confidence,
             "notes": self.notes
         }
-    
+
     def __str__(self) -> str:
         """Human-readable status summary."""
         return f"{self.mode.value.upper()} | {self.resolution.value.upper()} | {self.source}"
@@ -75,29 +75,29 @@ def determine_resolution(
 ) -> Resolution:
     """
     Determine the appropriate geographic resolution based on selected area and data availability.
-    
+
     Args:
         county: Selected county name
         constituency: Selected constituency (None if county-wide)
         ward: Selected ward (None if all wards or constituency-wide)
         hierarchy_available: Whether hierarchy data is loaded
         ward_data_available: Whether ward-level datasets exist
-    
+
     Returns:
         Resolution level (WARD, CONSTITUENCY, COUNTY, or NATIONAL)
     """
     # If ward specified and ward data exists, use ward resolution
     if ward and ward != "All wards" and ward_data_available:
         return Resolution.WARD
-    
+
     # If constituency specified and hierarchy available, use constituency resolution
     if constituency and constituency != "County-wide" and hierarchy_available:
         return Resolution.CONSTITUENCY
-    
+
     # Default to county resolution
     if county:
         return Resolution.COUNTY
-    
+
     # Fallback to national
     return Resolution.NATIONAL
 
@@ -112,7 +112,7 @@ def get_current_status(
 ) -> ResolutionStatus:
     """
     Get current system status for UI display.
-    
+
     Args:
         selected_county: Active county selection
         selected_constituency: Active constituency (if any)
@@ -120,7 +120,7 @@ def get_current_status(
         hierarchy_available: Hierarchy data loaded
         ward_data_available: Ward-level data available
         data_source: Data source type ("demo", "nasa", "gee", "nasa+gee", "simulated_realistic")
-    
+
     Returns:
         ResolutionStatus object with current system state
     """
@@ -131,13 +131,13 @@ def get_current_status(
         hierarchy_available,
         ward_data_available
     )
-    
+
     # Determine mode based on data source
     if data_source in ["nasa", "gee", "nasa+gee", "simulated_realistic"]:
         mode = DataMode.LIVE
     else:
         mode = DataMode.DEMO
-    
+
     # Determine data source description
     if resolution == Resolution.WARD:
         source = "Ward-level satellite data" if mode == DataMode.LIVE else "Ward-level synthetic models"
@@ -148,7 +148,7 @@ def get_current_status(
     else:
         source = "County satellite data" if mode == DataMode.LIVE else "County-level synthetic models"
         notes = None if mode == DataMode.LIVE else "Demo data - not real-time satellite or ground truth"
-    
+
     return ResolutionStatus(
         mode=mode,
         resolution=resolution,

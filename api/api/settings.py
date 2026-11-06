@@ -1,5 +1,8 @@
 import os
+
 from pydantic import BaseModel
+
+
 class Settings(BaseModel):
     postgres_url: str = os.environ['POSTGRES_URL']
     redis_url: str = os.environ['REDIS_URL']

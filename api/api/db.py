@@ -1,5 +1,7 @@
 import psycopg
+
 from api.settings import Settings
+
 
 def conn():
     s=Settings()

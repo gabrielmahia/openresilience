@@ -1,4 +1,6 @@
 import numpy as np
+
+
 def load_synthetic(shape=(120, 240), seed=7):
     rng = np.random.default_rng(seed)
     lat = np.linspace(90, -90, shape[0])[:, None]
