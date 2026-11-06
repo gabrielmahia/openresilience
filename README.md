@@ -6,7 +6,7 @@
 Built for farmers, NGOs, county governments, and community leaders.
 
 [![Live App](https://img.shields.io/badge/Live%20App-wapimaji.streamlit.app-FF4B4B?logo=streamlit)](https://wapimaji.streamlit.app/)
-[![Live Data](https://img.shields.io/badge/Live%20Data-Open-Meteo%20%C2%B7%20NDMA-00b4d8)](#openresilience)
+[![Live Data](https://img.shields.io/badge/Live%20Data-Open--Meteo-00b4d8)](#openresilience)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 [![Status](https://img.shields.io/badge/status-Demo%20Data-orange)](docs/INDEX_METHODOLOGY.md)
 [![Coverage](https://img.shields.io/badge/coverage-47%20Counties-brightgreen)](https://wapimaji.streamlit.app/)
@@ -62,7 +62,7 @@ data/                           ← County baseline data, seed files
 migrations/                     ← Database schema versioning
 ```
 
-The architecture is production-ready: separate API, worker, and notifier services with Docker Compose orchestration. The current bottleneck is connecting real satellite data sources — not the infrastructure.
+The architecture separates API, worker and notifier services with Docker Compose orchestration; it has not been run in production. The current bottleneck is connecting real satellite data sources — not the infrastructure.
 
 ---
 
