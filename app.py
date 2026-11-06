@@ -20,11 +20,11 @@
 # Focus: 47 Counties + Makongeni & Thika Landless Areas
 # Built for Kenyan Communities 🇰🇪
 
-import json
-import urllib.request
 import hashlib
+import json
 import re
 import sys
+import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
@@ -41,21 +41,24 @@ sys.path.insert(0, 'src')
 try:
     from openresilience.agriculture import get_next_planting_window, get_planting_advice
     from openresilience.database import (
-        create_alert,
+        create_alert,  # noqa: F401 - part of the availability check for the optional module
         ensure_region,
         get_active_alerts,
         get_recent_reports,
-        get_recent_runs,
+        get_recent_runs,  # noqa: F401 - part of the availability check for the optional module
         init_database,
         insert_field_report,
-        insert_run,
+        insert_run,  # noqa: F401 - part of the availability check for the optional module
     )
     from openresilience.export import (
         export_all_counties_excel,
         export_county_data_csv,
         export_county_summary_report,
     )
-    from openresilience.scoring import ResilienceScores, compute_resilience_scores
+    from openresilience.scoring import (  # noqa: F401 - part of the availability check for the optional module
+        ResilienceScores,
+        compute_resilience_scores,
+    )
     from openresilience.visuals import (
         get_action_required,
         get_planting_recommendation,
@@ -1156,8 +1159,8 @@ with st.sidebar.expander("📚 Understanding Water Stress"):
     try:
         from openresilience.glossary import (
             get_glossary_text,
-            get_stress_category,
-            get_stress_interpretation,
+            get_stress_category,  # noqa: F401 - part of the availability check for the optional module
+            get_stress_interpretation,  # noqa: F401 - part of the availability check for the optional module
         )
         st.markdown(get_glossary_text())
     except ImportError:
@@ -1291,7 +1294,7 @@ try:
     if 'geo' in locals():
         try:
             hierarchy_available = geo.is_available()
-        except:
+        except Exception:
             pass
 
     status = get_current_status(

@@ -12,7 +12,7 @@ Sign up: https://urs.earthdata.nasa.gov/users/new
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 import requests
 
@@ -50,7 +50,7 @@ class NASADataAdapter:
         lat: float,
         lon: float,
         days: int = 30
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[dict[str, Any]]:
         """
         Fetch IMERG rainfall data and calculate anomaly.
 
@@ -80,7 +80,7 @@ class NASADataAdapter:
 
             # IMERG Final Run (2-3 month latency) or Early Run (4-hour latency)
             # Using Early Run for near-real-time data
-            base_url = "https://gpm1.gesdisc.eosdis.nasa.gov/opendap/GPM_L3/GPM_3IMERGHHE.06"
+            _base_url = "https://gpm1.gesdisc.eosdis.nasa.gov/opendap/GPM_L3/GPM_3IMERGHHE.06"
 
             # Build query for point extraction
             # Format: /YYYY/DOY/3B-HHR-E.MS.MRG.3IMERG.YYYYMMDD-S000000-E002959.0000.V06B.HDF5
@@ -111,7 +111,7 @@ class NASADataAdapter:
         self,
         lat: float,
         lon: float
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[dict[str, Any]]:
         """
         Fetch SMAP soil moisture data.
 
@@ -135,7 +135,7 @@ class NASADataAdapter:
 
         try:
             # SMAP Level 3 Enhanced product
-            base_url = "https://n5eil01u.ecs.nsidc.org/opendap/SMAP/SPL3SMP_E.005"
+            _base_url = "https://n5eil01u.ecs.nsidc.org/opendap/SMAP/SPL3SMP_E.005"
 
             # Get most recent data (usually 1-3 days old)
             # Format: /YYYY.MM.DD/SMAP_L3_SM_P_E_YYYYMMDD_R18290_001.h5
@@ -161,7 +161,7 @@ def fetch_nasa_data_simple(
     lat: float,
     lon: float,
     token: Optional[str] = None
-) -> Tuple[Optional[float], Optional[float]]:
+) -> tuple[Optional[float], Optional[float]]:
     """
     Simplified NASA data fetch for immediate integration.
 
@@ -187,10 +187,10 @@ def fetch_nasa_data_simple(
         # https://giovanni.gsfc.nasa.gov/giovanni/
 
         end_date = datetime.now()
-        start_date = end_date - timedelta(days=30)
+        _start_date = end_date - timedelta(days=30)
 
         # Example Giovanni URL structure (simplified)
-        giovanni_url = "https://giovanni.gsfc.nasa.gov/giovanni/daac-bin/wms_ag4"
+        _giovanni_url = "https://giovanni.gsfc.nasa.gov/giovanni/daac-bin/wms_ag4"
 
         # For immediate deployment, we'll use a hybrid approach:
         # 1. Check if we have cached NASA data (from periodic updates)

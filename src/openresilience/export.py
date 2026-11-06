@@ -9,7 +9,7 @@ Provides CSV, Excel, and summary report exports for:
 
 import io
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import pandas as pd
 
@@ -36,7 +36,7 @@ def export_county_data_csv(df: pd.DataFrame) -> bytes:
 
 def export_county_summary_report(
     county_name: str,
-    county_data: Dict[str, Any],
+    county_data: dict[str, Any],
     timestamp: datetime
 ) -> str:
     """
@@ -199,7 +199,7 @@ def export_all_counties_excel(df: pd.DataFrame) -> bytes:
     return buffer.getvalue()
 
 
-def export_field_reports_csv(reports: List[Dict]) -> bytes:
+def export_field_reports_csv(reports: list[dict]) -> bytes:
     """
     Export field reports to CSV.
 

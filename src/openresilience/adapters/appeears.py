@@ -17,7 +17,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 import requests
 
@@ -119,7 +119,7 @@ class NASAAppEEARSClient:
             return None
 
 
-def get_cached_nasa_data(county_name: str) -> Optional[Dict[str, Any]]:
+def get_cached_nasa_data(county_name: str) -> Optional[dict[str, Any]]:
     """
     Read NASA data from local cache.
 
@@ -160,7 +160,7 @@ def get_nasa_data_for_county(
     county_name: str,
     lat: float,
     lon: float
-) -> Tuple[Optional[float], Optional[float]]:
+) -> tuple[Optional[float], Optional[float]]:
     """
     Get NASA satellite data for a county.
 

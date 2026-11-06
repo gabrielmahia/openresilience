@@ -9,7 +9,6 @@ and water management guidance based on:
 - ASAL vs non-ASAL zones
 """
 
-from typing import Dict, List, Tuple
 
 
 def get_season_name(month: int) -> str:
@@ -29,7 +28,7 @@ def get_planting_advice(
     is_asal: bool,
     water_stress: float,
     month: int
-) -> Dict[str, any]:
+) -> dict[str, any]:
     """
     Get comprehensive planting advice for farmers.
 
@@ -121,7 +120,7 @@ def get_planting_advice(
     }
 
 
-def get_next_planting_window(month: int, is_asal: bool) -> Tuple[str, str]:
+def get_next_planting_window(month: int, is_asal: bool) -> tuple[str, str]:
     """
     Get next planting window information.
 
@@ -140,7 +139,7 @@ def get_next_planting_window(month: int, is_asal: bool) -> Tuple[str, str]:
         return ("Long Rains", "March 15 - April 30")
 
 
-def get_crop_calendar(is_asal: bool) -> Dict[str, List[Tuple[str, str]]]:
+def get_crop_calendar(is_asal: bool) -> dict[str, list[tuple[str, str]]]:
     """
     Get full year crop calendar.
 

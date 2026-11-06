@@ -7,7 +7,6 @@ Provides simple, clear visual indicators that work for:
 - Quick decision-making
 """
 
-from typing import Tuple
 
 
 def get_stress_emoji(stress_level: float) -> str:
@@ -61,7 +60,7 @@ def get_stress_text(stress_level: float, language: str = 'en') -> str:
             return "Severe"
 
 
-def get_action_required(stress_level: float, language: str = 'en') -> Tuple[str, str]:
+def get_action_required(stress_level: float, language: str = 'en') -> tuple[str, str]:
     """
     Get action required for given stress level.
 

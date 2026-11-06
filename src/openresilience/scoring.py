@@ -11,7 +11,6 @@ All indices use 0-100 scale where higher = more stress/risk.
 """
 
 from dataclasses import dataclass
-from typing import Dict
 
 
 @dataclass
@@ -23,7 +22,7 @@ class ResilienceScores:
     cri: float  # Composite Risk Index (0-100)
     confidence: float  # Overall confidence (0-100)
 
-    def to_dict(self) -> Dict[str, float]:
+    def to_dict(self) -> dict[str, float]:
         """Export as dictionary for storage/display."""
         return {
             "wsi": self.wsi,

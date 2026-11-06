@@ -7,7 +7,7 @@ and data quality status for display in the UI.
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 
 class DataMode(Enum):
@@ -50,7 +50,7 @@ class ResolutionStatus:
         self.confidence = confidence
         self.notes = notes
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Export status as dictionary for UI display."""
         return {
             "mode": self.mode.value,

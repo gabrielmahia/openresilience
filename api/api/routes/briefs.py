@@ -52,7 +52,8 @@ def region_pdf(region_id: str):
         c.drawString(72, y, f"{m.upper()}  value={v:.2f}  severity={sev}  conf={conf}  updated={ts.isoformat()}")
         y -= 12
         if y < 120:
-            c.showPage(); y = h-72
+            c.showPage()
+            y = h-72
     c.setFont("Helvetica-Bold", 12)
     c.drawString(72, y, "Recent Alerts")
     y -= 16
@@ -66,7 +67,8 @@ def region_pdf(region_id: str):
                 y -= 12
         y -= 4
         if y < 120:
-            c.showPage(); y = h-72
+            c.showPage()
+            y = h-72
     c.setFont("Helvetica-Oblique", 9)
     c.drawString(72, 72, "Disclaimer: probabilistic signals. Verify locally. Do not use as sole basis for travel or enforcement.")
     c.save()

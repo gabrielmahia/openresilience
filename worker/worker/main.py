@@ -46,8 +46,14 @@ def run_once():
                 def ins(metric, val, sev):
                     cur.execute("INSERT INTO indicators(run_id, region_id, metric, value, severity, confidence, provenance, updated_utc) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
                                 (run_db_id, rid, metric, float(val), int(sev), confidence, prov, now))
-                ins("rain_anom", anom[i,j], 0); ins("soil_pct", soil[i,j], 0); ins("ndvi_anom", ndvi[i,j], 0); ins("persistence_wk", pers[i,j], 0)
-                ins("wsi", wsi[i,j], wsi[i,j]); ins("fsi", fsi[i,j], fsi[i,j]); ins("msi", msi[i,j], msi[i,j]); ins("cri", cri[i,j], cri[i,j])
+                ins("rain_anom", anom[i,j], 0)
+                ins("soil_pct", soil[i,j], 0)
+                ins("ndvi_anom", ndvi[i,j], 0)
+                ins("persistence_wk", pers[i,j], 0)
+                ins("wsi", wsi[i,j], wsi[i,j])
+                ins("fsi", fsi[i,j], fsi[i,j])
+                ins("msi", msi[i,j], msi[i,j])
+                ins("cri", cri[i,j], cri[i,j])
                 sev = int(cri[i,j])
                 if sev >= 2:
                     title = "Crisis risk elevated" if sev == 2 else "Crisis risk severe"

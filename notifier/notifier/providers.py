@@ -18,8 +18,12 @@ class AfricasTalkingProvider(Provider):
         raise RuntimeError("Africa's Talking adapter stub: store encrypted destination in meta to enable real sending.")
 def get_provider():
     p = os.environ.get("MSG_PROVIDER","mock").lower()
-    if p == "none": return NoneProvider()
-    if p == "mock": return MockProvider()
-    if p == "twilio": return TwilioProvider()
-    if p == "africastalking": return AfricasTalkingProvider()
+    if p == "none":
+        return NoneProvider()
+    if p == "mock":
+        return MockProvider()
+    if p == "twilio":
+        return TwilioProvider()
+    if p == "africastalking":
+        return AfricasTalkingProvider()
     return MockProvider()

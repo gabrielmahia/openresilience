@@ -47,7 +47,7 @@ def check_pip():
         subprocess.run(['pip', '--version'], capture_output=True, check=True)
         print("✅ pip is installed")
         return True
-    except:
+    except Exception:
         print("❌ pip not found!")
         print("   Install with: python -m ensurepip")
         return False

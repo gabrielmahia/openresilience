@@ -14,7 +14,6 @@ Uses Africa's Talking API - Kenya's leading SMS platform
 
 import os
 from datetime import datetime
-from typing import Dict, List
 
 
 class SMSAlertService:
@@ -54,7 +53,7 @@ class SMSAlertService:
         phone_number: str,
         message: str,
         county: str = None
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send SMS alert to a phone number.
 
@@ -102,7 +101,7 @@ class SMSAlertService:
         stress_level: float,
         action: str,
         language: str = 'en'
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send water stress alert.
 
@@ -160,9 +159,9 @@ class SMSAlertService:
         phone_number: str,
         county: str,
         season: str,
-        recommended_crops: List[str],
+        recommended_crops: list[str],
         language: str = 'en'
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send planting season reminder.
 
@@ -202,7 +201,7 @@ class SMSAlertService:
         time: str,
         cost: str,
         language: str = 'en'
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send water truck schedule.
 
@@ -243,7 +242,7 @@ class SMSAlertService:
         forecast: str,
         tip: str,
         language: str = 'en'
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Send weekly water stress summary.
 
@@ -302,7 +301,7 @@ class SMSAlertService:
         else:
             return clean
 
-    def parse_incoming_sms(self, from_number: str, text: str) -> Dict[str, any]:
+    def parse_incoming_sms(self, from_number: str, text: str) -> dict[str, any]:
         """
         Parse incoming SMS for subscription/commands.
 
@@ -433,7 +432,7 @@ class SubscriptionManager:
             return True
         return False
 
-    def get_subscribers_for_county(self, county: str) -> List[Dict]:
+    def get_subscribers_for_county(self, county: str) -> list[dict]:
         """
         Get all active subscribers for a county.
 
@@ -449,7 +448,7 @@ class SubscriptionManager:
             if data.get('active') and data.get('county') == county
         ]
 
-    def get_all_active_subscribers(self) -> List[Dict]:
+    def get_all_active_subscribers(self) -> list[dict]:
         """
         Get all active subscribers.
 

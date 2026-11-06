@@ -18,7 +18,8 @@ def loop():
                 cur.execute("SELECT id FROM runs ORDER BY run_time_utc DESC LIMIT 1")
                 run = cur.fetchone()
                 if not run:
-                    time.sleep(interval); continue
+                    time.sleep(interval)
+                    continue
                 run_db_id = run[0]
                 cur.execute(
                     "SELECT region_id, domain, severity, title, created_utc FROM alerts "

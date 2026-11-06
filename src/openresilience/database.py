@@ -13,7 +13,7 @@ Design: Local-first, zero-infrastructure, portable
 import sqlite3
 from contextlib import contextmanager
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 DEFAULT_DB_PATH = "openresilience.db"
 
@@ -209,8 +209,8 @@ def ensure_region(
 
 def insert_run(
     region_id: int,
-    scores: Dict[str, float],
-    signals: Dict[str, Any],
+    scores: dict[str, float],
+    signals: dict[str, Any],
     timestamp: Optional[str] = None,
     notes: str = "",
     data_mode: str = "demo",
@@ -264,7 +264,7 @@ def get_recent_runs(
     region_id: int,
     limit: int = 10,
     db_path: str = DEFAULT_DB_PATH
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Retrieve recent scoring runs for a region.
 
@@ -334,7 +334,7 @@ def get_recent_reports(
     category: Optional[str] = None,
     limit: int = 50,
     db_path: str = DEFAULT_DB_PATH
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Retrieve recent field reports.
 
@@ -407,7 +407,7 @@ def create_alert(
 def get_active_alerts(
     region_id: Optional[int] = None,
     db_path: str = DEFAULT_DB_PATH
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Retrieve unacknowledged alerts.
 

@@ -5,7 +5,6 @@ Provides definitions, interpretation scales, and recommended actions
 for water stress indicators used in OpenResilience.
 """
 
-from typing import Dict
 
 # Water Stress Index Scale (0-10)
 WATER_STRESS_SCALE = {
@@ -39,7 +38,7 @@ def get_stress_category(stress_value: float) -> str:
         return "extreme"
 
 
-def get_stress_interpretation(category: str) -> Dict[str, str]:
+def get_stress_interpretation(category: str) -> dict[str, str]:
     """
     Get interpretation and recommended actions for a stress category.
 

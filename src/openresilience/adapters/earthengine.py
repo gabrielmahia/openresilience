@@ -14,7 +14,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +96,7 @@ class EarthEngineAdapter:
         lat: float,
         lon: float,
         days: int = 16
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[dict[str, Any]]:
         """
         Get NDVI (vegetation health) from MODIS.
 
@@ -187,7 +187,7 @@ class EarthEngineAdapter:
         self,
         locations: list,
         days: int = 16
-    ) -> Dict[str, Optional[Dict[str, Any]]]:
+    ) -> dict[str, Optional[dict[str, Any]]]:
         """
         Get NDVI for multiple locations efficiently.
 
@@ -213,7 +213,7 @@ class EarthEngineAdapter:
         return results
 
 
-def get_cached_vegetation_data(county_name: str) -> Optional[Dict[str, Any]]:
+def get_cached_vegetation_data(county_name: str) -> Optional[dict[str, Any]]:
     """
     Read vegetation data from local cache.
 

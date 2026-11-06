@@ -8,7 +8,7 @@ Supports optional ward centroid data for mapping.
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 import pandas as pd
 
@@ -49,7 +49,7 @@ class GeoHierarchy:
 
         try:
             self.ward_centroids = pd.read_csv(self.centroids_path)
-        except:
+        except Exception:
             self.ward_centroids = None
 
     def get_ward_centroid(
@@ -57,8 +57,8 @@ class GeoHierarchy:
         county: str,
         constituency: Optional[str] = None,
         ward: Optional[str] = None,
-        county_fallback: Optional[Tuple[float, float]] = None
-    ) -> Optional[Tuple[float, float]]:
+        county_fallback: Optional[tuple[float, float]] = None
+    ) -> Optional[tuple[float, float]]:
         """
         Get centroid coordinates for a ward, with fallback to county centroid.
 
@@ -109,7 +109,7 @@ class GeoHierarchy:
         """Check if hierarchy data is loaded and available."""
         return self.loaded and len(self.hierarchy) > 0
 
-    def get_counties(self) -> List[str]:
+    def get_counties(self) -> list[str]:
         """
         Get list of counties with hierarchy data.
 
@@ -120,7 +120,7 @@ class GeoHierarchy:
             return []
         return sorted(self.hierarchy.keys())
 
-    def get_constituencies(self, county: str) -> List[str]:
+    def get_constituencies(self, county: str) -> list[str]:
         """
         Get constituencies within a county.
 
@@ -136,7 +136,7 @@ class GeoHierarchy:
         constituencies = self.hierarchy[county].get('constituencies', {})
         return sorted(constituencies.keys())
 
-    def get_wards(self, county: str, constituency: str) -> List[str]:
+    def get_wards(self, county: str, constituency: str) -> list[str]:
         """
         Get wards within a constituency.
 
@@ -157,7 +157,7 @@ class GeoHierarchy:
         wards = constituencies[constituency].get('wards', [])
         return sorted(wards) if isinstance(wards, list) else []
 
-    def get_coverage_summary(self) -> Dict[str, int]:
+    def get_coverage_summary(self) -> dict[str, int]:
         """
         Get summary of data coverage.
 
