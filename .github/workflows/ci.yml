@@ -20,4 +20,3 @@ jobs:
         run: ruff check . --ignore E501
       - name: Smoke tests
         run: pytest tests/ -v --tb=short
-        continue-on-error: true
