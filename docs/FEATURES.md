@@ -358,7 +358,7 @@ Forecast: 📉 Conditions worsening - Prepare
 
 ## 📄 **License & Data Sovereignty**
 
-**Platform:** Open Source (Community-owned)
+**Platform:** Source-available (PolyForm Noncommercial 1.0.0)
 **Data:** Locally-managed, Community-controlled
 **Governance:** Multi-stakeholder (Counties + NGOs + Communities)
 

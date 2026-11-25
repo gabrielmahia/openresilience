@@ -32,7 +32,7 @@ By contributing to this project, you agree that:
    - You're not bound by employer agreements preventing contribution
 
 3. **You understand:**
-   - Contributions become part of the open-source project
+   - Contributions become part of the project
    - Your name will be listed in CONTRIBUTORS.md
    - You'll be credited in release notes
 
