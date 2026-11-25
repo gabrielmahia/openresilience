@@ -4,24 +4,16 @@ This document defines governance, structure, and quality standards for OpenResil
 
 ## License Requirements
 
-**Mandatory License:** Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 (CC BY-NC-ND)
+**License:** [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0) (changed from CC BY-NC-ND 4.0 on 2026-11-25).
 
 ### Why This License?
-- **NonCommercial**: Prevents extraction/commodification of crisis intelligence
-- **NoDerivatives**: Maintains ethical integrity, prevents weaponization or misrepresentation
-- **Attribution**: Ensures visibility of source and methodology
+- **Noncommercial**: Prevents extraction/commodification of crisis intelligence; commercial use needs a licence from the owner.
+- **Useful to the public sector**: explicitly free for government institutions, charities, public research, public health and educational organisations, including modifying it for their own use.
+- **Built for software**: Creative Commons advises against its licences for code; PolyForm is a software licence.
+- **Attribution**: the Required Notice must travel with every copy.
 
 ### License File Format
-```
-Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License
-
-Copyright (c) [YEAR] [AUTHOR]
-
-By exercising the Licensed Rights (defined below), You accept and agree to be bound by...
-[Standard CC BY-NC-ND text]
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
-```
+The LICENSE file starts with `Required Notice: Copyright (c) [YEAR] Gabriel Mahia (https://github.com/gabrielmahia)` and a commercial-licensing contact line, followed by the unmodified PolyForm Noncommercial 1.0.0 text.
 
 ## Trust and Transparency Standards
 
@@ -59,7 +51,7 @@ Email directly to:
 
 ### Required Files
 ```
-LICENSE                    # CC BY-NC-ND 4.0
+LICENSE                    # PolyForm Noncommercial 1.0.0
 README.md                  # Trust-first disclosure
 SECURITY.md                # Vulnerability reporting
 CONTRIBUTING.md            # Contribution guidelines
@@ -155,7 +147,7 @@ Required if system uses demo data. Must document:
 5. Add tests covering trust properties
 
 ### For External Collaborators
-1. Review LICENSE (NoDerivatives means no direct PRs for redistribution)
+1. Review LICENSE (PolyForm Noncommercial: noncommercial use and modification are allowed; commercial use needs a licence)
 2. Collaboration requires email coordination: contact@aikungfu.dev
 3. Forks for study/learning are encouraged
 4. Suggest improvements via issues
@@ -186,7 +178,7 @@ Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`
 ## Future Repository Standards
 
 Any new repositories under OpenResilience umbrella must:
-1. Adopt CC BY-NC-ND license
+1. Adopt PolyForm Noncommercial 1.0.0
 2. Follow trust disclosure standards
 3. Use src/ package structure
 4. Include smoke tests

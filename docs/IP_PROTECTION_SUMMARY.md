@@ -1,3 +1,5 @@
+> **Superseded (2026-11-25).** This describes an earlier AGPL-3.0 plan that was never the repository's licence. The current licence is PolyForm Noncommercial 1.0.0; see [LICENSE](../LICENSE) and [REPO_STANDARDS](architecture/REPO_STANDARDS.md).
+
 # OpenResilience Kenya - IP Protection Summary
 
 **Implemented: February 13, 2026**  
